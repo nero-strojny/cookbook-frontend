@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let endpoint = "http://ec2-54-145-81-149.compute-1.amazonaws.com:8080";
+let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
 //let endpoint = "http://localhost:8080";
 
 export const login = async (username, password) => {
