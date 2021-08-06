@@ -64,5 +64,6 @@ export const defaultRecipe = {
   servings: 0,
   author: "",
   cooktime: 0,
-  preptime: 0
+  preptime: 0,
+  tags: []
 };

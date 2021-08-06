@@ -2,6 +2,7 @@ export const recipeReducer = (state, action) => {
     const { payload } = action;
     const tempSteps = [...state.steps];
     const tempIngredients = [...state.ingredients];
+    const tempTag = state.tags ? [...state.tags] : [];
     console.log(tempIngredients);
     switch (action.type) {
         case "EDIT_NAME":
@@ -67,6 +68,16 @@ export const recipeReducer = (state, action) => {
             return {
                 ...state,
                 ingredients: tempIngredients
+            };
+        case "ADD_TAG":
+            return {
+                ...state,
+                tags: [...tempTag, payload.tag]
+            };
+        case "DELETE_TAG":
+            return {
+                ...state,
+                tags: tempTag.filter(tag => tag !== payload.tag)
             };
         default:
             return state;
