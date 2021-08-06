@@ -1,12 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Form, TextArea, Grid, Button, Icon } from "semantic-ui-react";
+import { RecipeContext } from "../RecipeContext";
 
-function Steps({ currentSteps, setCurrentSteps, onStepDelete }) {
-  function changeStepValue(indexSelected, valueInput) {
-    const tempSteps = [...currentSteps];
-    tempSteps[indexSelected] = valueInput;
-    setCurrentSteps(tempSteps);
-  }
+function Steps() {
+  const { state, dispatch } = useContext(RecipeContext);
+  const { steps: currentSteps } = state;
 
   function createSteps() {
     const stepInputs = [
@@ -17,7 +15,10 @@ function Steps({ currentSteps, setCurrentSteps, onStepDelete }) {
               <TextArea
                 placeholder="Describe step here..."
                 value={currentSteps.length > 0 ? currentSteps[0] : "" }
-                onChange={(event) => changeStepValue(0, event.target.value)}
+                onChange={(event) => dispatch({ 
+                  type: 'EDIT_STEP',
+                  payload: { indexSelected: 0, valueInput: event.target.value }
+                })}
               />
             </Form.Field>
           </Grid.Column>
@@ -32,7 +33,10 @@ function Steps({ currentSteps, setCurrentSteps, onStepDelete }) {
               <TextArea
                 placeholder="Describe step here..."
                 value={currentSteps[i]}
-                onChange={(event) => changeStepValue(i, event.target.value)}
+                onChange={(event) => dispatch({ 
+                  type: 'EDIT_STEP',
+                  payload: { indexSelected: i, valueInput: event.target.value }
+                })}
               />
             </Form.Field>
           </Grid.Column>
@@ -42,7 +46,10 @@ function Steps({ currentSteps, setCurrentSteps, onStepDelete }) {
               size='big'
               color='grey'
               style={{ cursor: 'pointer' }}
-              onClick={() => onStepDelete(i)}
+              onClick={() => dispatch({ 
+                type: 'DELETE_STEP',
+                payload: { indexSelected: i }
+              })}
             />
           </Grid.Column>
         </Grid.Row>
@@ -62,7 +69,7 @@ function Steps({ currentSteps, setCurrentSteps, onStepDelete }) {
         {createSteps()}
         <Grid.Row>
           <Grid.Column>
-            <Button onClick={() => setCurrentSteps([...currentSteps, ""])}>
+            <Button onClick={() => dispatch({ type: 'ADD_STEP' })}>
               <Icon name="plus" /> Add Step
             </Button>
           </Grid.Column>
