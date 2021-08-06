@@ -16,7 +16,7 @@ function ViewRecipes({
   const [isLoading, setIsLoading] = useState(true);
   const [disablePagination, setDisablePagination] = useState(false);
   const [errorState, setErrorState] = useState("")
-  const [numberOfRecipes, setNumberOfRecipes] = useState(0)
+  const [numberOfRecipes, setNumberOfRecipes] = useState(0);
   
   const PAGESIZE = 5;
 

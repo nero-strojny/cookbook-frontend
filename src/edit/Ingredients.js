@@ -1,13 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Form, Grid, Button, Icon } from "semantic-ui-react";
+import { RecipeContext } from "../RecipeContext";
 
-function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDelete }) {
-
-  function changeIngredientValue(indexSelected, keySelected, valueInput) {
-    const tempIngredients = [...currentIngredients];
-    tempIngredients[indexSelected][keySelected] = valueInput;
-    setCurrentIngredients(tempIngredients);
-  }
+function Ingredients() {
+  const { state, dispatch } = useContext(RecipeContext);
+  const { ingredients: currentIngredients } = state;
 
   function createIngredients() {
     let ingredientInputs = [
@@ -23,7 +20,14 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
                   : ""
               }
               onChange={(event) =>
-                changeIngredientValue(0, "amount", parseFloat(event.target.value))
+                dispatch({ 
+                  type: 'EDIT_INGREDIENT',
+                  payload: {
+                    indexSelected: 0,
+                    keySelected: "amount",
+                    valueInput: parseFloat(event.target.value)
+                  }
+                })
               }
             />
           </Form.Field>
@@ -38,7 +42,14 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
                   : ""
               }
               onChange={(event) =>
-                changeIngredientValue(0, "measurement", event.target.value)
+                dispatch({ 
+                  type: 'EDIT_INGREDIENT',
+                  payload: {
+                    indexSelected: 0,
+                    keySelected: "measurement",
+                    valueInput: event.target.value
+                  }
+                })
               }
             />
           </Form.Field>
@@ -51,7 +62,14 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
                 currentIngredients.length >= 1 ? currentIngredients[0].name : ""
               }
               onChange={(event) =>
-                changeIngredientValue(0, "name", event.target.value)
+                dispatch({ 
+                  type: 'EDIT_INGREDIENT',
+                  payload: {
+                    indexSelected: 0,
+                    keySelected: "name",
+                    valueInput: event.target.value
+                  }
+                })
               }
             />
           </Form.Field>
@@ -68,7 +86,14 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
                 type="number"
                 value={currentIngredients[i].amount || 0}
                 onChange={(event) =>
-                  changeIngredientValue(i, "amount", parseFloat(event.target.value))
+                  dispatch({ 
+                    type: 'EDIT_INGREDIENT',
+                    payload: {
+                      indexSelected: i,
+                      keySelected: "amount",
+                      valueInput: parseFloat(event.target.value)
+                    }
+                  })
                 }
               />
             </Form.Field>
@@ -78,7 +103,14 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
               <input
                 value={currentIngredients[i].measurement || ''}
                 onChange={(event) =>
-                  changeIngredientValue(i, "measurement", event.target.value)
+                  dispatch({ 
+                    type: 'EDIT_INGREDIENT',
+                    payload: {
+                      indexSelected: i,
+                      keySelected: "measurement",
+                      valueInput: event.target.value
+                    }
+                  })
                 }
               />
             </Form.Field>
@@ -88,7 +120,14 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
               <input
                 value={currentIngredients[i].name || ''}
                 onChange={(event) =>
-                  changeIngredientValue(i, "name", event.target.value)
+                  dispatch({ 
+                    type: 'EDIT_INGREDIENT',
+                    payload: {
+                      indexSelected: i,
+                      keySelected: "name",
+                      valueInput: event.target.value
+                    }
+                  })
                 }
               />
             </Form.Field>
@@ -99,7 +138,10 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
               size='big'
               color='grey'
               style={{ cursor: 'pointer' }}
-              onClick={() => onIngredientDelete(i)}
+              onClick={() => dispatch({ 
+                type: 'DELETE_INGREDIENT',
+                payload: { indexSelected: i }
+              })}
             />
           </Grid.Column>
         </Grid.Row>
@@ -119,9 +161,7 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
         {createIngredients()}
         <Grid.Row>
           <Grid.Column>
-            <Button
-              onClick={() => setCurrentIngredients([...currentIngredients, {}])}
-            >
+            <Button onClick={() => dispatch({ type: 'ADD_INGREDIENT' })}>
               <Icon name="plus" /> Add Ingredient
             </Button>
           </Grid.Column>

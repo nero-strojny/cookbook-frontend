@@ -1,9 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useReducer } from "react";
 import { Form, Divider, Grid, Button, Card } from "semantic-ui-react";
 import Steps from "./Steps";
 import Ingredients from "./Ingredients";
 import { createRecipe, updateRecipe } from "../serviceCalls";
 import { MessageBarContext } from "../MessageBarContext";
+import { RecipeContext } from "../RecipeContext";
+import { recipeReducer } from "../reducers/recipeReducer";
 
 function EditRecipe({ 
   token, 
@@ -12,44 +14,32 @@ function EditRecipe({
   inputtedRecipe,
   setShowEditPage 
 }) {
-  const [recipeName, setRecipeName] = useState(inputtedRecipe.recipeName);
-  const [author, setAuthor] = useState(inputtedRecipe.author);
-  const [calories, setCalories] = useState(inputtedRecipe.calories);
-  const [steps, setSteps] = useState(inputtedRecipe.steps.map(step => step.text));
-  const [ingredients, setIngredients] = useState(inputtedRecipe.ingredients);
-  const [cookTime, setCookTime] = useState(inputtedRecipe.cookTime);
-  const [prepTime, setPrepTime] = useState(inputtedRecipe.prepTime);
-  const [servings, setServings] = useState(inputtedRecipe.servings);
   const [isLoading, setIsLoading] = useState(false);
-  
-  const { dispatch } = useContext(MessageBarContext);
+  const { dispatch: messageDispatch } = useContext(MessageBarContext);
+  const [state, dispatch] = useReducer(recipeReducer, {
+    ...inputtedRecipe,
+    steps: inputtedRecipe.steps.map(step => step.text)
+  });
 
   const submitRecipe = async () => {
-    const submittedSteps = [];
-    for (let i = 0; i < steps.length; i++) {
-      if (steps[i] !== "") {
-        submittedSteps.push({ number: i + 1, text: steps[i] });
-      }
+    let submittedSteps = state.steps
+      .filter(step => step !== "")
+      .map((step, index) => ({ number: index + 1, text: step }));
+    if (!submittedSteps || !submittedSteps.length){
+      submittedSteps = [""];
     }
-    const submittedIngredients = [];
-    for (let i = 0; i < ingredients.length; i++) {
-      if (
-        ingredients[i].name !== "" ||
-        ingredients[i].measurement !== "" ||
-        ingredients[i].amount !== ""
-      ) {
-        submittedIngredients.push(ingredients[i]);
-      }
+    let submittedIngredients = state.ingredients
+      .filter(ingredient =>
+        ingredient.name !== "" ||
+        ingredient.measurement !== "" ||
+        ingredient.amount !== "");
+    if (!submittedIngredients || !submittedIngredients.length){
+      submittedIngredients = [""];
     }
+    
     const submittedReport = {
-      ...inputtedRecipe,
-      recipeName,
+      ...state,
       userName: currentUser,
-      author,
-      calories,
-      cookTime,
-      prepTime,
-      servings,
       ingredients: submittedIngredients,
       steps: submittedSteps,
     };
@@ -57,156 +47,142 @@ function EditRecipe({
     if (inputtedRecipe._id) {
       const response = await updateRecipe(inputtedRecipe._id, submittedReport, token);
       if (response.status === 200) {
-        dispatch({ type: 'EDIT_SUCCESS', payload: { recipeName } });
+        messageDispatch({ type: 'EDIT_SUCCESS', payload: { recipeName: state.recipeName } });
         setShowEditPage(false);
       } else {
-        dispatch({ type: 'EDIT_FAILURE' });
+        messageDispatch({ type: 'EDIT_FAILURE' });
         setShowEditPage(false);
       }
     } else {
       const response = await createRecipe(submittedReport, token);
       if (response.status === 201) {
-        dispatch({ type: 'CREATE_SUCCESS', payload: { recipeName } });
-        onSuccessfulCreate(recipeName);
+        messageDispatch({ type: 'CREATE_SUCCESS', payload: { recipeName: state.recipeName } });
+        onSuccessfulCreate(state.recipeName);
       } else {
-        dispatch({ type: 'CREATE_FAILURE' });
+        messageDispatch({ type: 'CREATE_FAILURE' });
         setShowEditPage(false);
       }
     }
   };
 
-  const removeIngredient = (ingredientIndex) => {
-    const tempArray = [...ingredients];
-    tempArray.splice(ingredientIndex, 1);
-    setIngredients(tempArray);
-  }
-
-  const removeStep = (stepIndex) => {
-    const tempArray = [...steps];
-    tempArray.splice(stepIndex, 1);
-    setSteps(tempArray);
-  }
-
   return (
-    <Grid padded>
-      <Grid.Row columns="equal">
-        <Grid.Column>
-          <h1> Edit Recipe</h1>
-        </Grid.Column>
-        <Grid.Column textAlign="right">
-          <Button inverted color="orange" onClick={() => setShowEditPage(false)}>
-            Back to My Recipes
-          </Button>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <Card fluid>
-            <Card.Content>
-              <Form>
-                <Grid>
-                  <Grid.Row columns="equal">
-                    <Grid.Column>
-                      <h3>Basics</h3>
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row columns="equal">
-                    <Grid.Column>
-                      <Form.Field>
-                        <label>Recipe Name</label>
-                        <input
-                          placeholder="Recipe Name"
-                          defaultValue={recipeName}
-                          onChange={(event) =>
-                            setRecipeName(event.target.value)
-                          }
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row columns="equal">
-                    <Grid.Column>
-                      <Form.Field>
-                        <label>Author</label>
-                        <input
-                          placeholder="Author"
-                          defaultValue={author}
-                          onChange={(event) => setAuthor(event.target.value)}
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                    <Grid.Column>
-                      <Form.Field>
-                        <label>Calories Per Serving</label>
-                        <input
-                          type="number"
-                          placeholder="kCal/serving"
-                          defaultValue={calories}
-                          onChange={(event) => setCalories(Number(event.target.value))}
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                  </Grid.Row>
-                  <Grid.Row columns="equal">
-                    <Grid.Column>
-                      <Form.Field>
-                        <label>Prep Time (min)</label>
-                        <input
-                          type="number"
-                          defaultValue={prepTime}
-                          onChange={(event) =>
-                            setPrepTime(Number(event.target.value))
-                          }
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                    <Grid.Column>
-                      <Form.Field>
-                        <label>Cook Time (min)</label>
-                        <input
-                          type="number"
-                          defaultValue={cookTime}
-                          onChange={(event) =>
-                            setCookTime(Number(event.target.value))
-                          }
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                    <Grid.Column>
-                      <Form.Field>
-                        <label>Servings</label>
-                        <input
-                          type="number"
-                          defaultValue={servings}
-                          onChange={(event) =>
-                            setServings(Number(event.target.value))
-                          }
-                        />
-                      </Form.Field>
-                    </Grid.Column>
-                  </Grid.Row>
-                </Grid>
-              </Form>
-              <Divider />
-              <Ingredients
-                currentIngredients={ingredients}
-                setCurrentIngredients={setIngredients}
-                onIngredientDelete={(ingredientIndex) => removeIngredient(ingredientIndex)}
-              />
-              <Divider />
-              <Steps
-                currentSteps={steps}
-                setCurrentSteps={setSteps}
-                onStepDelete={(stepIndex) => removeStep(stepIndex)}
-              />
-            </Card.Content>
-            <Card.Content extra>
-              <Form.Button color='orange' loading={isLoading} onClick={() => submitRecipe()}>Submit</Form.Button>
-            </Card.Content>
-          </Card>
-        </Grid.Column>
-      </Grid.Row>
-    </Grid>
+    <RecipeContext.Provider value={{state, dispatch}}>
+      <Grid padded>
+        <Grid.Row columns="equal">
+          <Grid.Column>
+            <h1> Edit Recipe</h1>
+          </Grid.Column>
+          <Grid.Column textAlign="right">
+            <Button inverted color="orange" onClick={() => setShowEditPage(false)}>
+              Back to My Recipes
+            </Button>
+          </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            <Card fluid>
+              <Card.Content>
+                <Form>
+                  <Grid>
+                    <Grid.Row columns="equal">
+                      <Grid.Column>
+                        <h3>Basics</h3>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns="equal">
+                      <Grid.Column>
+                        <Form.Field>
+                          <label>Recipe Name</label>
+                          <input
+                            placeholder="Recipe Name"
+                            defaultValue={inputtedRecipe.recipeName}
+                            onChange={(event) =>
+                              dispatch({ type: 'EDIT_NAME', payload: { recipeName: event.target.value } })
+                            }
+                          />
+                        </Form.Field>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns="equal">
+                      <Grid.Column>
+                        <Form.Field>
+                          <label>Author</label>
+                          <input
+                            placeholder="Author"
+                            defaultValue={inputtedRecipe.author}
+                            onChange={(event) =>
+                              dispatch({ type: 'EDIT_AUTHOR', payload: { author: event.target.value } })
+                            }
+                          />
+                        </Form.Field>
+                      </Grid.Column>
+                      <Grid.Column>
+                        <Form.Field>
+                          <label>Calories Per Serving</label>
+                          <input
+                            type="number"
+                            placeholder="kCal/serving"
+                            defaultValue={inputtedRecipe.calories}
+                            onChange={(event) =>
+                              dispatch({ type: 'EDIT_CALORIES', payload: { calories: Number(event.target.value) } })
+                            }
+                          />
+                        </Form.Field>
+                      </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row columns="equal">
+                      <Grid.Column>
+                        <Form.Field>
+                          <label>Prep Time (min)</label>
+                          <input
+                            type="number"
+                            defaultValue={inputtedRecipe.prepTime}
+                            onChange={(event) =>
+                              dispatch({ type: 'EDIT_PREP_TIME', payload: { prepTime: Number(event.target.value) } })
+                            }
+                          />
+                        </Form.Field>
+                      </Grid.Column>
+                      <Grid.Column>
+                        <Form.Field>
+                          <label>Cook Time (min)</label>
+                          <input
+                            type="number"
+                            defaultValue={inputtedRecipe.cookTime}
+                            onChange={(event) =>
+                              dispatch({ type: 'EDIT_COOK_TIME', payload: { cookTime: Number(event.target.value) } })
+                            }
+                          />
+                        </Form.Field>
+                      </Grid.Column>
+                      <Grid.Column>
+                        <Form.Field>
+                          <label>Servings</label>
+                          <input
+                            type="number"
+                            defaultValue={inputtedRecipe.servings}
+                            onChange={(event) =>
+                              dispatch({ type: 'EDIT_SERVINGS', payload: { servings: Number(event.target.value) } })
+                            }
+                          />
+                        </Form.Field>
+                      </Grid.Column>
+                    </Grid.Row>
+                  </Grid>
+                </Form>
+                <Divider />
+                <Ingredients />
+                <Divider />
+                <Steps />
+              </Card.Content>
+              <Card.Content extra>
+                <Form.Button color='orange' loading={isLoading} onClick={() => submitRecipe()}>Submit</Form.Button>
+              </Card.Content>
+            </Card>
+          </Grid.Column>
+        </Grid.Row>
+      </Grid>
+    </RecipeContext.Provider>
   );
 }
 export default EditRecipe;
