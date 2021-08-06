@@ -1,7 +1,8 @@
 import React, { useState, useContext } from "react";
-import { List, Card, Grid, Icon, Loader, Button } from "semantic-ui-react";
+import { List, Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react";
 import { MessageBarContext } from "../MessageBarContext";
 import { deleteRecipe } from "../serviceCalls";
+import { defaultTags } from "../edit/Tags";
 
 function RecipeCard({ 
   token, 
@@ -24,6 +25,8 @@ function RecipeCard({
     steps,
     servings,
   } = recipe;
+
+  const tags = recipe.tags || [];
 
   const [stepsVisible, setStepsVisible] = useState(false)
   const [ingredientsVisible, setIngredientsVisible] = useState(false)
@@ -178,10 +181,17 @@ function RecipeCard({
       <Card.Content extra>
         <Grid>
           <Grid.Row>
-            <Grid.Column floated='left' textAlign='left' width={8}>
+            <Grid.Column floated='left' textAlign='left' width={4}>
               <>Submitted by {userName}</>
             </Grid.Column>
-            <Grid.Column floated='right' textAlign='right' width={8}>
+            <Grid.Column floated='right' textAlign='right' width={12}>
+            {defaultTags
+              .filter(tag => tags.includes(tag))
+              .map(tag => 
+                (<Label style={{margin:'5px 0px 5px 20px'}} tag color='orange'>
+                  {tag}
+                </Label>)
+              )}
             </Grid.Column>
           </Grid.Row>
         </Grid>

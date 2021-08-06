@@ -1,6 +1,7 @@
 import React, { useState, useContext, useReducer } from "react";
 import { Form, Divider, Grid, Button, Card } from "semantic-ui-react";
 import Steps from "./Steps";
+import Tags from "./Tags";
 import Ingredients from "./Ingredients";
 import { createRecipe, updateRecipe } from "../serviceCalls";
 import { MessageBarContext } from "../MessageBarContext";
@@ -170,6 +171,8 @@ function EditRecipe({
                     </Grid.Row>
                   </Grid>
                 </Form>
+                <Divider />
+                <Tags clickable />
                 <Divider />
                 <Ingredients />
                 <Divider />
