@@ -33,6 +33,7 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
       {showEditPage ? (
         <EditRecipe
           token={token}
+          setAccessToken={setAccessToken}
           currentUser={currentUser}
           onSuccessfulCreate={handleCreateRecipe}
           inputtedRecipe={recipeToEdit}
@@ -41,6 +42,7 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
       ) : (
           <ViewRecipes
             token={token}
+            setAccessToken={setAccessToken}
             currentUser={currentUser}
             onCreateRecipe={() => {
               setShowEditPage(true);

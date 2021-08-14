@@ -15,6 +15,7 @@ function Login({ setAccessToken, setCurrentUser}) {
       const response = await login(username, password);
       if (get(response, 'data.accessToken')) {
         setAccessToken(response.data.accessToken)
+        localStorage.setItem('accessToken', response.data.accessToken);
         setCurrentUser(username)
         setError(false)
       } else {

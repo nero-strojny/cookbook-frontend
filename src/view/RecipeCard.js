@@ -5,7 +5,8 @@ import { deleteRecipe } from "../serviceCalls";
 import { defaultTags } from "../edit/Tags";
 
 function RecipeCard({ 
-  token, 
+  token,
+  setAccessToken,
   currentUser, 
   recipe, 
   refreshRecipesAfterDelete, 
@@ -40,6 +41,8 @@ function RecipeCard({
     if (response.status === 204) {
       dispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
       refreshRecipesAfterDelete();
+    } else if (response.status === 401 || response.status === 403) {
+      setAccessToken("")
     } else {
       dispatch({ type: 'DELETE_FAILURE' });
       onFailedDelete()

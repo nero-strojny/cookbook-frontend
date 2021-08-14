@@ -5,6 +5,7 @@ import { searchRecipe } from "../serviceCalls";
 
 function SearchSection({
   token,
+  setAccessToken,
   setErrorState,
   setRecipes,
   setNumberOfRecipes,
@@ -24,9 +25,13 @@ function SearchSection({
         {recipeName: searchField};
       const response = await searchRecipe(queryParameters, token);
       if (response.status !== 200) {
-        setErrorState("Error Retrieving Recipes");
-        setRecipes([]);
-        setNumberOfRecipes(1);
+        if (response.status === 401 || response.status === 403) {
+          setAccessToken("");
+        } else {
+          setErrorState("Error Retrieving Recipes");
+          setRecipes([]);
+          setNumberOfRecipes(1);
+        }
       } else if (!response.data.length) {
         setErrorState("No Matching Recipes Found");
         setNumberOfRecipes(1);
@@ -45,7 +50,7 @@ function SearchSection({
 
   async function onInputChange(event) {
     if (event.key === 'Enter') {
-      submitSearch();
+      await submitSearch();
     }
   }
 
