@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
-import { getRecipes, searchRecipe, getRandomRecipes } from "../serviceCalls";
+import { getRecipes, getRandomRecipes } from "../serviceCalls";
 import SearchSection from "./SearchSection";
 
 function ViewRecipes({ 
-  token, 
+  token,
+  setAccessToken, 
   currentUser, 
   onCreateRecipe,
   onEditRecipe,
@@ -30,14 +31,16 @@ function ViewRecipes({
             pageSize: PAGESIZE,
             pageCount: currentPage-1
           }, token);
-          if (response.status !== 200) {
-            setErrorState("Error Retrieving Recipes");
-            setRecipes([]);
-          } else {
+          if (response.status === 200) {
             setErrorState(false);
             setRecipes(response.data.recipes);
             setNumberOfRecipes(response.data.numberOfRecipes);
-            }
+          } else if (response.status === 401 || response.status === 403) {
+            setAccessToken("")
+          } else {
+            setErrorState("Error Retrieving Recipes");
+            setRecipes([]);
+          }
           setIsLoading(false);
           setDisablePagination(false);
         }
@@ -47,7 +50,7 @@ function ViewRecipes({
     return () => {
       isCurrent = false
     }
-  }, [shouldRefresh, token, currentPage]);
+  }, [shouldRefresh, token, currentPage, setAccessToken]);
 
 
   function refreshRecipesAfterDelete() {
@@ -63,13 +66,15 @@ function ViewRecipes({
   async function generateRandomRecipes() {
     setIsLoading(true);
     const response = await getRandomRecipes(token);
-    if (response.status !== 200) {
+    if (response.status === 200 ) {
+      setErrorState("");
+      setRecipes(response.data);
+    } else if (response.status === 401 || response.status === 403) {
+      setAccessToken("")
+    } else {
       setErrorState("Error Retrieving Recipes");
       setRecipes([]);
       setNumberOfRecipes(1)
-    } else {
-      setErrorState("");
-      setRecipes(response.data);
     }
     setNumberOfRecipes(1)
     setIsLoading(false);
@@ -87,6 +92,7 @@ function ViewRecipes({
         <Grid.Column>
           <SearchSection
             token={token}
+            setAccessToken={setAccessToken}
             setErrorState={setErrorState}
             setRecipes={setRecipes}
             setNumberOfRecipes={setNumberOfRecipes}
@@ -145,6 +151,7 @@ function ViewRecipes({
                 {recipes.map((r) => (
                   <RecipeCard
                     token={token}
+                    setAccessToken={setAccessToken}
                     currentUser={currentUser}
                     recipe={r}
                     refreshRecipesAfterDelete={refreshRecipesAfterDelete}

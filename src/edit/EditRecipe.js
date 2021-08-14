@@ -9,7 +9,8 @@ import { RecipeContext } from "../RecipeContext";
 import { recipeReducer } from "../reducers/recipeReducer";
 
 function EditRecipe({ 
-  token, 
+  token,
+  setAccessToken,
   currentUser,
   onSuccessfulCreate, 
   inputtedRecipe,
@@ -50,6 +51,8 @@ function EditRecipe({
       if (response.status === 200) {
         messageDispatch({ type: 'EDIT_SUCCESS', payload: { recipeName: state.recipeName } });
         setShowEditPage(false);
+      } else if (response.status === 401 || response.status === 403) {
+        setAccessToken("")
       } else {
         messageDispatch({ type: 'EDIT_FAILURE' });
         setShowEditPage(false);
@@ -59,6 +62,8 @@ function EditRecipe({
       if (response.status === 201) {
         messageDispatch({ type: 'CREATE_SUCCESS', payload: { recipeName: state.recipeName } });
         onSuccessfulCreate(state.recipeName);
+      } else if (response.status === 401 || response.status === 403) {
+        setAccessToken("")
       } else {
         messageDispatch({ type: 'CREATE_FAILURE' });
         setShowEditPage(false);
