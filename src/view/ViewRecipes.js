@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Input, Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
+import { Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
 import { getRecipes, searchRecipe, getRandomRecipes } from "../serviceCalls";
+import SearchSection from "./SearchSection";
 
 function ViewRecipes({ 
   token, 
@@ -11,7 +12,6 @@ function ViewRecipes({
 }) {
   const [recipes, setRecipes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchField, setSearchField] = useState("");
   const [shouldRefresh, setShouldRefresh] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [disablePagination, setDisablePagination] = useState(false);
@@ -60,30 +60,6 @@ function ViewRecipes({
     setErrorState("");
   }
 
-  async function submitSearch() {
-    setIsLoading(true);
-    if (searchField !== ""){
-      const response = await searchRecipe(searchField, token);
-      if (response.status !== 200) {
-        setErrorState("Error Retrieving Recipes");
-        setRecipes([]);
-        setNumberOfRecipes(1);
-      } else if (!response.data.length) {
-        setErrorState("No Matching Recipes Found");
-        setNumberOfRecipes(1);
-        setRecipes(response.data);
-      } else {
-        setErrorState("");
-        setRecipes(response.data);
-      }
-      setNumberOfRecipes(1)
-      setIsLoading(false);
-      setDisablePagination(true);
-    } else {
-      setShouldRefresh(true);
-    }
-  }
-
   async function generateRandomRecipes() {
     setIsLoading(true);
     const response = await getRandomRecipes(token);
@@ -100,12 +76,6 @@ function ViewRecipes({
     setDisablePagination(true);
   }
 
-  async function onInputChange(event) {
-    if (event.key === 'Enter') {
-      submitSearch();
-    }
-  }
-
   async function switchPage(activePage){
     setCurrentPage(activePage);
     setShouldRefresh(true);
@@ -115,12 +85,15 @@ function ViewRecipes({
     <Grid padded>
       <Grid.Row columns="equal">
         <Grid.Column>
-          <Input
-            fluid
-            placeholder="Search Recipe"
-            icon={<Icon name="search" color='orange' inverted circular link onClick={() => submitSearch()} />}
-            onChange={(event) => setSearchField(event.target.value)}
-            onKeyPress={async (event) => await onInputChange(event)} />
+          <SearchSection
+            token={token}
+            setErrorState={setErrorState}
+            setRecipes={setRecipes}
+            setNumberOfRecipes={setNumberOfRecipes}
+            setIsLoading={setIsLoading}
+            setDisablePagination={setDisablePagination}
+            setShouldRefresh={setShouldRefresh}
+          />
         </Grid.Column>
         <Grid.Column textAlign="right">
           <Button color="orange" onClick={() => onCreateRecipe()}>

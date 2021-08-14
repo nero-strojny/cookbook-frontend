@@ -87,10 +87,10 @@ export const deleteRecipe = async (recipeId, token) => {
   return response
 };
 
-export const searchRecipe = async (recipeName, token) => {
+export const searchRecipe = async (recipe, token) => {
   let response;
   try {
-    response = await axios.post(endpoint + `/api/recipe/search`, {recipeName}, {
+    response = await axios.post(endpoint + `/api/recipe/search`, {...recipe}, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
