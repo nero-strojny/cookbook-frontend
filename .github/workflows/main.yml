@@ -33,6 +33,11 @@ jobs:
     needs: [continuous-integration]
     steps:
 
+    - name: Download Build
+      uses: actions/download-artifact@v2
+      with:
+        name: build-output
+
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -41,7 +46,4 @@ jobs:
         aws-region: us-east-1
 
     - name: Deploy static site to S3 bucket
-      uses: actions/download-artifact@v2
-      with:
-        name: build-output
       run: aws s3 sync ./build/ s3://nero-strojny-cookbook --delete
