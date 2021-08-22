@@ -4,12 +4,6 @@
 The frontend for an application that alolows uses to store and edit recipes
 Deployed to an s3 bucket which is currently only accessible to the authors
 
-Main Page:
-![Main Page](/main-page.png)
-
-Create/Edit a Recipe:
-![Edit Page](/edit-page.png)
-
 ## Requirements:
 
 ### React App
