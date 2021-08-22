@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Icon, Menu } from "semantic-ui-react";
+import { ServerRequestContext } from "./ServerRequestContext"
 
-function Header({ styleValue, setAccessToken }) {
+function Header({ styleValue }) {
+  
+  const { dispatch: serverDispatch } = useContext(ServerRequestContext);
 
   return (
       <Menu pointing secondary size="massive" className={styleValue}>
@@ -13,7 +16,7 @@ function Header({ styleValue, setAccessToken }) {
           </div>
         </Menu.Item>
         <Menu.Item position='right'
-          onClick={() => setAccessToken("")}>
+          onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS' })}>
           <div
             className="logoutTitleStyle">
             Logout

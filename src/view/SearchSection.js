@@ -1,20 +1,15 @@
-import React, {useState} from "react";
+import React, { useState, useContext } from "react";
 import { Input, Icon } from "semantic-ui-react";
 import { defaultTags } from "../edit/Tags";
-import { searchRecipe } from "../serviceCalls";
+import { ServerRequestContext } from "../ServerRequestContext"
 
 function SearchSection({
-  token,
-  setAccessToken,
-  setErrorState,
-  setRecipes,
-  setNumberOfRecipes,
   setIsLoading,
-  setDisablePagination,
-  setShouldRefresh,
+  setCurrentPage
 }) {
   
   const [searchField, setSearchField] = useState("");
+  const { dispatch: serverDispatch } = useContext(ServerRequestContext);
 
   async function submitSearch() {
     setIsLoading(true);
@@ -23,29 +18,13 @@ function SearchSection({
       const queryParameters = defaultTags.includes(searchField) ?
         {tags: [searchField]} :
         {recipeName: searchField};
-      const response = await searchRecipe(queryParameters, token);
-      if (response.status !== 200) {
-        if (response.status === 401 || response.status === 403) {
-          setAccessToken("");
-        } else {
-          setErrorState("Error Retrieving Recipes");
-          setRecipes([]);
-          setNumberOfRecipes(1);
-        }
-      } else if (!response.data.length) {
-        setErrorState("No Matching Recipes Found");
-        setNumberOfRecipes(1);
-        setRecipes(response.data);
-      } else {
-        setErrorState("");
-        setRecipes(response.data);
-      }
-      setNumberOfRecipes(1)
-      setIsLoading(false);
-      setDisablePagination(true);
+      setCurrentPage(1);
+      serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: { pageSize: 5, pageCount: 0, queryRecipe: queryParameters } } });
     } else {
-      setShouldRefresh(true);
+      setCurrentPage(1);
+      serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: { pageSize: 5, pageCount: 0 } } });
     }
+    setIsLoading(false);
   }
 
   async function onInputChange(event) {
@@ -53,8 +32,6 @@ function SearchSection({
       await submitSearch();
     }
   }
-
-
 
   return (
     <Input
