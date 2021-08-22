@@ -3,6 +3,11 @@ import axios from "axios";
 let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
 //let endpoint = "http://localhost:8080";
 
+export const defaultPaginatedRequest = {
+  pageSize: 5,
+  pageCount: 0
+}
+
 export const login = async (username, password) => {
   return await axios.post(endpoint + "/api/userToken",
   {username, password}, {
@@ -27,8 +32,9 @@ export const createRecipe = async (recipe, token) => {
   return response
 };
 
-export const getRecipes = async (paginatedRequest, token) =>{
+export const getRecipes = async (inputPaginatedRequest, token) =>{
   let response;
+  const paginatedRequest = inputPaginatedRequest || defaultPaginatedRequest;
   try {
     response = await axios.post(endpoint + "/api/recipes", 
     paginatedRequest, {
@@ -42,10 +48,10 @@ export const getRecipes = async (paginatedRequest, token) =>{
   return response
 };
 
-export const getRandomRecipes = async (token) =>{
+export const getRandomRecipes = async (token, numberOfRecipes) =>{
   let response;
   try {
-    response = await axios.get(endpoint + "/api/randomRecipe/5",
+    response = await axios.get(endpoint + `/api/randomRecipe/${numberOfRecipes}`,
     {
       headers: {
         "Authorization": `Bearer ${token}`,

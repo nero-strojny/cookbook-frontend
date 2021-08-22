@@ -1,24 +1,23 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ViewRecipes from "./view/ViewRecipes";
 import EditRecipe from "./edit/EditRecipe";
 import "./stylesheets/index.css";
 import MessageBar from "./MessageBar";
 import Header from "./Header";
-import { MessageBarContext } from "./MessageBarContext";
-import { messageReducer } from "./reducers/messageReducer";
+import { ServerRequestContext } from "./ServerRequestContext";
 
-function CookbookApp({ token, currentUser, setAccessToken }) {
+function CookbookApp() {
   const [showEditPage, setShowEditPage] = useState(false);
   const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
-
-  const [state, dispatch] = useReducer(messageReducer, {});
+  
+  const { state, dispatch } = useContext(ServerRequestContext);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       dispatch({type: 'CLEAR_MESSAGE'})
     }, 5000);
     return () => clearTimeout(timer);
-  }, [state]);
+  }, [dispatch, state]);
 
   function handleCreateRecipe() {
     defaultRecipe.ingredients = [{}];
@@ -27,23 +26,17 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
   }
 
   return (
-    <MessageBarContext.Provider value={{state, dispatch}}>
-      <Header styleValue={"orangeMenuStyle"} setAccessToken={setAccessToken}/>
+      <>
+      <Header styleValue={"orangeMenuStyle"} />
       <MessageBar />
       {showEditPage ? (
         <EditRecipe
-          token={token}
-          setAccessToken={setAccessToken}
-          currentUser={currentUser}
           onSuccessfulCreate={handleCreateRecipe}
           inputtedRecipe={recipeToEdit}
           setShowEditPage={setShowEditPage}
         />
       ) : (
           <ViewRecipes
-            token={token}
-            setAccessToken={setAccessToken}
-            currentUser={currentUser}
             onCreateRecipe={() => {
               setShowEditPage(true);
               setRecipeToEdit(defaultRecipe);
@@ -54,7 +47,7 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
             }}
           />
         )}
-    </MessageBarContext.Provider>
+    </>
   );
 }
 export default CookbookApp;

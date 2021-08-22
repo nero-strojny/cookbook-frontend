@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom'
 import CookbookApp from "./CookbookApp";
 import Login from "./Login";
-import { getRandomRecipes } from "./serviceCalls";
+import { serverRequestReducer } from './reducers/serverRequestReducer';
+import { ServerRequestContext } from './ServerRequestContext';
+import { defaultPaginatedRequest, getRandomRecipes } from "./serviceCalls";
 
 function App() {
-  const [accessToken, setAccessToken] = useState("");
-  const [currentUser, setCurrentUser] = useState("");
+  const [state, dispatch] = useReducer(serverRequestReducer, {});
 
   useEffect(() => {
     let isCurrent = true;
     (async () => {
       if (isCurrent) {
         const localStorageAccessToken = localStorage.getItem("accessToken");
-        if(localStorageAccessToken) {
-          const response = await getRandomRecipes(localStorageAccessToken);
+        const localStorageUserName = localStorage.getItem("userName");
+        if(localStorageAccessToken && localStorageUserName) {
+          const response = await getRandomRecipes(localStorageAccessToken, defaultPaginatedRequest.pageSize);
           if (response.status === 200) {
-            setAccessToken(localStorageAccessToken);
+            dispatch({ type: 'LOGIN_SUCCESS', payload: { userName: localStorageUserName, accessToken: localStorageAccessToken } });
           }
         }
       }
@@ -27,38 +29,30 @@ function App() {
   }, []);
 
   return (
+    <ServerRequestContext.Provider value={{state, dispatch}}>
     <BrowserRouter>
       <Switch>
         {
-          accessToken === "" ?
+          state.accessToken === "" ?
             (
               <><Route path="/login" exact>
-                <Login 
-                  setAccessToken={setAccessToken}
-                  setCurrentUser={setCurrentUser}
-                />
+                <Login />
               </Route>
                 <Redirect to="/login" /></>
             ) :
             (
               <><Route path="/cookbook" exact>
-                <CookbookApp 
-                  token={accessToken}
-                  currentUser={currentUser} 
-                  setAccessToken={setAccessToken}
-                />
+                <CookbookApp />
               </Route>
                 <Route path="/login" exact>
-                  <Login
-                    setCredentials={setAccessToken}
-                    setCurrentUser={setCurrentUser}
-                  />
+                  <Login />
                 </Route>
                 <Redirect to="/cookbook" /></>
             )
         }
       </Switch>
     </BrowserRouter>
+    </ServerRequestContext.Provider>
   )
 }
 

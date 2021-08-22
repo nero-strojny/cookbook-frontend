@@ -1,13 +1,10 @@
 import React, { useState, useContext } from "react";
 import { List, Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react";
-import { MessageBarContext } from "../MessageBarContext";
+import { ServerRequestContext } from "../ServerRequestContext";
 import { deleteRecipe } from "../serviceCalls";
 import { defaultTags } from "../edit/Tags";
 
-function RecipeCard({ 
-  token,
-  setAccessToken,
-  currentUser, 
+function RecipeCard({
   recipe, 
   refreshRecipesAfterDelete, 
   onEditRecipe,
@@ -33,18 +30,18 @@ function RecipeCard({
   const [ingredientsVisible, setIngredientsVisible] = useState(false)
   const [recipeLoading, setRecipeLoading] = useState(false);
 
-  const { dispatch } = useContext(MessageBarContext);
+  const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
 
   const onDeleteRecipe = async () => {
     setRecipeLoading(true);
-    const response = await deleteRecipe(recipeId, token);
+    const response = await deleteRecipe(recipeId, serverState.accessToken);
     if (response.status === 204) {
-      dispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
+      serverDispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
       refreshRecipesAfterDelete();
     } else if (response.status === 401 || response.status === 403) {
-      setAccessToken("")
+      serverDispatch({ type: 'LOGOUT_SUCCESS' });
     } else {
-      dispatch({ type: 'DELETE_FAILURE' });
+      serverDispatch({ type: 'DELETE_FAILURE' });
       onFailedDelete()
     }
     setRecipeLoading(false);
@@ -140,7 +137,7 @@ function RecipeCard({
             <Grid.Row columns="equal">
               <Grid.Column>{recipeName}</Grid.Column>
               <Grid.Column textAlign="right">
-              {(!recipeLoading && (userName === currentUser)) &&
+              {(!recipeLoading && (userName === serverState.userName)) &&
                 (<>
                 <Button size='mini' color='orange' inverted
                   onClick={() => onEditRecipe(recipe)}>

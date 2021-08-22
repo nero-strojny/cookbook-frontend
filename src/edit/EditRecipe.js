@@ -4,20 +4,17 @@ import Steps from "./Steps";
 import Tags from "./Tags";
 import Ingredients from "./Ingredients";
 import { createRecipe, updateRecipe } from "../serviceCalls";
-import { MessageBarContext } from "../MessageBarContext";
+import { ServerRequestContext } from "../ServerRequestContext";
 import { RecipeContext } from "../RecipeContext";
 import { recipeReducer } from "../reducers/recipeReducer";
 
-function EditRecipe({ 
-  token,
-  setAccessToken,
-  currentUser,
+function EditRecipe({
   onSuccessfulCreate, 
   inputtedRecipe,
   setShowEditPage 
 }) {
   const [isLoading, setIsLoading] = useState(false);
-  const { dispatch: messageDispatch } = useContext(MessageBarContext);
+  const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   const [state, dispatch] = useReducer(recipeReducer, {
     ...inputtedRecipe,
     steps: inputtedRecipe.steps.map(step => step.text)
@@ -41,31 +38,31 @@ function EditRecipe({
     
     const submittedReport = {
       ...state,
-      userName: currentUser,
+      userName: serverState.userName,
       ingredients: submittedIngredients,
       steps: submittedSteps,
     };
     setIsLoading(true);
     if (inputtedRecipe._id) {
-      const response = await updateRecipe(inputtedRecipe._id, submittedReport, token);
+      const response = await updateRecipe(inputtedRecipe._id, submittedReport, serverState.accessToken);
       if (response.status === 200) {
-        messageDispatch({ type: 'EDIT_SUCCESS', payload: { recipeName: state.recipeName } });
+        serverDispatch({ type: 'EDIT_SUCCESS', payload: { recipeName: state.recipeName } });
         setShowEditPage(false);
       } else if (response.status === 401 || response.status === 403) {
-        setAccessToken("")
+        serverDispatch({ type: 'LOGOUT_SUCCESS' });
       } else {
-        messageDispatch({ type: 'EDIT_FAILURE' });
+        serverDispatch({ type: 'EDIT_FAILURE' });
         setShowEditPage(false);
       }
     } else {
-      const response = await createRecipe(submittedReport, token);
+      const response = await createRecipe(submittedReport, serverState.accessToken);
       if (response.status === 201) {
-        messageDispatch({ type: 'CREATE_SUCCESS', payload: { recipeName: state.recipeName } });
+        serverDispatch({ type: 'CREATE_SUCCESS', payload: { recipeName: state.recipeName } });
         onSuccessfulCreate(state.recipeName);
       } else if (response.status === 401 || response.status === 403) {
-        setAccessToken("")
+        serverDispatch({ type: 'LOGOUT_SUCCESS' });
       } else {
-        messageDispatch({ type: 'CREATE_FAILURE' });
+        serverDispatch({ type: 'CREATE_FAILURE' });
         setShowEditPage(false);
       }
     }
