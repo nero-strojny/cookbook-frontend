@@ -41,16 +41,14 @@ function Steps() {
             </Form.Field>
           </Grid.Column>
           <Grid.Column width={2} textAlign="center" verticalAlign="middle">
-            <Icon
-              name="minus circle"
-              size='big'
-              color='grey'
-              style={{ cursor: 'pointer' }}
+            <Button size='mini' color='orange' inverted
               onClick={() => dispatch({ 
                 type: 'DELETE_STEP',
                 payload: { indexSelected: i }
-              })}
-            />
+              })}>
+                <Icon name="trash" />
+                Delete
+            </Button>
           </Grid.Column>
         </Grid.Row>
       );

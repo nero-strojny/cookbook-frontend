@@ -19,6 +19,8 @@ function App() {
           const response = await getRandomRecipes(localStorageAccessToken, defaultPaginatedRequest.pageSize);
           if (response.status === 200) {
             dispatch({ type: 'LOGIN_SUCCESS', payload: { userName: localStorageUserName, accessToken: localStorageAccessToken } });
+          } else if(response.status === 401 || response.status === 403) {
+            dispatch({ type: 'LOGOUT_SUCCESS' });
           }
         }
       }

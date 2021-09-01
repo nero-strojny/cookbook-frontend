@@ -107,3 +107,35 @@ export const searchRecipe = async (recipe, token) => {
   }
   return response
 }
+
+export const createIngredient = async (ingredient, token) => {
+  let response;
+  try {
+    response = await axios.post(endpoint + `/api/ingredient`, {...ingredient}, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+}
+
+export const searchIngredient = async (prefix, token) => {
+  let response;
+  try {
+    response = await axios.get(endpoint + `/api/ingredients?prefixIngredient=${prefix}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+}
+
+
