@@ -85,7 +85,8 @@ export const serverRequestReducer = (state, action) => {
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: false,
         recipes: [],
-        numberOfRecipes: 1
+        numberOfRecipes: 1,
+        basket: []
       }
     case "QUERY_RECIPES_PENDING":
       return {
