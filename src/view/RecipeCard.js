@@ -7,8 +7,7 @@ import { defaultTags } from "../edit/Tags";
 function RecipeCard({
   recipe, 
   refreshRecipesAfterDelete, 
-  onEditRecipe,
-  onFailedDelete
+  onEditRecipe
  }) {
 
   const {
@@ -42,7 +41,6 @@ function RecipeCard({
       serverDispatch({ type: 'LOGOUT_SUCCESS' });
     } else {
       serverDispatch({ type: 'DELETE_FAILURE' });
-      onFailedDelete()
     }
     setRecipeLoading(false);
   }
@@ -150,6 +148,11 @@ function RecipeCard({
                     Delete
                 </Button></>)
               }
+              <Button size='mini' color='orange' inverted 
+                onClick={() => serverDispatch({ type: 'ADD_CART', payload: { basketItem: recipe } })}>
+                <Icon name="plus" />
+                Add To Basket
+              </Button>
               </Grid.Column>
             </Grid.Row>
           </Grid>

@@ -3,7 +3,6 @@ export const recipeReducer = (state, action) => {
     const tempSteps = [...state.steps];
     const tempIngredients = [...state.ingredients];
     const tempTag = state.tags ? [...state.tags] : [];
-    console.log(tempIngredients);
     switch (action.type) {
         case "EDIT_NAME":
             return {

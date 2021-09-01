@@ -3,6 +3,17 @@ import { defaultPaginatedRequest } from "../serviceCalls";
 export const serverRequestReducer = (state, action) => {
   const { payload } = action;
   switch (action.type) {
+    case "REFRESH_RECIPES":
+      return {
+        ...state,
+        shouldRefresh: true
+      }
+    case "ADD_CART":
+      const tempBasket = [...state.basket];
+      return {
+        ...state,
+        basket: [...tempBasket, payload.basketItem]
+      }
     case "CREATE_SUCCESS":
       return {
         ...state,
@@ -63,7 +74,8 @@ export const serverRequestReducer = (state, action) => {
         accessToken: payload.accessToken,
         userName: payload.userName,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        basket: []
       }
     case "LOGOUT_SUCCESS":
       return {

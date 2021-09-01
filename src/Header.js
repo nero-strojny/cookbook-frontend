@@ -1,13 +1,13 @@
 import React, { useContext } from 'react'
-import { Icon, Menu } from "semantic-ui-react";
+import { Icon, Menu, Button } from "semantic-ui-react";
 import { ServerRequestContext } from "./ServerRequestContext"
 
 function Header({ styleValue }) {
   
-  const { dispatch: serverDispatch } = useContext(ServerRequestContext);
+  const { dispatch: serverDispatch, state } = useContext(ServerRequestContext);
 
   return (
-      <Menu pointing secondary size="massive" className={styleValue}>
+      <Menu pointing secondary className={styleValue}>
         <Menu.Item>
           <div
             className="headerTitleStyle">
@@ -15,13 +15,19 @@ function Header({ styleValue }) {
             TastyBoi
           </div>
         </Menu.Item>
-        <Menu.Item position='right'
-          onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS' })}>
-          <div
-            className="logoutTitleStyle">
-            Logout
-          </div>
-          </Menu.Item>
+        <Menu.Item position='right'>
+          <Button.Group color='orange'>
+          <Button onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS' })}>
+              <Icon name="log out" />
+              Log-out
+          </Button>
+          <Button>
+              <Icon name="shopping basket" />
+              Basket
+              { state.basket && state.basket.length > 0 && ` (${state.basket.length})`}
+          </Button>
+          </Button.Group>
+        </Menu.Item>
       </Menu>
 
   )

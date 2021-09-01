@@ -14,7 +14,7 @@ function CookbookApp() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      dispatch({type: 'CLEAR_MESSAGE'})
+      dispatch({type: 'CLEAR_MESSAGE'});
     }, 5000);
     return () => clearTimeout(timer);
   }, [dispatch, state]);
@@ -33,7 +33,12 @@ function CookbookApp() {
         <EditRecipe
           onSuccessfulCreate={handleCreateRecipe}
           inputtedRecipe={recipeToEdit}
-          setShowEditPage={setShowEditPage}
+          setShowEditPage={(param)=> {
+            setShowEditPage(param);
+            if(!param) {
+              dispatch({type: 'REFRESH_RECIPES'});
+            }
+          }}
         />
       ) : (
           <ViewRecipes
