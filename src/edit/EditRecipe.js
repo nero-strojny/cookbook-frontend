@@ -31,9 +31,6 @@ function EditRecipe({
         ingredient.name !== "" ||
         ingredient.measurement !== "" ||
         ingredient.amount !== "");
-    if (!submittedIngredients || !submittedIngredients.length){
-      submittedIngredients = [""];
-    }
     
     const submittedReport = {
       ...state,
@@ -177,7 +174,12 @@ function EditRecipe({
                 <Steps />
               </Card.Content>
               <Card.Content extra>
-                <Form.Button color='orange' loading={isLoading} onClick={() => submitRecipe()}>Submit</Form.Button>
+                <Form.Button 
+                  color='orange'
+                  disabled={state.ingredients.length <= 0}
+                  loading={isLoading} onClick={() => submitRecipe()}>
+                    Submit
+                </Form.Button>
               </Card.Content>
             </Card>
           </Grid.Column>

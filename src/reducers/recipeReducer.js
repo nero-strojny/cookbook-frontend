@@ -52,9 +52,10 @@ export const recipeReducer = (state, action) => {
                 steps: tempSteps
                 };
         case "ADD_INGREDIENT":
+            tempIngredients.push(payload.ingredient)
             return {
                 ...state,
-                ingredients: [...tempIngredients, payload.ingredient]
+                ingredients: tempIngredients
             };
         case "EDIT_INGREDIENT":
             tempIngredients[payload.indexSelected][payload.keySelected] = payload.valueInput;

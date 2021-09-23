@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Grid, Icon, Form, Dropdown, Button } from "semantic-ui-react";
+import { Grid, Icon, Form, Dropdown, Button, Label } from "semantic-ui-react";
 import { RecipeContext } from "../RecipeContext";
 import { searchIngredient, createIngredient } from "../serviceCalls";
 import { ServerRequestContext } from "../ServerRequestContext";
@@ -16,7 +16,6 @@ function Ingredients(){
 
   function addIngredient() {
     const selectedOption = selectionOptions.find(option => option.name === newName);
-    console.log(selectedOption);
     dispatch({
       type:'ADD_INGREDIENT',
       payload: {
@@ -74,7 +73,7 @@ function Ingredients(){
     ];
 
     // Do not display the default ingredient list
-    if (!(currentIngredients.length === 1 && currentIngredients[0] !== {name:"", amount: 0, measurement: ""})) {
+    if (currentIngredients.length > 0 ) {
       for (let i = 0; i < currentIngredients.length; i++) {
         ingredientInputs.push(
           <Grid.Row columns="equal" key={`ingredient${i}`}>
@@ -177,6 +176,13 @@ function Ingredients(){
               Add
             </Button>
             </Grid.Column>
+        </Grid.Row>
+        <Grid.Row>
+          <Grid.Column>
+            {state.ingredients.length <= 0 &&(
+              <Label pointing color="red">Please enter at least one ingredient</Label>
+            )}
+          </Grid.Column>
         </Grid.Row>
       </Grid>
     </Form>

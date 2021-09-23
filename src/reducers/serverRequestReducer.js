@@ -1,4 +1,5 @@
 import { defaultPaginatedRequest } from "../serviceCalls";
+import { findIndex } from "lodash";
 
 export const serverRequestReducer = (state, action) => {
   const { payload } = action;
@@ -9,11 +10,19 @@ export const serverRequestReducer = (state, action) => {
         shouldRefresh: true,
         currentPage: "viewRecipes"
       }
-    case "ADD_CART":
+    case "ADD_BASKET":
       const tempBasket = [...state.basket];
       return {
         ...state,
         basket: [...tempBasket, payload.basketItem]
+      }
+    case "REMOVE_BASKET":
+      const currentBasket = [...state.basket];
+      const index = findIndex(state.basket, basketItem => payload.basketItem._id === basketItem._id);
+      currentBasket.splice(index, 1);
+      return {
+        ...state,
+        basket: currentBasket
       }
     case "CREATE_SUCCESS":
       return {

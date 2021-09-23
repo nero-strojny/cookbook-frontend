@@ -20,7 +20,7 @@ function CookbookApp() {
   }, [dispatch, state]);
 
   function handleCreateRecipe() {
-    defaultRecipe.ingredients = [{}];
+    defaultRecipe.ingredients = [];
     setRecipeToEdit({...defaultRecipe});
   }
 
@@ -73,7 +73,7 @@ export default CookbookApp;
 
 export const defaultRecipe = {
   steps: [""],
-  ingredients: [{name:"", amount:0, measurement: ""}],
+  ingredients: [],
   recipename: "",
   servings: 0,
   author: "",

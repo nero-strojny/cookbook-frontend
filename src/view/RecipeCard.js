@@ -3,6 +3,7 @@ import { List, Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react
 import { ServerRequestContext } from "../ServerRequestContext";
 import { deleteRecipe } from "../serviceCalls";
 import { defaultTags } from "../edit/Tags";
+import { findIndex } from "lodash";
 
 function RecipeCard({
   recipe, 
@@ -52,6 +53,21 @@ function RecipeCard({
       return `some ${name}`;
     }
     return `${amount} ${measurement} of ${name}`;
+  }
+
+  const createBasketButton = () => {
+    if(findIndex(serverState.basket, basketItem => recipe._id === basketItem._id) !== -1){
+      return(<Button size='mini' color='orange' 
+        onClick={() => serverDispatch({ type: 'REMOVE_BASKET', payload: { basketItem: recipe } })}>
+        <Icon name="minus" />
+        Remove From Basket
+      </Button>);
+    }
+    return(<Button size='mini' color='orange' inverted 
+      onClick={() => serverDispatch({ type: 'ADD_BASKET', payload: { basketItem: recipe } })}>
+      <Icon name="plus" />
+      Add To Basket
+    </Button>);
   }
 
   const createIngredients = () => {
@@ -148,11 +164,7 @@ function RecipeCard({
                     Delete
                 </Button></>)
               }
-              <Button size='mini' color='orange' inverted 
-                onClick={() => serverDispatch({ type: 'ADD_CART', payload: { basketItem: recipe } })}>
-                <Icon name="plus" />
-                Add To Basket
-              </Button>
+              {createBasketButton()}
               </Grid.Column>
             </Grid.Row>
           </Grid>
