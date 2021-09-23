@@ -155,8 +155,7 @@ function ViewRecipes({
       </Grid.Row>
       <Grid.Row>
       <Grid.Column>
-        <Pagination 
-          defaultActivePage={1} 
+        <Pagination
           totalPages={Math.ceil(serverState.numberOfRecipes/PAGESIZE) || 1} 
           firstItem={null}
           lastItem={null}

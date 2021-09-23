@@ -5,9 +5,9 @@ import "./stylesheets/index.css";
 import MessageBar from "./MessageBar";
 import Header from "./Header";
 import { ServerRequestContext } from "./ServerRequestContext";
+import Basket from "./basket/Basket";
 
 function CookbookApp() {
-  const [showEditPage, setShowEditPage] = useState(false);
   const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
   
   const { state, dispatch } = useContext(ServerRequestContext);
@@ -22,36 +22,50 @@ function CookbookApp() {
   function handleCreateRecipe() {
     defaultRecipe.ingredients = [{}];
     setRecipeToEdit({...defaultRecipe});
-    setShowEditPage(false);
+  }
+
+  function returnPage(){
+    switch(state.currentPage){
+      case "viewRecipes": 
+        return (<ViewRecipes
+          onCreateRecipe={() => {
+            dispatch({ type: 'SWITCH_TO_EDIT' });
+            setRecipeToEdit(defaultRecipe);
+          }}
+          onEditRecipe={(recipe) => {
+            dispatch({ type: 'SWITCH_TO_EDIT' });
+            setRecipeToEdit(recipe);
+          }}
+        />);
+      case "editRecipes": 
+          return (
+            <EditRecipe
+              onSuccessfulCreate={handleCreateRecipe}
+              inputtedRecipe={recipeToEdit}
+            />);
+      case "basket": 
+          return (
+            <Basket />
+          );
+      default:
+        return( <ViewRecipes
+          onCreateRecipe={() => {
+            dispatch({ type: 'SWITCH_TO_EDIT' });
+            setRecipeToEdit(defaultRecipe);
+          }}
+          onEditRecipe={(recipe) => {
+            dispatch({ type: 'SWITCH_TO_EDIT' });
+            setRecipeToEdit(recipe);
+          }}
+        />);
+    }
   }
 
   return (
       <>
       <Header styleValue={"orangeMenuStyle"} />
       <MessageBar />
-      {showEditPage ? (
-        <EditRecipe
-          onSuccessfulCreate={handleCreateRecipe}
-          inputtedRecipe={recipeToEdit}
-          setShowEditPage={(param)=> {
-            setShowEditPage(param);
-            if(!param) {
-              dispatch({type: 'REFRESH_RECIPES'});
-            }
-          }}
-        />
-      ) : (
-          <ViewRecipes
-            onCreateRecipe={() => {
-              setShowEditPage(true);
-              setRecipeToEdit(defaultRecipe);
-            }}
-            onEditRecipe={(recipe) => {
-              setShowEditPage(true);
-              setRecipeToEdit(recipe);
-            }}
-          />
-        )}
+      {returnPage()}
     </>
   );
 }

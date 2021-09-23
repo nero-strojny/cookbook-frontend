@@ -6,7 +6,8 @@ export const serverRequestReducer = (state, action) => {
     case "REFRESH_RECIPES":
       return {
         ...state,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "ADD_CART":
       const tempBasket = [...state.basket];
@@ -20,7 +21,8 @@ export const serverRequestReducer = (state, action) => {
         header: 'Success!',
         messageContent: `Recipe, "${payload.recipeName}", has been created`,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "EDIT_SUCCESS":
       return {
@@ -28,7 +30,8 @@ export const serverRequestReducer = (state, action) => {
         header: 'Success!',
         messageContent: `Recipe, "${payload.recipeName}", has been edited`,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "DELETE_SUCCESS":
       return {
@@ -36,7 +39,8 @@ export const serverRequestReducer = (state, action) => {
         header: 'Success!',
         messageContent: `Recipe, "${payload.recipeName}", has been deleted`,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "CREATE_FAILURE":
       return {
@@ -44,7 +48,8 @@ export const serverRequestReducer = (state, action) => {
         header: 'Error',
         messageContent: `There was an error in creating a new recipe`,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "EDIT_FAILURE":
       return {
@@ -52,7 +57,8 @@ export const serverRequestReducer = (state, action) => {
         header: 'Error',
         messageContent: `There was an error in editing a new recipe`,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "DELETE_FAILURE":
       return {
@@ -60,7 +66,8 @@ export const serverRequestReducer = (state, action) => {
         header: 'Error!',
         messageContent: `There was an error in deleting a new recipe`,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes"
       }
     case "CLEAR_MESSAGE":
       return {
@@ -75,7 +82,8 @@ export const serverRequestReducer = (state, action) => {
         userName: payload.userName,
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: true,
-        basket: []
+        currentPage: "viewRecipes",
+        basket: [],
       }
     case "LOGOUT_SUCCESS":
       return {
@@ -84,6 +92,7 @@ export const serverRequestReducer = (state, action) => {
         userName: "",
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: false,
+        currentPage: "viewRecipes",
         recipes: [],
         numberOfRecipes: 1,
         basket: []
@@ -107,6 +116,22 @@ export const serverRequestReducer = (state, action) => {
         shouldRefresh: false,
         recipes: [],
         numberOfRecipes: 1
+      }
+    case "SWITCH_TO_BASKET":
+      return {
+        ...state,
+        currentPage: "basket",
+      }
+    case "SWITCH_TO_RECIPES":
+      return {
+        ...state,
+        currentPage: "viewRecipes",
+        shouldRefresh: true
+      }
+    case "SWITCH_TO_EDIT":
+      return {
+        ...state,
+        currentPage: "editRecipes"
       }
     default:
       return state;

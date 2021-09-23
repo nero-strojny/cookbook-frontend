@@ -21,11 +21,22 @@ function Header({ styleValue }) {
               <Icon name="log out" />
               Log-out
           </Button>
-          <Button>
-              <Icon name="shopping basket" />
-              Basket
-              { state.basket && state.basket.length > 0 && ` (${state.basket.length})`}
-          </Button>
+          {
+            state.currentPage === "basket" ?
+            (
+              <Button onClick={() => serverDispatch({ type: 'SWITCH_TO_RECIPES' })}>
+                <Icon name="list alternate outline" />
+                View Recipes
+              </Button>
+            ) :
+            (
+              <Button onClick={() => serverDispatch({ type: 'SWITCH_TO_BASKET' })}>
+                <Icon name="shopping basket" />
+                Basket
+                { state.basket && state.basket.length > 0 && ` (${state.basket.length})`}
+              </Button>
+            )
+          }
           </Button.Group>
         </Menu.Item>
       </Menu>
