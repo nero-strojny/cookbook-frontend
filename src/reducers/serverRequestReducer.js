@@ -3,26 +3,43 @@ import { findIndex } from "lodash";
 
 export const serverRequestReducer = (state, action) => {
   const { payload } = action;
+  let tempBasket;
   switch (action.type) {
     case "REFRESH_RECIPES":
       return {
         ...state,
         shouldRefresh: true,
-        currentPage: "viewRecipes"
+        currentPage: "viewRecipes",
+        basket: [],
       }
     case "ADD_BASKET":
-      const tempBasket = [...state.basket];
+      tempBasket = [...state.basket];
       return {
         ...state,
         basket: [...tempBasket, payload.basketItem]
       }
-    case "REMOVE_BASKET":
-      const currentBasket = [...state.basket];
-      const index = findIndex(state.basket, basketItem => payload.basketItem._id === basketItem._id);
-      currentBasket.splice(index, 1);
+    case "ADD_ALL_BASKET":
+      tempBasket = [...state.basket];
+      const dedup = payload.basketItems.filter(addedBasketItem => {
+        const index = findIndex(state.basket, basketItem => addedBasketItem._id === basketItem._id);
+        return index === -1;
+      })
       return {
         ...state,
-        basket: currentBasket
+        basket: tempBasket.concat(dedup)
+        }
+    case "REMOVE_BASKET":
+      tempBasket = [...state.basket];
+      const index = findIndex(state.basket, basketItem => payload.basketItem._id === basketItem._id);
+      tempBasket.splice(index, 1);
+      return {
+        ...state,
+        basket: tempBasket
+      }
+    case "EMPTY_BASKET":
+      return {
+        ...state,
+        basket: []
       }
     case "CREATE_SUCCESS":
       return {
