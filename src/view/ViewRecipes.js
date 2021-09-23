@@ -126,6 +126,17 @@ function ViewRecipes({
             />
           </>
         </Grid.Column>
+        <Grid.Column width={3} floated='right' textAlign="right">
+          {
+            (serverState.recipes && serverState.recipes.length > 0) &&
+            (
+              <Button color="orange" inverted onClick={() => serverDispatch({ type: 'ADD_ALL_BASKET', payload: { basketItems: serverState.recipes } })}>
+                <Icon name="plus" />
+                {`Add All (${serverState.recipes.length}) To Basket`}
+              </Button>
+            )
+          }
+        </Grid.Column>
       </Grid.Row>
       <Grid.Row>
         <Grid.Column>
@@ -155,8 +166,7 @@ function ViewRecipes({
       </Grid.Row>
       <Grid.Row>
       <Grid.Column>
-        <Pagination 
-          defaultActivePage={1} 
+        <Pagination
           totalPages={Math.ceil(serverState.numberOfRecipes/PAGESIZE) || 1} 
           firstItem={null}
           lastItem={null}

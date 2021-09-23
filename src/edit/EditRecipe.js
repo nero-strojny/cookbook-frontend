@@ -10,8 +10,7 @@ import { recipeReducer } from "../reducers/recipeReducer";
 
 function EditRecipe({
   onSuccessfulCreate, 
-  inputtedRecipe,
-  setShowEditPage 
+  inputtedRecipe
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
@@ -32,9 +31,6 @@ function EditRecipe({
         ingredient.name !== "" ||
         ingredient.measurement !== "" ||
         ingredient.amount !== "");
-    if (!submittedIngredients || !submittedIngredients.length){
-      submittedIngredients = [""];
-    }
     
     const submittedReport = {
       ...state,
@@ -47,12 +43,10 @@ function EditRecipe({
       const response = await updateRecipe(inputtedRecipe._id, submittedReport, serverState.accessToken);
       if (response.status === 200) {
         serverDispatch({ type: 'EDIT_SUCCESS', payload: { recipeName: state.recipeName } });
-        setShowEditPage(false);
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS' });
       } else {
         serverDispatch({ type: 'EDIT_FAILURE' });
-        setShowEditPage(false);
       }
     } else {
       const response = await createRecipe(submittedReport, serverState.accessToken);
@@ -63,7 +57,6 @@ function EditRecipe({
         serverDispatch({ type: 'LOGOUT_SUCCESS' });
       } else {
         serverDispatch({ type: 'CREATE_FAILURE' });
-        setShowEditPage(false);
       }
     }
   };
@@ -76,7 +69,7 @@ function EditRecipe({
             <h1> Edit Recipe</h1>
           </Grid.Column>
           <Grid.Column textAlign="right">
-            <Button inverted color="orange" onClick={() => setShowEditPage(false)}>
+            <Button inverted color="orange" onClick={() => serverDispatch({ type: 'SWITCH_TO_RECIPES' })}>
               Back to My Recipes
             </Button>
           </Grid.Column>
@@ -181,7 +174,12 @@ function EditRecipe({
                 <Steps />
               </Card.Content>
               <Card.Content extra>
-                <Form.Button color='orange' loading={isLoading} onClick={() => submitRecipe()}>Submit</Form.Button>
+                <Form.Button 
+                  color='orange'
+                  disabled={state.ingredients.length <= 0}
+                  loading={isLoading} onClick={() => submitRecipe()}>
+                    Submit
+                </Form.Button>
               </Card.Content>
             </Card>
           </Grid.Column>
