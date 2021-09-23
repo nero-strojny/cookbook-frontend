@@ -1,6 +1,6 @@
 
 import React, { useContext } from "react";
-import { Checkbox, Grid, Card, Button, Label, Segment, GridColumn } from "semantic-ui-react";
+import { Checkbox, Grid, Button, Label, Segment, GridColumn } from "semantic-ui-react";
 import { ServerRequestContext } from "../ServerRequestContext";
 import { flatMap, groupBy } from 'lodash';
 

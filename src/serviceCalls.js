@@ -67,12 +67,13 @@ export const getRandomRecipes = async (token, numberOfRecipes) =>{
 
 export const updateRecipe = async (recipeId, recipe, token) => {
   await Promise.map(recipe.ingredients, async ingredient => {
-    const ingredientResponse = await getIngredient(ingredient._id, token);
-    if(has(ingredientResponse, "data.category")){
-      set(ingredient, "category", get(ingredientResponse, "data.category"));
+    if(!has(ingredient, "category")){
+      const ingredientResponse = await getIngredient(ingredient._id, token);
+      if(has(ingredientResponse, "data.category")){
+        set(ingredient, "category", get(ingredientResponse, "data.category"));
+      }
     }
   });
-  console.log(recipe);
   let response;
   try {
     response = await axios.put(endpoint + `/api/recipe/${recipeId}`, recipe, {
