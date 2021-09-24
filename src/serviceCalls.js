@@ -67,11 +67,9 @@ export const getRandomRecipes = async (token, numberOfRecipes) =>{
 
 export const updateRecipe = async (recipeId, recipe, token) => {
   await Promise.map(recipe.ingredients, async ingredient => {
-    if(!has(ingredient, "category")){
-      const ingredientResponse = await getIngredient(ingredient._id, token);
-      if(has(ingredientResponse, "data.category")){
-        set(ingredient, "category", get(ingredientResponse, "data.category"));
-      }
+    const ingredientResponse = await getIngredient(ingredient._id, token);
+    if(has(ingredientResponse, "data.category")){
+      set(ingredient, "category", get(ingredientResponse, "data.category"));
     }
   });
   let response;

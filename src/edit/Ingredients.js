@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Grid, Icon, Form, Dropdown, Button, Label } from "semantic-ui-react";
+import { Grid, Form, Dropdown, Button, Label, Divider } from "semantic-ui-react";
 import { RecipeContext } from "../RecipeContext";
 import { searchIngredient, createIngredient } from "../serviceCalls";
 import { ServerRequestContext } from "../ServerRequestContext";
@@ -58,17 +58,18 @@ function Ingredients(){
   function createIngredients() {
     let ingredientInputs = [
       <Grid.Row columns="equal" key="ingredient">
-        <Grid.Column width={2}>
+        <Grid.Column width={1}>
+        </Grid.Column>
+        <Grid.Column width={3}>
           <h4>Amount</h4>
         </Grid.Column>
-        <Grid.Column width={2}>
+        <Grid.Column width={4}>
           <h4>Measurement</h4>
         </Grid.Column>
         <Grid.Column width={4}>
           <h4>Name</h4>
         </Grid.Column>
-        <Grid.Column width={2}>
-        </Grid.Column>
+        <Grid.Column width={2} />
       </Grid.Row>
     ];
 
@@ -77,7 +78,8 @@ function Ingredients(){
       for (let i = 0; i < currentIngredients.length; i++) {
         ingredientInputs.push(
           <Grid.Row columns="equal" key={`ingredient${i}`}>
-            <Grid.Column width={2}>
+            <Grid.Column width={1} />
+            <Grid.Column width={3}>
               {
                 currentIngredients.length >= 1
                   ? currentIngredients[i].amount > 0 
@@ -86,7 +88,7 @@ function Ingredients(){
                   : ""
               }
             </Grid.Column>
-            <Grid.Column width={2}>
+            <Grid.Column width={4}>
               {
                 currentIngredients.length >= 1
                   ? currentIngredients[i].measurement
@@ -101,17 +103,22 @@ function Ingredients(){
               }
             </Grid.Column>
             <Grid.Column width={2} textAlign="center" verticalAlign="middle">
-              <Button size='mini' color='orange' inverted
+              <Button size='mini' color='orange' inverted circular icon='x'
                 onClick={() => dispatch({ 
                   type: 'DELETE_INGREDIENT',
                   payload: { indexSelected: i }
                 })}>
-                  <Icon name="trash" />
-                  Delete
               </Button>
             </Grid.Column>
           </Grid.Row>
         );
+        ingredientInputs.push(
+          <Grid.Row columns="equal" key={`divider${i}`}>
+            <Grid.Column width={16}>
+              <Divider fitted />
+            </Grid.Column>
+          </Grid.Row>
+        )
       }
     }
     
@@ -119,17 +126,19 @@ function Ingredients(){
   }
 
   return (
-    
     <Form>
-    <Grid>
+      <Grid>
         <Grid.Row columns="equal">
           <Grid.Column>
             <h3>Ingredients</h3>
           </Grid.Column>
         </Grid.Row>
         {createIngredients()}
+      </Grid>
+      <Grid stackable>
         <Grid.Row>
-          <Grid.Column width={2}>
+          <Grid.Column width={1} />
+          <Grid.Column width={3}>
             <Form.Field>
               <input
                 value={newAmount}
@@ -140,7 +149,7 @@ function Ingredients(){
               />
             </Form.Field>
           </Grid.Column>
-          <Grid.Column width={2}>
+          <Grid.Column width={3}>
             <Form.Field>
               <input
                 value={newMeasurement}
@@ -167,15 +176,12 @@ function Ingredients(){
               />
             </Form.Field>
           </Grid.Column>
-          <Grid.Column width={2} textAlign="center" verticalAlign="middle">
-            <Button size='mini' color='orange' inverted
+          <Grid.Column width={4} textAlign="center" verticalAlign="middle">
+            <Button size='mini' color='orange' inverted circular icon='plus'
               onClick={() => addIngredient()}
               disabled={newName === ""}
-            >
-              <Icon name="plus" />
-              Add
-            </Button>
-            </Grid.Column>
+            />
+          </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column>
