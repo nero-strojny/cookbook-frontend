@@ -63,8 +63,7 @@ function Basket() {
           <Label as='a' color='orange' size='large' ribbon>
             Included Recipes
           </Label>
-
-          <List>
+          <List bulleted>
           {state.basket.map(recipe => 
             (
               <List.Item> {recipe.recipeName} </List.Item>
