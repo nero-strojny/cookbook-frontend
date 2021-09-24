@@ -17,6 +17,7 @@ function Tags() {
         const labelColor = isSelected ? 'orange' : 'grey';
         return (
           <Label
+            key={`tag-${tag}`}
             style={{margin:'5px 10px 5px 10px', cursor: "pointer"}}
             color={labelColor}
             onClick={()=> isSelected ? 

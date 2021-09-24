@@ -60,13 +60,13 @@ function RecipeCard({
       return(<Button size='mini' color='orange' 
         onClick={() => serverDispatch({ type: 'REMOVE_BASKET', payload: { basketItem: recipe } })}>
         <Icon name="minus" />
-        Remove From Basket
+        Basket
       </Button>);
     }
     return(<Button size='mini' color='orange' inverted 
       onClick={() => serverDispatch({ type: 'ADD_BASKET', payload: { basketItem: recipe } })}>
       <Icon name="plus" />
-      Add To Basket
+      Basket
     </Button>);
   }
 
@@ -116,7 +116,7 @@ function RecipeCard({
             <h4>
               <p style={{ cursor: 'pointer' }}
                 onClick={() => setStepsVisible(false)}>
-                <Icon name="minus" color='orange' ></Icon>
+                <Icon name="minus" color='orange'  ></Icon>
                 {"\tSteps"}</p>
             </h4>
             <List ordered>
@@ -203,7 +203,11 @@ function RecipeCard({
             {defaultTags
               .filter(tag => tags.includes(tag))
               .map(tag => 
-                (<Label style={{margin:'5px 0px 5px 20px'}} tag color='orange'>
+                (<Label 
+                  style={{margin:'5px 0px 5px 20px'}} 
+                  tag
+                  color='orange' 
+                  key={`tag-${tag}-${recipeId}`}>
                   {tag}
                 </Label>)
               )}

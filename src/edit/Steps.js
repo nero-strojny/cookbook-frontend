@@ -9,7 +9,7 @@ function Steps() {
   function createSteps() {
     const stepInputs = [
       <Grid.Row columns="equal" key={"stepsText0"}>
-          <Grid.Column width={14}>
+          <Grid.Column width={13}>
             <Form.Field>
               <label>{"Step 1:"}</label>
               <TextArea
@@ -27,7 +27,7 @@ function Steps() {
     for (let i = 1; i < currentSteps.length; i++) {
       stepInputs.push(
         <Grid.Row columns="equal" key={"stepsText" + i}>
-          <Grid.Column width={14}>
+          <Grid.Column width={13}>
             <Form.Field>
               <label>{`Step ${i+1}:`}</label>
               <TextArea
@@ -41,13 +41,11 @@ function Steps() {
             </Form.Field>
           </Grid.Column>
           <Grid.Column width={2} textAlign="center" verticalAlign="middle">
-            <Button size='mini' color='orange' inverted
+            <Button size='mini' color='orange' inverted circular icon='x'
               onClick={() => dispatch({ 
                 type: 'DELETE_STEP',
                 payload: { indexSelected: i }
               })}>
-                <Icon name="trash" />
-                Delete
             </Button>
           </Grid.Column>
         </Grid.Row>

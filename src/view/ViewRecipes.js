@@ -88,13 +88,13 @@ function ViewRecipes({
   return (
     <Grid padded>
       <Grid.Row columns="equal">
-        <Grid.Column>
+        <Grid.Column width={10}>
           <SearchSection
             setIsLoading={setIsLoading}
             setCurrentPage={setCurrentPage}
           />
         </Grid.Column>
-        <Grid.Column textAlign="right">
+        <Grid.Column textAlign="right" width={6}>
           <Button color="orange" onClick={() => onCreateRecipe()}>
             <Icon name="plus" />
             New Recipe
@@ -102,7 +102,7 @@ function ViewRecipes({
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
-        <Grid.Column width={8}>
+        <Grid.Column width={16}>
           <>
             <Button
               size='small'
@@ -124,18 +124,22 @@ function ViewRecipes({
               labelPosition='left'
               onClick ={()=> generateRandomRecipes()}
             />
-          </>
-        </Grid.Column>
-        <Grid.Column width={3} floated='right' textAlign="right">
-          {
+            {
             (serverState.recipes && serverState.recipes.length > 0) &&
             (
-              <Button color="orange" inverted onClick={() => serverDispatch({ type: 'ADD_ALL_BASKET', payload: { basketItems: serverState.recipes } })}>
-                <Icon name="plus" />
-                {`Add All (${serverState.recipes.length}) To Basket`}
-              </Button>
+              <Button
+                size='small'
+                compact
+                loading={isLoading || serverState.shouldRefresh}
+                basic
+                content={`Add All (${serverState.recipes.length}) To Basket`}
+                icon='plus'
+                labelPosition='left'
+                onClick={() => serverDispatch({ type: 'ADD_ALL_BASKET', payload: { basketItems: serverState.recipes } })}
+              />
             )
           }
+          </>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
