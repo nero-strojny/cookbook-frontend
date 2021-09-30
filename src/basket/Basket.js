@@ -21,8 +21,6 @@ function Basket() {
         if(ingredient.amount === undefined || ingredient.amount === 0) {
           addToTaste = true;
         }
-        if(ingredient.name === "salt") {console.log(ingredient, ingredient.amount, addToTaste)}
-        
       });
       const sameMeasurements = groupBy(sameIngredientList, ingredient => ingredient.measurement);
     
