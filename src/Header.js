@@ -2,9 +2,12 @@ import React, { useContext } from 'react'
 import { Icon, Button, Grid } from "semantic-ui-react";
 import { ServerRequestContext } from "./ServerRequestContext"
 
-function Header({ styleValue }) {
+function Header({ styleValue, width }) {
   
   const { dispatch: serverDispatch, state } = useContext(ServerRequestContext);
+
+  // align different depending on the screen size
+  const textAlignSetting = width < 768 ? 'left' : 'right';
 
   return (
       <Grid className={styleValue} style={{marginBottom:'15px', padding: '10px'}} stackable>
@@ -16,7 +19,7 @@ function Header({ styleValue }) {
             TastyBoi
           </div>
           </Grid.Column>
-          <Grid.Column width={8} textAlign='right'>
+          <Grid.Column width={8} textAlign={textAlignSetting}>
             <Button inverted onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS' })}>
                 <Icon name="log out" />
                 Log-out

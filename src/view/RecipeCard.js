@@ -144,7 +144,7 @@ function RecipeCard({
   }
 
   return (
-    <Card fluid color="orange">
+    <Card color="orange">
       <Card.Content>
         <Card.Header>
           <Grid>

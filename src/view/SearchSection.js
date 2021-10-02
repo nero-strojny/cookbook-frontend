@@ -19,10 +19,10 @@ function SearchSection({
         {tags: [searchField]} :
         {recipeName: searchField};
       setCurrentPage(1);
-      serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: { pageSize: 5, pageCount: 0, queryRecipe: queryParameters } } });
+      serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: { pageSize: 6, pageCount: 0, queryRecipe: queryParameters } } });
     } else {
       setCurrentPage(1);
-      serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: { pageSize: 5, pageCount: 0 } } });
+      serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: { pageSize: 6, pageCount: 0 } } });
     }
     setIsLoading(false);
   }
