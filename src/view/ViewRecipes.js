@@ -9,6 +9,7 @@ import { get } from 'lodash';
 function ViewRecipes({
   onCreateRecipe,
   onEditRecipe,
+  width
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +17,13 @@ function ViewRecipes({
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   
   const PAGESIZE = defaultPaginatedRequest.pageSize;
+
+  let cardsPerRow = 1;
+  if (width > 1190){
+    cardsPerRow = 3;
+  } else if (width > 790) {
+    cardsPerRow = 2;
+  }
 
   useEffect(() => {
     let isCurrent = true;
@@ -151,7 +159,7 @@ function ViewRecipes({
         <Grid.Column>
           {isLoading || serverState.shouldRefresh ?
             <Loader active inline='centered' disabled={false} size='huge'>Loading Recipes...</Loader> :
-            <Card.Group itemsPerRow={1}>
+            <Card.Group itemsPerRow={cardsPerRow}>
               <Transition.Group
                 duration={1500}
               >

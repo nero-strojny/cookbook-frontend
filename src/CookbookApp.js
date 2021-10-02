@@ -9,6 +9,7 @@ import Basket from "./basket/Basket";
 
 function CookbookApp() {
   const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
+  const [width, setWidth] = useState(window.innerWidth);
   
   const { state, dispatch } = useContext(ServerRequestContext);
 
@@ -18,6 +19,17 @@ function CookbookApp() {
     }, 5000);
     return () => clearTimeout(timer);
   }, [dispatch, state]);
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+        window.removeEventListener('resize', handleWindowSizeChange);
+    }
+  }, []);
 
   function handleCreateRecipe() {
     defaultRecipe.ingredients = [];
@@ -36,6 +48,7 @@ function CookbookApp() {
             dispatch({ type: 'SWITCH_TO_EDIT' });
             setRecipeToEdit(recipe);
           }}
+          width={width}
         />);
       case "editRecipes": 
           return (
@@ -63,7 +76,7 @@ function CookbookApp() {
 
   return (
       <>
-      <Header styleValue={"orangeMenuStyle"} />
+      <Header styleValue={"orangeMenuStyle"} width={width}/>
       <MessageBar />
       {returnPage()}
     </>
