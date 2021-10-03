@@ -27,7 +27,8 @@ function Ingredients(){
           name: newName,
           amount: newAmount,
           measurement: newMeasurement,
-          _id: selectedOption._id
+          _id: selectedOption._id, 
+          category: selectedOption.category
         }
       }
     });
