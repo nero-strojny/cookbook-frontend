@@ -19,9 +19,9 @@ function ViewRecipes({
   const PAGESIZE = defaultPaginatedRequest.pageSize;
 
   let cardsPerRow = 1;
-  if (width > 1190){
+  if (width > 1190 && serverState.recipes && serverState.recipes.length >= 3){
     cardsPerRow = 3;
-  } else if (width > 790) {
+  } else if (width > 790 && serverState.recipes && serverState.recipes.length >= 2) {
     cardsPerRow = 2;
   }
 
@@ -153,10 +153,6 @@ function ViewRecipes({
       <Grid.Row>
         <Grid.Column>
           {errorState !== ""  && <h1>{errorState}</h1>}
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
           {isLoading || serverState.shouldRefresh ?
             <Loader active inline='centered' disabled={false} size='huge'>Loading Recipes...</Loader> :
             <Card.Group itemsPerRow={cardsPerRow}>

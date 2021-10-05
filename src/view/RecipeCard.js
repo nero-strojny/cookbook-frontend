@@ -144,12 +144,25 @@ function RecipeCard({
   }
 
   return (
-    <Card color="orange">
+    <Card fluid color="orange">
       <Card.Content>
         <Card.Header>
           <Grid>
             <Grid.Row columns="equal">
-              <Grid.Column>{recipeName}</Grid.Column>
+              <Grid.Column>
+                <p style={{ cursor: 'pointer', textDecoration:'underline' }}
+                  onClick={() => serverDispatch({
+                    type: 'QUERY_RECIPES_PENDING',
+                    payload: { 
+                      paginatedRequest: {
+                        pageSize: 1, pageCount: 0,
+                        queryRecipe: {recipeName}
+                      }
+                    }
+                  })}>
+                  {recipeName}
+                </p>
+              </Grid.Column>
               <Grid.Column textAlign="right">
               {(!recipeLoading && (userName === serverState.userName)) &&
                 (<>
