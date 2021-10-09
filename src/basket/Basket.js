@@ -1,5 +1,5 @@
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Checkbox, Grid, Button, Label, Segment, List } from "semantic-ui-react";
 import { ServerRequestContext } from "../ServerRequestContext";
 import { flatMap, groupBy, findIndex } from 'lodash';
@@ -8,7 +8,21 @@ export const defaultTags = [ "dinner", "lunch", "breakfast", "snack", "side dish
 
 function Basket() {
     const { state, dispatch } = useContext(ServerRequestContext);
+    const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState([]);
     const measurementsToPluralize = ["clove", "cup", "stalk", "slice", "lb"];
+    const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
+    const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
+
+
+    function changeIngredientsToNotEmail(ingredientString) {
+      let tempArray = [];
+      if(ingredientsToNotEmail.includes(ingredientString)){
+        tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
+      } else {
+        tempArray = [ingredientString];
+      }
+      setIngredientsToNotEmail(tempArray.concat(ingredientsToNotEmail));
+    }
 
     function determineIngredientString(sameIngredientList){
       let quantityString = "";
@@ -58,13 +72,17 @@ function Basket() {
       return `${sameIngredientList[0].name} (${quantityString})`;
     }
 
-    function generateBasketRows(categoryIngredientGroups, categoryName){
-        const sameIngredientGroups = groupBy(categoryIngredientGroups[categoryName], ingredient => ingredient._id);
-        const sortedIngredientGroup = Object.values(sameIngredientGroups).sort((a,b) => (a[0].name > b[0].name) ? 1 : -1);
-        const ingredientBoxes = sortedIngredientGroup.map(sameIngredient => {
+    function generateIngredientStrings(categoryName){
+      const sameIngredientGroups = groupBy(categoryGroupIngredients[categoryName], ingredient => ingredient._id);
+      const sortedIngredientGroup = Object.values(sameIngredientGroups).sort((a,b) => (a[0].name > b[0].name) ? 1 : -1);
+      return sortedIngredientGroup.map(sameIngredient => determineIngredientString(sameIngredient));
+    }
+
+    function generateBasketRows(categoryName){
+        const ingredientBoxes = generateIngredientStrings(categoryName).map(ingredientString => {
           return (<Grid.Row columns="equal" style={{marginTop:'10px'}}>
             <Grid.Column>
-              <Checkbox defaultChecked label={determineIngredientString(sameIngredient)} />
+              <Checkbox defaultChecked label={ingredientString} onChange={()=>changeIngredientsToNotEmail(ingredientString)}/>
             </Grid.Column>
           </Grid.Row>);
         });
@@ -79,8 +97,6 @@ function Basket() {
     }
 
     function generateBasketIngredients(){
-      const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
-      const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
       const {pantry, produce, protein, dairy, alcohol} = categoryGroupIngredients;
 
       return (<Grid>
@@ -91,17 +107,17 @@ function Basket() {
         </Grid.Row>
         <Grid.Row>
           <Grid.Column width={4} style={{marginTop:'10px'}}>
-            {(produce && produce.length) && (<>{generateBasketRows(categoryGroupIngredients, "produce")}</>)}
+            {(produce && produce.length) && (<>{generateBasketRows("produce")}</>)}
           </Grid.Column>
           <Grid.Column width={4} style={{marginTop:'10px'}}>
-            {(pantry && pantry.length) && (<>{generateBasketRows(categoryGroupIngredients, "pantry")}</>)}
+            {(pantry && pantry.length) && (<>{generateBasketRows("pantry")}</>)}
           </Grid.Column>
           <Grid.Column width={4} style={{marginTop:'10px'}}>
-            {(protein && protein.length) && (<>{generateBasketRows(categoryGroupIngredients, "protein")}</>)}
+            {(protein && protein.length) && (<>{generateBasketRows("protein")}</>)}
           </Grid.Column>
           <Grid.Column width={4} style={{marginTop:'10px'}}>  
-            {(dairy && dairy.length) && (<>{generateBasketRows(categoryGroupIngredients, "dairy")}</>)}
-            {(alcohol && alcohol.length) && (<>{generateBasketRows(categoryGroupIngredients, "alcohol")}</>)}
+            {(dairy && dairy.length) && (<>{generateBasketRows("dairy")}</>)}
+            {(alcohol && alcohol.length) && (<>{generateBasketRows("alcohol")}</>)}
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
