@@ -1,5 +1,5 @@
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Checkbox, Grid, Button, Label, Segment, List } from "semantic-ui-react";
 import { ServerRequestContext } from "../ServerRequestContext";
 import { flatMap, groupBy, findIndex } from 'lodash';
@@ -8,9 +8,21 @@ export const defaultTags = [ "dinner", "lunch", "breakfast", "snack", "side dish
 
 function Basket() {
     const { state, dispatch } = useContext(ServerRequestContext);
+    const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState([]);
     const measurementsToPluralize = ["clove", "cup", "stalk", "slice", "lb"];
     const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
     const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
+
+
+    function changeIngredientsToNotEmail(ingredientString) {
+      let tempArray = [];
+      if(ingredientsToNotEmail.includes(ingredientString)){
+        tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
+      } else {
+        tempArray = [ingredientString];
+      }
+      setIngredientsToNotEmail(tempArray.concat(ingredientsToNotEmail));
+    }
 
     function determineIngredientString(sameIngredientList){
       let quantityString = "";
@@ -64,13 +76,13 @@ function Basket() {
       const sameIngredientGroups = groupBy(categoryGroupIngredients[categoryName], ingredient => ingredient._id);
       const sortedIngredientGroup = Object.values(sameIngredientGroups).sort((a,b) => (a[0].name > b[0].name) ? 1 : -1);
       return sortedIngredientGroup.map(sameIngredient => determineIngredientString(sameIngredient));
-  }
+    }
 
     function generateBasketRows(categoryName){
         const ingredientBoxes = generateIngredientStrings(categoryName).map(ingredientString => {
           return (<Grid.Row columns="equal" style={{marginTop:'10px'}}>
             <Grid.Column>
-              <Checkbox defaultChecked label={ingredientString} />
+              <Checkbox defaultChecked label={ingredientString} onChange={()=>changeIngredientsToNotEmail(ingredientString)}/>
             </Grid.Column>
           </Grid.Row>);
         });
