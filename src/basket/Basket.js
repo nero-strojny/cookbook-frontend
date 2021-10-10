@@ -17,7 +17,7 @@ function Basket() {
 
 
     function changeIngredientsToNotEmail(ingredientString) {
-        let tempArray = [];
+      let tempArray = [];
       if(ingredientsToNotEmail.includes(ingredientString)){
         tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
       } else {

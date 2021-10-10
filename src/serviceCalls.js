@@ -2,8 +2,8 @@ import axios from "axios";
 import { Promise } from "bluebird";
 import { get, set, has } from 'lodash';
 
-// let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
-let endpoint = "http://localhost:8080";
+let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
+// let endpoint = "http://localhost:8080";
 
 export const defaultPaginatedRequest = {
   pageSize: 6,
