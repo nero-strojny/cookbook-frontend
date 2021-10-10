@@ -1,11 +1,12 @@
 import { Ingredient } from "../types/ingredient";
+import { Step } from "../types/step";
 
 export interface EditRecipeState {
   recipeName: string;
   author: string;
   userName?: string;
   ingredients: Ingredient[];
-  stepsText?: string[];
+  steps: Step[];
   tags: string[];
   prepTime: number;
   cookTime: number;
@@ -14,7 +15,7 @@ export interface EditRecipeState {
 }
 
 export const defaultRecipe: EditRecipeState = {
-  stepsText: [],
+  steps: [{number: 1, text: ""}],
   ingredients: [],
   recipeName: "",
   servings: 0,

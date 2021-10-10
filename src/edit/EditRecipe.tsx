@@ -18,34 +18,17 @@ type EditRecipeProps = {
 function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
-  const inputtedRecipeSteps = inputtedRecipe.steps || [];
   const [state, dispatch] = useReducer(editRecipeReducer, {
     ...defaultRecipe,
-    ...inputtedRecipe,
-    stepsText: inputtedRecipeSteps.map((step: { text: string; }) => step.text)
+    ...inputtedRecipe
   });
 
   const submitRecipe = async () => {
-    let submittedSteps = state.stepsText || [""];
-    let filteredSteps = submittedSteps
-      .filter(step => step !== "")
-      .map((step, index) => ({ number: index + 1, text: step }));
-    if (!submittedSteps || !submittedSteps.length){
-      filteredSteps = [{number: 0, text: ""}];
-    }
-    let submittedIngredients = state.ingredients
-      .filter(ingredient =>
-        ingredient.name !== "" ||
-        ingredient.measurement !== "" ||
-        ingredient.amount);
-    
     const submittedRecipe = {
       ...state,
       userName: serverState.userName,
-      ingredients: submittedIngredients,
-      steps: filteredSteps,
     };
-    delete submittedRecipe.stepsText;
+
     setIsLoading(true);
     if (inputtedRecipe._id) {
       const response = await updateRecipe(inputtedRecipe._id, submittedRecipe, serverState.accessToken);

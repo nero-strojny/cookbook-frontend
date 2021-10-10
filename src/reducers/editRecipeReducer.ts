@@ -3,7 +3,7 @@ import { defaultRecipe, EditRecipeState } from "./EditRecipeState";
 
 export const editRecipeReducer = (state: EditRecipeState, action: EditRecipeAction): EditRecipeState => {
   const { payload } = action;
-  const tempSteps = state.stepsText ? [...state.stepsText] : [];
+  const tempSteps = [...state.steps];
   const tempIngredients = [...state.ingredients];
   const tempTag = state.tags ? [...state.tags] : [];
   switch (action.type) {
@@ -40,19 +40,22 @@ export const editRecipeReducer = (state: EditRecipeState, action: EditRecipeActi
     case "ADD_STEP":
         return {
             ...state,
-            stepsText: [...tempSteps, ""]
+            steps: [...tempSteps, { number: tempSteps.length, text: "" }]
         };
     case "EDIT_STEP":
-        tempSteps[payload.indexSelected || 0] = payload.valueInput || "";
+        tempSteps[payload.indexSelected || 0] = {
+          ...tempSteps[payload.indexSelected || 0],
+          text: payload.valueInput || ""
+        };
         return {
             ...state,
-            stepsText: tempSteps
+            steps: tempSteps
         };
     case "DELETE_STEP":
         tempSteps.splice(payload.indexSelected || 0, 1);
         return {
             ...state,
-            stepsText: tempSteps
+            steps: tempSteps
             };
     case "ADD_INGREDIENT":
         tempIngredients.push(payload.ingredient ||

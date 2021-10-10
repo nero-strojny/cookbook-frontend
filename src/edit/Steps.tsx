@@ -4,8 +4,7 @@ import { RecipeContext } from "../RecipeContext";
 
 function Steps() {
   const { state, dispatch } = useContext(RecipeContext);
-  const { stepsText } = state;
-  const currentStepsText = stepsText || [];
+  const { steps: currentSteps } = state;
 
   function createSteps() {
     const stepInputs = [
@@ -15,7 +14,7 @@ function Steps() {
               <label>{"Step 1:"}</label>
               <TextArea
                 placeholder="Describe step here..."
-                value={currentStepsText.length > 0 ? currentStepsText[0] : "" }
+                value={currentSteps.length > 0 ? currentSteps[0].text : "" }
                 onChange={(event) => dispatch({ 
                   type: 'EDIT_STEP',
                   payload: { indexSelected: 0, valueInput: event.target.value }
@@ -25,7 +24,7 @@ function Steps() {
           </Grid.Column>
         </Grid.Row>
     ];
-    for (let i = 1; i < currentStepsText.length; i++) {
+    for (let i = 1; i < currentSteps.length; i++) {
       stepInputs.push(
         <Grid.Row columns="equal" key={"stepsText" + i}>
           <Grid.Column width={13}>
@@ -33,7 +32,7 @@ function Steps() {
               <label>{`Step ${i+1}:`}</label>
               <TextArea
                 placeholder="Describe step here..."
-                value={currentStepsText[i]}
+                value={currentSteps[i].text}
                 onChange={(event) => dispatch({ 
                   type: 'EDIT_STEP',
                   payload: { indexSelected: i, valueInput: event.target.value }
