@@ -159,6 +159,24 @@ export const serverRequestReducer = (state, action) => {
         ...state,
         currentPage: "editRecipes"
       }
+    case "EMAIL_SUCCESS":
+      return {
+        ...state,
+        header: 'Success!',
+        messageContent: 'Shopping list has been emailed!',
+        paginatedRequest: defaultPaginatedRequest,
+        shouldRefresh: false,
+        currentPage: "basket"
+      }
+    case "EMAIL_FAILURE":
+      return {
+        ...state,
+        header: 'Error!',
+        messageContent: 'Emailing shopping list failed due to an error',
+        paginatedRequest: defaultPaginatedRequest,
+        shouldRefresh: false,
+        currentPage: "basket"
+      }
     default:
       return state;
   }

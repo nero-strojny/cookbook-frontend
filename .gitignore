@@ -3,3 +3,4 @@ server/server.exe
 server/config.json
 node_modules
 build
+.idea/
