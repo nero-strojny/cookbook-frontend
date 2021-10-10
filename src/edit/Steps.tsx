@@ -4,7 +4,8 @@ import { RecipeContext } from "../RecipeContext";
 
 function Steps() {
   const { state, dispatch } = useContext(RecipeContext);
-  const { steps: currentSteps } = state;
+  const { stepsText } = state;
+  const currentStepsText = stepsText || [];
 
   function createSteps() {
     const stepInputs = [
@@ -14,7 +15,7 @@ function Steps() {
               <label>{"Step 1:"}</label>
               <TextArea
                 placeholder="Describe step here..."
-                value={currentSteps.length > 0 ? currentSteps[0] : "" }
+                value={currentStepsText.length > 0 ? currentStepsText[0] : "" }
                 onChange={(event) => dispatch({ 
                   type: 'EDIT_STEP',
                   payload: { indexSelected: 0, valueInput: event.target.value }
@@ -24,7 +25,7 @@ function Steps() {
           </Grid.Column>
         </Grid.Row>
     ];
-    for (let i = 1; i < currentSteps.length; i++) {
+    for (let i = 1; i < currentStepsText.length; i++) {
       stepInputs.push(
         <Grid.Row columns="equal" key={"stepsText" + i}>
           <Grid.Column width={13}>
@@ -32,7 +33,7 @@ function Steps() {
               <label>{`Step ${i+1}:`}</label>
               <TextArea
                 placeholder="Describe step here..."
-                value={currentSteps[i]}
+                value={currentStepsText[i]}
                 onChange={(event) => dispatch({ 
                   type: 'EDIT_STEP',
                   payload: { indexSelected: i, valueInput: event.target.value }
@@ -65,7 +66,7 @@ function Steps() {
         {createSteps()}
         <Grid.Row>
           <Grid.Column>
-            <Button onClick={() => dispatch({ type: 'ADD_STEP' })}>
+            <Button onClick={() => dispatch({ type: 'ADD_STEP', payload: {} })}>
               <Icon name="plus" /> Add Step
             </Button>
           </Grid.Column>

@@ -5,3 +5,8 @@ export type Ingredient = {
   amount: number;
   measurement: string;
 }
+
+export type NewIngredient = {
+  name: string;
+  category: string;
+}

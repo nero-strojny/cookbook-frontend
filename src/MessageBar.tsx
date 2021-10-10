@@ -8,7 +8,7 @@ function MessageBar() {
   return (
     <Transition visible={Boolean(messageContent)} animation="scale" duration={500}>
       <Message
-        onDismiss={() => dispatch({type: 'CLEAR_MESSAGE'})}
+        onDismiss={() => dispatch({type: 'CLEAR_MESSAGE', payload: {}})}
         header={header}
         content={messageContent}
       />

@@ -1,6 +1,6 @@
 import { Ingredient } from "../types/ingredient";
 
-export type EditRecipeActionType = {
+export type EditRecipeAction = {
   type: string,
   payload: {
     recipeName?: string;

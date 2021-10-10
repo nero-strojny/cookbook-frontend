@@ -2,7 +2,12 @@ import React, { useContext } from 'react'
 import { Icon, Button, Grid } from "semantic-ui-react";
 import { ServerRequestContext } from "./ServerRequestContext"
 
-function Header({ styleValue, width }) {
+type HeaderProps = {
+  styleValue: string;
+  width: number;
+}
+
+function Header({ styleValue, width }: HeaderProps): JSX.Element {
   
   const { dispatch: serverDispatch, state } = useContext(ServerRequestContext);
 
@@ -20,20 +25,20 @@ function Header({ styleValue, width }) {
           </div>
           </Grid.Column>
           <Grid.Column width={8} textAlign={textAlignSetting}>
-            <Button inverted onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS' })}>
+            <Button inverted onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} })}>
                 <Icon name="log out" />
                 Log-out
             </Button>
             {
               state.currentPage === "basket" ?
               (
-                <Button inverted onClick={() => serverDispatch({ type: 'SWITCH_TO_RECIPES' })}>
+                <Button inverted onClick={() => serverDispatch({ type: 'SWITCH_TO_RECIPES', payload: {} })}>
                   <Icon name="list alternate outline" />
                   View Recipes
                 </Button>
               ) :
               (
-                <Button inverted onClick={() => serverDispatch({ type: 'SWITCH_TO_BASKET' })}>
+                <Button inverted onClick={() => serverDispatch({ type: 'SWITCH_TO_BASKET', payload: {} })}>
                   <Icon name="shopping basket" />
                   Basket
                   { state.basket && state.basket.length > 0 && ` (${state.basket.length})`}

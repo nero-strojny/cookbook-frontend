@@ -6,6 +6,7 @@ import MessageBar from "./MessageBar";
 import Header from "./Header";
 import { ServerRequestContext } from "./ServerRequestContext";
 import Basket from "./basket/Basket";
+import { defaultRecipe } from "./reducers/EditRecipeState"
 
 function CookbookApp() {
   const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
@@ -83,14 +84,3 @@ function CookbookApp() {
   );
 }
 export default CookbookApp;
-
-export const defaultRecipe = {
-  steps: [""],
-  ingredients: [],
-  recipename: "",
-  servings: 0,
-  author: "",
-  cooktime: 0,
-  preptime: 0,
-  tags: []
-};

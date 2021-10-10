@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Card, Form, Transition, Message } from "semantic-ui-react";
 import { login } from "./serviceCalls";
-import get from 'lodash';
+import { get } from 'lodash';
 import { ServerRequestContext } from './ServerRequestContext';
 
 function Login() {

@@ -1,58 +1,58 @@
-import { EditRecipeActionType } from "./EditRecipeActions";
-import { EditRecipeState } from "./EditRecipeState";
+import { EditRecipeAction } from "./EditRecipeAction";
+import { defaultRecipe, EditRecipeState } from "./EditRecipeState";
 
-export const editRecipeReducer = (state: EditRecipeState, action: EditRecipeActionType) => {
+export const editRecipeReducer = (state: EditRecipeState, action: EditRecipeAction): EditRecipeState => {
   const { payload } = action;
-  const tempSteps = [...state.steps];
+  const tempSteps = state.stepsText ? [...state.stepsText] : [];
   const tempIngredients = [...state.ingredients];
   const tempTag = state.tags ? [...state.tags] : [];
   switch (action.type) {
     case "EDIT_NAME":
         return {
             ...state,
-            recipeName: payload.recipeName
+            recipeName: payload.recipeName || defaultRecipe.recipeName
         };
     case "EDIT_AUTHOR":
         return {
             ...state,
-            author: payload.author
+            author: payload.author || defaultRecipe.author
         };
     case "EDIT_CALORIES":
         return {
             ...state,
-            calories: payload.calories
+            calories: payload.calories || defaultRecipe.calories
         };
     case "EDIT_COOK_TIME":
         return {
             ...state,
-            cookTime: payload.cookTime
+            cookTime: payload.cookTime || defaultRecipe.cookTime
         };
     case "EDIT_PREP_TIME":
         return {
             ...state,
-            prepTime: payload.prepTime
+            prepTime: payload.prepTime || defaultRecipe.prepTime
         };
     case "EDIT_SERVINGS":
         return {
             ...state,
-            servings: payload.servings
+            servings: payload.servings|| defaultRecipe.servings
         };
     case "ADD_STEP":
         return {
             ...state,
-            steps: [...tempSteps, ""]
+            stepsText: [...tempSteps, ""]
         };
     case "EDIT_STEP":
         tempSteps[payload.indexSelected || 0] = payload.valueInput || "";
         return {
             ...state,
-            steps: tempSteps
+            stepsText: tempSteps
         };
     case "DELETE_STEP":
         tempSteps.splice(payload.indexSelected || 0, 1);
         return {
             ...state,
-            steps: tempSteps
+            stepsText: tempSteps
             };
     case "ADD_INGREDIENT":
         tempIngredients.push(payload.ingredient ||
@@ -68,9 +68,13 @@ export const editRecipeReducer = (state: EditRecipeState, action: EditRecipeActi
             ingredients: tempIngredients
         };
     case "ADD_TAG":
+        let tempTagArray: string[] = [];
+        if(state.tags && payload.tag) {
+          tempTagArray = [...state.tags, payload.tag];
+        }
         return {
             ...state,
-            tags: [...tempTag, payload.tag]
+            tags: tempTagArray
         };
     case "DELETE_TAG":
         return {

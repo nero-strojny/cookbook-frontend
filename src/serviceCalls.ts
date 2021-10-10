@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Promise } from "bluebird";
 import { get, set, has } from 'lodash';
-import { Ingredient } from "./types/ingredient";
+import { NewIngredient } from "./types/ingredient";
 import { PaginatedRequest } from "./types/paginatedRequest";
 import { Recipe } from "./types/recipe";
 
@@ -134,7 +134,7 @@ export const searchRecipe = async (recipe: Recipe, token: string) => {
   return response
 }
 
-export const createIngredient = async (ingredient: Ingredient, token: string): Promise<AxiosResponse> => {
+export const createIngredient = async (ingredient: NewIngredient, token: string): Promise<AxiosResponse> => {
   let response;
   try {
     response = await axios.post(endpoint + `/api/ingredient`, {...ingredient}, {

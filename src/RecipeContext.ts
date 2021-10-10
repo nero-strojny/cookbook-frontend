@@ -1,10 +1,10 @@
 import { createContext } from 'react';
-import { EditRecipeActionType } from './reducers/EditRecipeActions';
+import { EditRecipeAction } from './reducers/EditRecipeAction';
 import { defaultRecipe, EditRecipeState } from './reducers/EditRecipeState';
 
 export const RecipeContext = createContext<{
   state: EditRecipeState;
-  dispatch: React.Dispatch<EditRecipeActionType>;
+  dispatch: React.Dispatch<EditRecipeAction>;
   }>({
       state: defaultRecipe,
       dispatch: () => undefined,
