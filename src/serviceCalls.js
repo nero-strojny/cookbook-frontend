@@ -2,8 +2,8 @@ import axios from "axios";
 import { Promise } from "bluebird";
 import { get, set, has } from 'lodash';
 
-let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
-//let endpoint = "http://localhost:8080";
+// let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
+let endpoint = "http://localhost:8080";
 
 export const defaultPaginatedRequest = {
   pageSize: 6,
@@ -153,6 +153,21 @@ export const searchIngredient = async (prefix, token) => {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
+      }
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+}
+
+export const emailBasket = async (ingredients, token) => {
+  let response;
+  try {
+    response = await axios.post(endpoint + `/api/basket`, ingredients, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       }
     });
   } catch(err) {
