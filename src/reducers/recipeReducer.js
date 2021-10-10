@@ -57,12 +57,6 @@ export const recipeReducer = (state, action) => {
                 ...state,
                 ingredients: tempIngredients
             };
-        case "EDIT_INGREDIENT":
-            tempIngredients[payload.indexSelected][payload.keySelected] = payload.valueInput;
-            return {
-                ...state,
-                ingredients: tempIngredients
-            };
         case "DELETE_INGREDIENT":
             tempIngredients.splice(payload.indexSelected, 1);
             return {
