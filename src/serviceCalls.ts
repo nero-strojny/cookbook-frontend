@@ -6,7 +6,7 @@ import { PaginatedRequest } from "./types/paginatedRequest";
 import { Recipe } from "./types/recipe";
 
 let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
-//let endpoint = "http://localhost:8080";
+// let endpoint = "http://localhost:8080";
 
 export const defaultPaginatedRequest: PaginatedRequest = {
   pageSize: 6,
@@ -164,7 +164,19 @@ export const searchIngredient = async (prefix: string, token: string): Promise<A
   return response
 }
 
-type ApiError = {
-  response: AxiosResponse;
+export const emailBasket = async (ingredientStrings: {[category:string]: string[]}, token: string) => {
+  let response;
+  try {
+    response = await axios.post(endpoint + `/api/basket`, ingredientStrings, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    });
+  } catch(err) {
+    response = get(err, 'response');
+  }
+  return response
 }
+
 

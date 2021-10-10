@@ -2,16 +2,18 @@
 import React, { useContext, useState } from "react";
 import { Checkbox, Grid, Button, Label, Segment, List } from "semantic-ui-react";
 import { ServerRequestContext } from "../ServerRequestContext";
-import { flatMap, groupBy, findIndex } from 'lodash';
+import { flatMap, groupBy, findIndex, set } from 'lodash';
+import { emailBasket } from "../serviceCalls";
 
-export const defaultTags = [ "dinner", "lunch", "breakfast", "snack", "side dish", "main dish"];
 
 function Basket() {
-    const { state, dispatch } = useContext(ServerRequestContext);
+    const { state, dispatch } = useContext(ServerRequestContext)
+
     const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState([]);
     const measurementsToPluralize = ["clove", "cup", "stalk", "slice", "lb"];
     const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
     const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
+    const ingredientCategories = ["produce", "protein", "dairy", "pantry", "alcohol"];
 
 
     function changeIngredientsToNotEmail(ingredientString) {
@@ -23,7 +25,6 @@ function Basket() {
       }
       setIngredientsToNotEmail(tempArray.concat(ingredientsToNotEmail));
     }
-
     function determineIngredientString(sameIngredientList){
       let quantityString = "";
       let addToTaste = false;
@@ -96,6 +97,21 @@ function Basket() {
       </>);
     }
 
+    async function emailIngredients() {
+        let ingredientObject = {};
+        ingredientCategories.forEach(category => {
+            set(ingredientObject, category, generateIngredientStrings(category).filter(ingredient => !ingredientsToNotEmail.includes(ingredient)))
+        });
+        const response = await emailBasket(ingredientObject, state.accessToken)
+        if (response.status === 200) {
+            dispatch({ type: 'EMAIL_SUCCESS'});
+        } else if (response.status === 401 || response.status === 403) {
+            dispatch({ type: 'LOGOUT_SUCCESS' });
+        } else {
+            dispatch({ type: 'EMAIL_FAILURE' });
+        }
+    }
+
     function generateBasketIngredients(){
       const {pantry, produce, protein, dairy, alcohol} = categoryGroupIngredients;
 
@@ -122,7 +138,7 @@ function Basket() {
         </Grid.Row>
         <Grid.Row>
           <Grid.Column width={4} floated='right'>
-            <Button color='orange'>Send To Email</Button>
+            <Button color='orange' onClick={() => emailIngredients()}>Send To Email</Button>
           </Grid.Column>
         </Grid.Row>
       </Grid>)
