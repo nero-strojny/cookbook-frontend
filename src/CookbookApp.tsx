@@ -6,16 +6,17 @@ import MessageBar from "./MessageBar";
 import Header from "./Header";
 import { ServerRequestContext } from "./ServerRequestContext";
 import Basket from "./basket/Basket";
+import { defaultRecipe } from "./reducers/EditRecipeState"
+import { Recipe } from "./types/recipe";
 
-function CookbookApp() {
-  const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
-  const [width, setWidth] = useState(window.innerWidth);
-  
+function CookbookApp(): JSX.Element {
+  const [width, setWidth] = useState<number>(window.innerWidth);
   const { state, dispatch } = useContext(ServerRequestContext);
+  const [recipeToEdit, setRecipeToEdit] = useState<Recipe>({...defaultRecipe, userName: state.userName });
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      dispatch({type: 'CLEAR_MESSAGE'});
+      dispatch({type: 'CLEAR_MESSAGE', payload: {}});
     }, 5000);
     return () => clearTimeout(timer);
   }, [dispatch, state]);
@@ -33,7 +34,7 @@ function CookbookApp() {
 
   function handleCreateRecipe() {
     defaultRecipe.ingredients = [];
-    setRecipeToEdit({...defaultRecipe});
+    setRecipeToEdit({...defaultRecipe, userName: state.userName });
   }
 
   function returnPage(){
@@ -41,11 +42,11 @@ function CookbookApp() {
       case "viewRecipes": 
         return (<ViewRecipes
           onCreateRecipe={() => {
-            dispatch({ type: 'SWITCH_TO_EDIT' });
-            setRecipeToEdit(defaultRecipe);
+            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
+            setRecipeToEdit({...defaultRecipe, userName: state.userName });
           }}
-          onEditRecipe={(recipe) => {
-            dispatch({ type: 'SWITCH_TO_EDIT' });
+          onEditRecipe={(recipe: React.SetStateAction<Recipe>) => {
+            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
             setRecipeToEdit(recipe);
           }}
           width={width}
@@ -63,13 +64,14 @@ function CookbookApp() {
       default:
         return( <ViewRecipes
           onCreateRecipe={() => {
-            dispatch({ type: 'SWITCH_TO_EDIT' });
-            setRecipeToEdit(defaultRecipe);
+            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
+            setRecipeToEdit({...defaultRecipe, userName: state.userName });
           }}
-          onEditRecipe={(recipe) => {
-            dispatch({ type: 'SWITCH_TO_EDIT' });
+          onEditRecipe={(recipe: React.SetStateAction<Recipe>) => {
+            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
             setRecipeToEdit(recipe);
           }}
+          width={width}
         />);
     }
   }
@@ -83,14 +85,3 @@ function CookbookApp() {
   );
 }
 export default CookbookApp;
-
-export const defaultRecipe = {
-  steps: [""],
-  ingredients: [],
-  recipename: "",
-  servings: 0,
-  author: "",
-  cooktime: 0,
-  preptime: 0,
-  tags: []
-};

@@ -1,24 +1,33 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
+import { Grid, Button, Icon, Card, Transition, Loader, Pagination, SemanticWIDTHSNUMBER } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
 import { getRecipes, getRandomRecipes, defaultPaginatedRequest } from "../serviceCalls";
 import SearchSection from "./SearchSection";
 import { ServerRequestContext } from "../ServerRequestContext";
 import { get } from 'lodash';
 
+type ViewRecipesProps = {
+  onCreateRecipe: Function, 
+  onEditRecipe: Function,
+  width: number
+}
+
 function ViewRecipes({
   onCreateRecipe,
   onEditRecipe,
   width
-}) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorState, setErrorState] = useState("");
+}: ViewRecipesProps): JSX.Element {
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorState, setErrorState] = useState<string>("");
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   
   const PAGESIZE = defaultPaginatedRequest.pageSize;
+  const totalPages = serverState.numberOfRecipes ?
+    Math.ceil(serverState.numberOfRecipes/PAGESIZE) || 1 :
+    1;
 
-  let cardsPerRow = 1;
+  let cardsPerRow: SemanticWIDTHSNUMBER = 1;
   if (width > 1190 && serverState.recipes && serverState.recipes.length >= 3){
     cardsPerRow = 3;
   } else if (width > 790 && serverState.recipes && serverState.recipes.length >= 2) {
@@ -33,16 +42,16 @@ function ViewRecipes({
           window.scrollTo(0, 0);
           const response = await getRecipes(serverState.paginatedRequest, serverState.accessToken);
           if (response.status === 200) {
-            setErrorState(false);
+            setErrorState("");
             serverDispatch({ type: 'QUERY_RECIPES_SUCCESS', payload: { recipes: response.data.recipes, numberOfRecipes: response.data.numberOfRecipes } });
             if (!response.data.recipes || response.data.recipes.length < 1) {
               setErrorState("No Recipes Found");
             }
           } else if (response.status === 401 || response.status === 403) {
-            serverDispatch({ type: 'LOGOUT_SUCCESS' });
+            serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
           } else {
             setErrorState("Error Retrieving Recipes");
-            serverDispatch({ type: 'QUERY_RECIPES_FAILED' });
+            serverDispatch({ type: 'QUERY_RECIPES_FAILED', payload: {} });
           }
           setIsLoading(false);
         }
@@ -71,26 +80,32 @@ function ViewRecipes({
       setErrorState("");
       serverDispatch({ type: 'QUERY_RECIPES_SUCCESS', payload: { recipes: response.data, numberOfRecipes: PAGESIZE } });
     } else if (response.status === 401 || response.status === 403) {
-      serverDispatch({ type: 'LOGOUT_SUCCESS' });
+      serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
     } else {
       setErrorState("Error Retrieving Recipes");
-      serverDispatch({ type: 'QUERY_RECIPES_FAILED' });
+      serverDispatch({ type: 'QUERY_RECIPES_FAILED', payload: {} });
     }
     setIsLoading(false);
   }
 
-  async function switchPage(activePage){
-    setCurrentPage(activePage);
-    serverDispatch({
-      type: 'QUERY_RECIPES_PENDING',
-      payload: { 
-        paginatedRequest: {
-          pageSize: PAGESIZE,
-          pageCount: activePage-1,
-          queryRecipe: get(serverState, "paginatedRequest.queryRecipe", {})
+  async function switchPage(activePage: number | undefined){
+    if (activePage) {
+      setCurrentPage(activePage);
+      serverDispatch({
+        type: 'QUERY_RECIPES_PENDING',
+        payload: { 
+          paginatedRequest: {
+            pageSize: PAGESIZE,
+            pageCount: activePage-1,
+            queryRecipe: get(serverState, "paginatedRequest.queryRecipe", {})
+          }
         }
-      }
-    });
+      });
+    }
+  }
+
+  if (!serverState.recipes || !serverState.recipes.length) {
+    return <></>;
   }
 
   return (
@@ -175,13 +190,13 @@ function ViewRecipes({
       <Grid.Row>
       <Grid.Column>
         <Pagination
-          totalPages={Math.ceil(serverState.numberOfRecipes/PAGESIZE) || 1} 
+          totalPages={totalPages} 
           firstItem={null}
           lastItem={null}
           pointing
           secondary
           activePage={currentPage}
-          onPageChange={(e, { activePage })=>switchPage(activePage)}
+          onPageChange={(e, { activePage })=>switchPage(Number(activePage))}
           style={{marginBottom: '40px'}}
         />
         </Grid.Column>

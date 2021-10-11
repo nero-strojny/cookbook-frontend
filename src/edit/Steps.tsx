@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Form, TextArea, Grid, Button, Icon } from "semantic-ui-react";
 import { RecipeContext } from "../RecipeContext";
 
-function Steps() {
+function Steps(): JSX.Element {
   const { state, dispatch } = useContext(RecipeContext);
   const { steps: currentSteps } = state;
 
@@ -14,7 +14,7 @@ function Steps() {
               <label>{"Step 1:"}</label>
               <TextArea
                 placeholder="Describe step here..."
-                value={currentSteps.length > 0 ? currentSteps[0] : "" }
+                value={currentSteps.length > 0 ? currentSteps[0].text : "" }
                 onChange={(event) => dispatch({ 
                   type: 'EDIT_STEP',
                   payload: { indexSelected: 0, valueInput: event.target.value }
@@ -32,7 +32,7 @@ function Steps() {
               <label>{`Step ${i+1}:`}</label>
               <TextArea
                 placeholder="Describe step here..."
-                value={currentSteps[i]}
+                value={currentSteps[i].text}
                 onChange={(event) => dispatch({ 
                   type: 'EDIT_STEP',
                   payload: { indexSelected: i, valueInput: event.target.value }
@@ -65,7 +65,7 @@ function Steps() {
         {createSteps()}
         <Grid.Row>
           <Grid.Column>
-            <Button onClick={() => dispatch({ type: 'ADD_STEP' })}>
+            <Button onClick={() => dispatch({ type: 'ADD_STEP', payload: {} })}>
               <Icon name="plus" /> Add Step
             </Button>
           </Grid.Column>

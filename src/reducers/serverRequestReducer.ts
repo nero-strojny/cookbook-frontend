@@ -1,9 +1,12 @@
 import { defaultPaginatedRequest } from "../serviceCalls";
-import { findIndex } from "lodash";
+import { findIndex, get } from "lodash";
+import { ServerState } from "./ServerState";
+import { ServerAction } from "./ServerAction";
+import { Recipe } from "../types/recipe";
 
-export const serverRequestReducer = (state, action) => {
+export const serverRequestReducer = (state: ServerState, action: ServerAction): ServerState => {
   const { payload } = action;
-  let tempBasket;
+  let tempBasket: Recipe[] = [];
   switch (action.type) {
     case "REFRESH_RECIPES":
       return {
@@ -13,14 +16,17 @@ export const serverRequestReducer = (state, action) => {
         basket: [],
       }
     case "ADD_BASKET":
-      tempBasket = [...state.basket];
+      if (payload.basketItem){
+        tempBasket = [...state.basket, payload.basketItem];
+      }
       return {
         ...state,
-        basket: [...tempBasket, payload.basketItem]
+        basket: tempBasket
       }
     case "ADD_ALL_BASKET":
       tempBasket = [...state.basket];
-      const dedup = payload.basketItems.filter(addedBasketItem => {
+      const payloadBasketItems: Recipe[] = payload.basketItems || [];
+      const dedup = payloadBasketItems.filter((addedBasketItem) => {
         const index = findIndex(state.basket, basketItem => addedBasketItem._id === basketItem._id);
         return index === -1;
       })
@@ -30,7 +36,8 @@ export const serverRequestReducer = (state, action) => {
         }
     case "REMOVE_BASKET":
       tempBasket = [...state.basket];
-      const index = findIndex(state.basket, basketItem => payload.basketItem._id === basketItem._id);
+      const basketItemId: string = get(payload, "basketItem._id", "");
+      const index = findIndex(state.basket, basketItem => basketItemId === basketItem._id);
       tempBasket.splice(index, 1);
       return {
         ...state,
@@ -98,14 +105,14 @@ export const serverRequestReducer = (state, action) => {
     case "CLEAR_MESSAGE":
       return {
         ...state, 
-        header: null,
-        messageContent: null
+        header: undefined,
+        messageContent: undefined
       };
     case "LOGIN_SUCCESS":
       return {
         ...state,
-        accessToken: payload.accessToken,
-        userName: payload.userName,
+        accessToken: payload.accessToken || "",
+        userName: payload.userName || "",
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: true,
         currentPage: "viewRecipes",
@@ -126,7 +133,7 @@ export const serverRequestReducer = (state, action) => {
     case "QUERY_RECIPES_PENDING":
       return {
         ...state, 
-        paginatedRequest: payload.paginatedRequest,
+        paginatedRequest: payload.paginatedRequest || defaultPaginatedRequest,
         shouldRefresh: true
       }
     case "QUERY_RECIPES_SUCCESS":

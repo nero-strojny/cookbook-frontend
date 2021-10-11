@@ -1,16 +1,19 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Promise } from "bluebird";
 import { get, set, has } from 'lodash';
+import { NewIngredient } from "./types/ingredient";
+import { PaginatedRequest } from "./types/paginatedRequest";
+import { Recipe } from "./types/recipe";
 
 let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
 // let endpoint = "http://localhost:8080";
 
-export const defaultPaginatedRequest = {
+export const defaultPaginatedRequest: PaginatedRequest = {
   pageSize: 6,
   pageCount: 0
 }
 
-export const login = async (username, password) => {
+export const login = async (username: string, password: string) => {
   return await axios.post(endpoint + "/api/userToken",
   {username, password}, {
     headers: {
@@ -19,8 +22,8 @@ export const login = async (username, password) => {
   });
 }
 
-export const createRecipe = async (recipe, token) => {
-  let response;
+export const createRecipe = async (recipe: Recipe, token: string) => {
+  let response: AxiosResponse;
   try {
     response = await axios.post(endpoint + "/api/recipe", recipe, {
       headers: {
@@ -29,12 +32,12 @@ export const createRecipe = async (recipe, token) => {
       },
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 };
 
-export const getRecipes = async (inputPaginatedRequest, token) =>{
+export const getRecipes = async (inputPaginatedRequest: PaginatedRequest, token: string): Promise<AxiosResponse> =>{
   let response;
   const paginatedRequest = inputPaginatedRequest || defaultPaginatedRequest;
   try {
@@ -45,12 +48,12 @@ export const getRecipes = async (inputPaginatedRequest, token) =>{
     }
   });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 };
 
-export const getRandomRecipes = async (token, numberOfRecipes) =>{
+export const getRandomRecipes = async (token: string, numberOfRecipes: number): Promise<AxiosResponse> =>{
   let response;
   try {
     response = await axios.get(endpoint + `/api/randomRecipe/${numberOfRecipes}`,
@@ -60,12 +63,12 @@ export const getRandomRecipes = async (token, numberOfRecipes) =>{
       }
   });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 };
 
-export const updateRecipe = async (recipeId, recipe, token) => {
+export const updateRecipe = async (recipeId: string, recipe: Recipe, token: string): Promise<AxiosResponse> => {
   await Promise.map(recipe.ingredients, async ingredient => {
     const ingredientResponse = await getIngredient(ingredient._id, token);
     if(has(ingredientResponse, "data.category")){
@@ -81,12 +84,12 @@ export const updateRecipe = async (recipeId, recipe, token) => {
       },
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 };
 
-const getIngredient = async (ingredientId, token) => {
+const getIngredient = async (ingredientId: string, token:string): Promise<AxiosResponse> => {
   let response;
   try {
     response = await axios.get(endpoint + `/api/ingredient/${ingredientId}`, {
@@ -96,12 +99,12 @@ const getIngredient = async (ingredientId, token) => {
       },
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 };
 
-export const deleteRecipe = async (recipeId, token) => {
+export const deleteRecipe = async (recipeId: string, token: string): Promise<AxiosResponse> => {
   let response;
   try {
     response = await axios.delete(endpoint + `/api/recipe/${recipeId}`, {
@@ -111,12 +114,12 @@ export const deleteRecipe = async (recipeId, token) => {
       },
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 };
 
-export const searchRecipe = async (recipe, token) => {
+export const searchRecipe = async (recipe: Recipe, token: string) => {
   let response;
   try {
     response = await axios.post(endpoint + `/api/recipe/search`, {...recipe}, {
@@ -126,12 +129,12 @@ export const searchRecipe = async (recipe, token) => {
       }
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 }
 
-export const createIngredient = async (ingredient, token) => {
+export const createIngredient = async (ingredient: NewIngredient, token: string): Promise<AxiosResponse> => {
   let response;
   try {
     response = await axios.post(endpoint + `/api/ingredient`, {...ingredient}, {
@@ -141,12 +144,12 @@ export const createIngredient = async (ingredient, token) => {
       }
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 }
 
-export const searchIngredient = async (prefix, token) => {
+export const searchIngredient = async (prefix: string, token: string): Promise<AxiosResponse> => {
   let response;
   try {
     response = await axios.get(endpoint + `/api/ingredients?prefixIngredient=${prefix}`, {
@@ -156,22 +159,22 @@ export const searchIngredient = async (prefix, token) => {
       }
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 }
 
-export const emailBasket = async (ingredients, token) => {
+export const emailBasket = async (ingredientStrings: {[category:string]: string[]}, token: string) => {
   let response;
   try {
-    response = await axios.post(endpoint + `/api/basket`, ingredients, {
+    response = await axios.post(endpoint + `/api/basket`, ingredientStrings, {
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       }
     });
   } catch(err) {
-    response = err.response
+    response = get(err, 'response');
   }
   return response
 }

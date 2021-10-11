@@ -3,11 +3,12 @@ import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom'
 import CookbookApp from "./CookbookApp";
 import Login from "./Login";
 import { serverRequestReducer } from './reducers/serverRequestReducer';
+import { initialServerState } from './reducers/ServerState';
 import { ServerRequestContext } from './ServerRequestContext';
 import { defaultPaginatedRequest, getRandomRecipes } from "./serviceCalls";
 
-function App() {
-  const [state, dispatch] = useReducer(serverRequestReducer, {});
+function App(): JSX.Element {
+  const [state, dispatch] = useReducer(serverRequestReducer, initialServerState);
 
   useEffect(() => {
     let isCurrent = true;
@@ -20,7 +21,7 @@ function App() {
           if (response.status === 200) {
             dispatch({ type: 'LOGIN_SUCCESS', payload: { userName: localStorageUserName, accessToken: localStorageAccessToken } });
           } else if(response.status === 401 || response.status === 403) {
-            dispatch({ type: 'LOGOUT_SUCCESS' });
+            dispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
           }
         }
       }

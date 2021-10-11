@@ -3,47 +3,51 @@ import { Grid, Form, Dropdown, Button, Label, Divider, Modal, Message, Transitio
 import { RecipeContext } from "../RecipeContext";
 import { searchIngredient, createIngredient } from "../serviceCalls";
 import { ServerRequestContext } from "../ServerRequestContext";
+import { Ingredient } from "../types/ingredient";
 
-function Ingredients(){
+function Ingredients(): JSX.Element{
   const { dispatch, state } = useContext(RecipeContext);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   const { ingredients: currentIngredients } = state;
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ newName, setNewName ] = useState("");
-  const [ newMeasurement, setNewMeasurement ] = useState("");
-  const [ newAmount, setNewAmount ] = useState(0);
-  const [ selectionOptions, setSelectionOptions ] = useState([]);
-  const [ openModal, setOpenModal ] = useState(false);
-  const [ newIngredientName, setNewIngredientName ] = useState("");
-  const [ newCategory, setNewCategory ] = useState("");
-  const [ successfulPost, setSuccessfulPost ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
+  const [ newName, setNewName ] = useState<string>("");
+  const [ newMeasurement, setNewMeasurement ] = useState<string>("");
+  const [ newAmount, setNewAmount ] = useState<number>(0);
+  const [ selectionOptions, setSelectionOptions ] = useState<Ingredient[]>([]);
+  const [ openModal, setOpenModal ] = useState<boolean>(false);
+  const [ newIngredientName, setNewIngredientName ] = useState<string>("");
+  const [ newCategory, setNewCategory ] = useState<string>("");
+  const [ successfulPost, setSuccessfulPost ] = useState<boolean>(false);
 
   function addIngredient() {
     const selectedOption = selectionOptions.find(option => option.name === newName);
-    dispatch({
-      type:'ADD_INGREDIENT',
-      payload: {
-        ingredient: {
-          name: newName,
-          amount: newAmount,
-          measurement: newMeasurement,
-          _id: selectedOption._id, 
-          category: selectedOption.category
+    if (selectedOption) {
+      dispatch({
+        type:'ADD_INGREDIENT',
+        payload: {
+          ingredient: {
+            name: newName,
+            amount: newAmount,
+            measurement: newMeasurement,
+            _id: selectedOption._id, 
+            category: selectedOption.category
+          }
         }
-      }
-    });
-    setNewName("");
-    setNewMeasurement("");
-    setNewAmount(0);
-    setSelectionOptions([]);
+      });
+      setNewName("");
+      setNewMeasurement("");
+      setNewAmount(0);
+      setSelectionOptions([]);
+    }
   }
 
-  async function submitSearch(prefix) {
+  async function submitSearch(prefix: string) {
+    console.log(prefix);
     if(prefix !== "") {
       setIsLoading(true);
       const response = await searchIngredient(prefix, serverState.accessToken);
       if (response.status === 401 || response.status === 403) {
-        serverDispatch({ type: 'LOGOUT_SUCCESS' });
+        serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       }
       setSelectionOptions(response.data);
       setIsLoading(false);
@@ -52,9 +56,11 @@ function Ingredients(){
 
   async function postNewIngredient() {
     setIsLoading(true);
-    const response = await createIngredient({name: newIngredientName || newName, category: newCategory}, serverState.accessToken);
+    const response = await createIngredient(
+      { name: newIngredientName || newName, category: newCategory},
+    serverState.accessToken);
     if (response.status === 401 || response.status === 403) {
-      serverDispatch({ type: 'LOGOUT_SUCCESS' });
+      serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
     }
     setSelectionOptions([response.data]);
     setSuccessfulPost(true);
@@ -219,13 +225,14 @@ function Ingredients(){
                 selection
                 clearable
                 allowAdditions
-                onChange={(_event, { value }) => setNewName(value)}
+                onChange={(_event, { value }) => setNewName(String(value))}
                 onAddItem={() => setOpenModal(true)}
                 loading={isLoading}
                 options={selectionOptions.map(opt => ({text: opt.name, value: opt.name, key: opt.name}))}
-                onSearchChange={(event) =>
-                  submitSearch(event.target.value)
-                }
+                onSearchChange={(event) => {
+                  const element = event.target as HTMLInputElement
+                  submitSearch(element.value);
+                }}
               />
             </Form.Field>
           </Grid.Column>
