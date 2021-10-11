@@ -4,12 +4,19 @@ import { ServerRequestContext } from "../ServerRequestContext";
 import { deleteRecipe } from "../serviceCalls";
 import { defaultTags } from "../edit/Tags";
 import { findIndex } from "lodash";
+import { Recipe } from "../types/recipe";
+
+type RecipeCardProps = {
+  recipe: Recipe,
+  refreshRecipesAfterDelete: Function,
+  onEditRecipe: Function
+}
 
 function RecipeCard({
   recipe, 
   refreshRecipesAfterDelete, 
   onEditRecipe
- }) {
+ }: RecipeCardProps): JSX.Element {
 
   const {
     recipeName,
@@ -26,27 +33,30 @@ function RecipeCard({
 
   const tags = recipe.tags || [];
 
-  const [stepsVisible, setStepsVisible] = useState(false)
-  const [ingredientsVisible, setIngredientsVisible] = useState(false)
-  const [recipeLoading, setRecipeLoading] = useState(false);
+  const [stepsVisible, setStepsVisible] = useState<boolean>(false)
+  const [ingredientsVisible, setIngredientsVisible] = useState<boolean>(false)
+  const [recipeLoading, setRecipeLoading] = useState<boolean>(false);
 
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
 
   const onDeleteRecipe = async () => {
     setRecipeLoading(true);
-    const response = await deleteRecipe(recipeId, serverState.accessToken);
-    if (response.status === 204) {
-      serverDispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
-      refreshRecipesAfterDelete();
-    } else if (response.status === 401 || response.status === 403) {
-      serverDispatch({ type: 'LOGOUT_SUCCESS' });
-    } else {
-      serverDispatch({ type: 'DELETE_FAILURE' });
+    if (recipeId) {
+      const response = await deleteRecipe(recipeId, serverState.accessToken);
+      if (response.status === 204) {
+        serverDispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
+        refreshRecipesAfterDelete();
+      } else if (response.status === 401 || response.status === 403) {
+        serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+      } else {
+        serverDispatch({ type: 'DELETE_FAILURE', payload: {}  });
+      }
+      setRecipeLoading(false);
+
     }
-    setRecipeLoading(false);
   }
 
-  const getIngredientEntry = (name, amount, measurement) => {
+  const getIngredientEntry = (name: string, amount: number, measurement: string) => {
     if (!measurement && amount) {
       return `${amount} ${name}`;
     } else if (!measurement && !amount) {
@@ -172,7 +182,7 @@ function RecipeCard({
                     Edit
                 </Button>
                 <Button size='mini' color='orange' inverted
-                  onClick={() => onDeleteRecipe(recipe)}>
+                  onClick={() => onDeleteRecipe()}>
                     <Icon name="trash" />
                     Delete
                 </Button></>)
@@ -192,7 +202,7 @@ function RecipeCard({
             </Grid.Column>
             <Grid.Column >
               <Card.Meta textAlign='right'>
-                <div floated='right'>Total Time: {cookTime + prepTime} min</div>
+                <div>Total Time: {cookTime + prepTime} min</div>
                 <div style={{ marginRight: '0.3em' }}>Servings: {servings}</div>
               </Card.Meta>
             </Grid.Column>

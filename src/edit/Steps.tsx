@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Form, TextArea, Grid, Button, Icon } from "semantic-ui-react";
 import { RecipeContext } from "../RecipeContext";
 
-function Steps() {
+function Steps(): JSX.Element {
   const { state, dispatch } = useContext(RecipeContext);
   const { steps: currentSteps } = state;
 

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Transition, Message } from "semantic-ui-react";
 import { ServerRequestContext } from "./ServerRequestContext";
 
-function MessageBar() {
+function MessageBar(): JSX.Element {
   const { state, dispatch } = useContext(ServerRequestContext);
   const { header, messageContent } = state;
   return (

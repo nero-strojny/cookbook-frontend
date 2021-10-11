@@ -23,5 +23,5 @@ export const defaultRecipe: EditRecipeState = {
   cookTime: 0,
   prepTime: 0,
   tags: [],
-  calories: 0
+  calories: 0,
 };

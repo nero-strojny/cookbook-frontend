@@ -4,7 +4,7 @@ import { RecipeContext } from "../RecipeContext";
 
 export const defaultTags = [ "dinner", "lunch", "breakfast", "snack", "side dish", "main dish"];
 
-function Tags() {
+function Tags(): JSX.Element {
     const { state, dispatch } = useContext(RecipeContext);
 
     const currentTags = state.tags || [];

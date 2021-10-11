@@ -3,12 +3,14 @@ import { Input, Icon } from "semantic-ui-react";
 import { defaultTags } from "../edit/Tags";
 import { ServerRequestContext } from "../ServerRequestContext"
 
-function SearchSection({
-  setIsLoading,
-  setCurrentPage
-}) {
+type SearchSectionProps = {
+  setIsLoading: Function,
+  setCurrentPage: Function
+}
+
+function SearchSection({ setIsLoading, setCurrentPage}: SearchSectionProps): JSX.Element {
   
-  const [searchField, setSearchField] = useState("");
+  const [searchField, setSearchField] = useState<string>("");
   const { dispatch: serverDispatch } = useContext(ServerRequestContext);
 
   async function submitSearch() {
@@ -27,7 +29,7 @@ function SearchSection({
     setIsLoading(false);
   }
 
-  async function onInputChange(event) {
+  async function onInputChange(event: React.KeyboardEvent<Input>) {
     if (event.key === 'Enter') {
       await submitSearch();
     }
@@ -39,7 +41,7 @@ function SearchSection({
       placeholder="Search Recipe By Name or By Tag..."
       icon={<Icon name="search" color='orange' inverted circular link onClick={() => submitSearch()} />}
       onChange={(event) => setSearchField(event.target.value)}
-      onKeyPress={async (event) => await onInputChange(event)}
+      onKeyPress={async (event: React.KeyboardEvent<Input>) => await onInputChange(event)}
     />
   );
 }

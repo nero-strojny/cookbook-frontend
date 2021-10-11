@@ -4,19 +4,19 @@ import { Checkbox, Grid, Button, Label, Segment, List } from "semantic-ui-react"
 import { ServerRequestContext } from "../ServerRequestContext";
 import { flatMap, groupBy, findIndex, set } from 'lodash';
 import { emailBasket } from "../serviceCalls";
+import { Ingredient } from "../types/ingredient";
 
+function Basket(): JSX.Element {
+    const { state, dispatch } = useContext(ServerRequestContext);
 
-function Basket() {
-    const { state, dispatch } = useContext(ServerRequestContext)
-
-    const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState([]);
+    const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState<string[]>([]);
     const measurementsToPluralize = ["clove", "cup", "stalk", "slice", "lb"];
     const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
     const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
     const ingredientCategories = ["produce", "protein", "dairy", "pantry", "alcohol"];
 
 
-    function changeIngredientsToNotEmail(ingredientString) {
+    function changeIngredientsToNotEmail(ingredientString: string) {
       let tempArray = [];
       if(ingredientsToNotEmail.includes(ingredientString)){
         tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
@@ -25,7 +25,8 @@ function Basket() {
       }
       setIngredientsToNotEmail(tempArray.concat(ingredientsToNotEmail));
     }
-    function determineIngredientString(sameIngredientList){
+
+    function determineIngredientString(sameIngredientList: Ingredient[]){
       let quantityString = "";
       let addToTaste = false;
 
@@ -73,13 +74,13 @@ function Basket() {
       return `${sameIngredientList[0].name} (${quantityString})`;
     }
 
-    function generateIngredientStrings(categoryName){
+    function generateIngredientStrings(categoryName: string){
       const sameIngredientGroups = groupBy(categoryGroupIngredients[categoryName], ingredient => ingredient._id);
       const sortedIngredientGroup = Object.values(sameIngredientGroups).sort((a,b) => (a[0].name > b[0].name) ? 1 : -1);
       return sortedIngredientGroup.map(sameIngredient => determineIngredientString(sameIngredient));
     }
 
-    function generateBasketRows(categoryName){
+    function generateBasketRows(categoryName: string){
         const ingredientBoxes = generateIngredientStrings(categoryName).map(ingredientString => {
           return (<Grid.Row columns="equal" style={{marginTop:'10px'}}>
             <Grid.Column>
@@ -104,11 +105,11 @@ function Basket() {
         });
         const response = await emailBasket(ingredientObject, state.accessToken)
         if (response.status === 200) {
-            dispatch({ type: 'EMAIL_SUCCESS'});
+            dispatch({ type: 'EMAIL_SUCCESS', payload: {}});
         } else if (response.status === 401 || response.status === 403) {
-            dispatch({ type: 'LOGOUT_SUCCESS' });
+            dispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
         } else {
-            dispatch({ type: 'EMAIL_FAILURE' });
+            dispatch({ type: 'EMAIL_FAILURE', payload: {} });
         }
     }
 
@@ -167,7 +168,7 @@ function Basket() {
             (<>
               <Grid.Row>
                 <Grid.Column>
-                  <Button color="orange" inverted onClick={() => dispatch({ type: 'EMPTY_BASKET' })}>
+                  <Button color="orange" inverted onClick={() => dispatch({ type: 'EMPTY_BASKET', payload: {} })}>
                     {`Empty Basket`}
                     </Button>
                 </Grid.Column>

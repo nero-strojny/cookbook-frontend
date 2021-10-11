@@ -4,11 +4,11 @@ import { login } from "./serviceCalls";
 import { get } from 'lodash';
 import { ServerRequestContext } from './ServerRequestContext';
 
-function Login() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState(false);
+function Login(): JSX.Element {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [password, setPassword] = useState<string>("");
+  const [username, setUsername] = useState<string>("");
+  const [error, setError] = useState<boolean>(false);
   
   const { dispatch: serverDispatch } = useContext(ServerRequestContext);
 

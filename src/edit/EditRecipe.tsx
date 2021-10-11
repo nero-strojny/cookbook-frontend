@@ -15,8 +15,8 @@ type EditRecipeProps = {
   inputtedRecipe: Recipe
 }
 
-function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps) {
-  const [isLoading, setIsLoading] = useState(false);
+function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.Element {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   const [state, dispatch] = useReducer(editRecipeReducer, {
     ...defaultRecipe,
@@ -24,7 +24,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps) {
   });
 
   const submitRecipe = async () => {
-    const submittedRecipe = {
+    const submittedRecipe: Recipe = {
       ...state,
       userName: serverState.userName,
     };

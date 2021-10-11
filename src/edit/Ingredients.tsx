@@ -5,19 +5,19 @@ import { searchIngredient, createIngredient } from "../serviceCalls";
 import { ServerRequestContext } from "../ServerRequestContext";
 import { Ingredient } from "../types/ingredient";
 
-function Ingredients(){
+function Ingredients(): JSX.Element{
   const { dispatch, state } = useContext(RecipeContext);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   const { ingredients: currentIngredients } = state;
-  const [ isLoading, setIsLoading ] = useState(false);
-  const [ newName, setNewName ] = useState("");
-  const [ newMeasurement, setNewMeasurement ] = useState("");
-  const [ newAmount, setNewAmount ] = useState(0);
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
+  const [ newName, setNewName ] = useState<string>("");
+  const [ newMeasurement, setNewMeasurement ] = useState<string>("");
+  const [ newAmount, setNewAmount ] = useState<number>(0);
   const [ selectionOptions, setSelectionOptions ] = useState<Ingredient[]>([]);
-  const [ openModal, setOpenModal ] = useState(false);
-  const [ newIngredientName, setNewIngredientName ] = useState("");
-  const [ newCategory, setNewCategory ] = useState("");
-  const [ successfulPost, setSuccessfulPost ] = useState(false);
+  const [ openModal, setOpenModal ] = useState<boolean>(false);
+  const [ newIngredientName, setNewIngredientName ] = useState<string>("");
+  const [ newCategory, setNewCategory ] = useState<string>("");
+  const [ successfulPost, setSuccessfulPost ] = useState<boolean>(false);
 
   function addIngredient() {
     const selectedOption = selectionOptions.find(option => option.name === newName);
