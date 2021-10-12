@@ -44,12 +44,16 @@ function RecipeCard({
     if (recipeId) {
       const response = await deleteRecipe(recipeId, serverState.accessToken);
       if (response.status === 204) {
-        serverDispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
+        serverDispatch({ type: 'SHOW_MESSAGE',
+          payload: { messageContent: `Recipe, "${recipe.recipeName}", has been deleted`, success: true }
+        });
         refreshRecipesAfterDelete();
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       } else {
-        serverDispatch({ type: 'DELETE_FAILURE', payload: {}  });
+        serverDispatch({ type: 'SHOW_MESSAGE',
+          payload: { messageContent: `There was an error in deleting the recipe`, success: false }
+        });
       }
       setRecipeLoading(false);
 

@@ -65,7 +65,7 @@ export const getRandomRecipes = async (token: string, numberOfRecipes: number): 
   } catch(err) {
     response = get(err, 'response');
   }
-  return response
+  return response;
 };
 
 export const updateRecipe = async (recipeId: string, recipe: Recipe, token: string): Promise<AxiosResponse> => {
@@ -118,21 +118,6 @@ export const deleteRecipe = async (recipeId: string, token: string): Promise<Axi
   }
   return response
 };
-
-export const searchRecipe = async (recipe: Recipe, token: string) => {
-  let response;
-  try {
-    response = await axios.post(endpoint + `/api/recipe/search`, {...recipe}, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      }
-    });
-  } catch(err) {
-    response = get(err, 'response');
-  }
-  return response
-}
 
 export const createIngredient = async (ingredient: NewIngredient, token: string): Promise<AxiosResponse> => {
   let response;

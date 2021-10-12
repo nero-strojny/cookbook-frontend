@@ -34,6 +34,13 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         ...state,
         basket: tempBasket.concat(dedup)
         }
+    case "ADD_ALL_CALENDAR":
+      return {
+        ...state,
+        calendarRecipes: payload.calendarRecipes,
+        header: 'Success!',
+        messageContent: `Your Calendar Has Been Saved For This Session!`,
+        }
     case "REMOVE_BASKET":
       tempBasket = [...state.basket];
       const basketItemId: string = get(payload, "basketItem._id", "");
@@ -48,56 +55,11 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         ...state,
         basket: []
       }
-    case "CREATE_SUCCESS":
+    case "SHOW_MESSAGE":
       return {
         ...state,
-        header: 'Success!',
-        messageContent: `Recipe, "${payload.recipeName}", has been created`,
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes"
-      }
-    case "EDIT_SUCCESS":
-      return {
-        ...state,
-        header: 'Success!',
-        messageContent: `Recipe, "${payload.recipeName}", has been edited`,
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes"
-      }
-    case "DELETE_SUCCESS":
-      return {
-        ...state,
-        header: 'Success!',
-        messageContent: `Recipe, "${payload.recipeName}", has been deleted`,
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes"
-      }
-    case "CREATE_FAILURE":
-      return {
-        ...state,
-        header: 'Error',
-        messageContent: `There was an error in creating a new recipe`,
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes"
-      }
-    case "EDIT_FAILURE":
-      return {
-        ...state,
-        header: 'Error',
-        messageContent: `There was an error in editing a new recipe`,
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes"
-      }
-    case "DELETE_FAILURE":
-      return {
-        ...state,
-        header: 'Error!',
-        messageContent: `There was an error in deleting a new recipe`,
+        header: payload.success ? "Success!": "Error",
+        messageContent: payload.messageContent,
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: true,
         currentPage: "viewRecipes"
@@ -134,7 +96,8 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
       return {
         ...state, 
         paginatedRequest: payload.paginatedRequest || defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes",
       }
     case "QUERY_RECIPES_SUCCESS":
       return {
@@ -150,21 +113,11 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         recipes: [],
         numberOfRecipes: 1
       }
-    case "SWITCH_TO_BASKET":
+    case "SWITCH_TO_PAGE":
       return {
         ...state,
-        currentPage: "basket",
-      }
-    case "SWITCH_TO_RECIPES":
-      return {
-        ...state,
-        currentPage: "viewRecipes",
+        currentPage: payload.currentPage || "viewRecipes",
         shouldRefresh: true
-      }
-    case "SWITCH_TO_EDIT":
-      return {
-        ...state,
-        currentPage: "editRecipes"
       }
     case "EMAIL_SUCCESS":
       return {

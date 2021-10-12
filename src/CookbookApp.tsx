@@ -8,6 +8,7 @@ import { ServerRequestContext } from "./ServerRequestContext";
 import Basket from "./basket/Basket";
 import { defaultRecipe } from "./reducers/EditRecipeState"
 import { Recipe } from "./types/recipe";
+import Calendar from "./calendar/Calendar";
 
 function CookbookApp(): JSX.Element {
   const [width, setWidth] = useState<number>(window.innerWidth);
@@ -42,11 +43,11 @@ function CookbookApp(): JSX.Element {
       case "viewRecipes": 
         return (<ViewRecipes
           onCreateRecipe={() => {
-            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
+            dispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "editRecipes" } });
             setRecipeToEdit({...defaultRecipe, userName: state.userName });
           }}
           onEditRecipe={(recipe: React.SetStateAction<Recipe>) => {
-            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
+            dispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "editRecipes" } });
             setRecipeToEdit(recipe);
           }}
           width={width}
@@ -61,14 +62,18 @@ function CookbookApp(): JSX.Element {
           return (
             <Basket />
           );
+      case "calendar": 
+        return (
+          <Calendar width={width} />
+        );
       default:
         return( <ViewRecipes
           onCreateRecipe={() => {
-            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
+            dispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "editRecipes" } });
             setRecipeToEdit({...defaultRecipe, userName: state.userName });
           }}
           onEditRecipe={(recipe: React.SetStateAction<Recipe>) => {
-            dispatch({ type: 'SWITCH_TO_EDIT', payload: {} });
+            dispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "editRecipes" } });
             setRecipeToEdit(recipe);
           }}
           width={width}
@@ -78,7 +83,7 @@ function CookbookApp(): JSX.Element {
 
   return (
       <>
-      <Header styleValue={"orangeMenuStyle"} width={width}/>
+      <Header/>
       <MessageBar />
       {returnPage()}
     </>
