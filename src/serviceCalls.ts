@@ -3,6 +3,7 @@ import { Promise } from "bluebird";
 import { get, set, has } from 'lodash';
 import { NewIngredient } from "./types/ingredient";
 import { PaginatedRequest } from "./types/paginatedRequest";
+import { QueryRecipe } from "./types/queryRecipe";
 import { Recipe } from "./types/recipe";
 
 let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
@@ -65,7 +66,7 @@ export const getRandomRecipes = async (token: string, numberOfRecipes: number): 
   } catch(err) {
     response = get(err, 'response');
   }
-  return response
+  return response;
 };
 
 export const updateRecipe = async (recipeId: string, recipe: Recipe, token: string): Promise<AxiosResponse> => {
@@ -119,7 +120,7 @@ export const deleteRecipe = async (recipeId: string, token: string): Promise<Axi
   return response
 };
 
-export const searchRecipe = async (recipe: Recipe, token: string) => {
+export const searchRecipe = async (recipe: QueryRecipe, token: string) => {
   let response;
   try {
     response = await axios.post(endpoint + `/api/recipe/search`, {...recipe}, {

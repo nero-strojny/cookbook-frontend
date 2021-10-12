@@ -1,54 +1,46 @@
 import React, { useContext } from 'react'
-import { Icon, Button, Grid } from "semantic-ui-react";
+import { Icon, Button, Grid, Menu } from "semantic-ui-react";
 import { ServerRequestContext } from "./ServerRequestContext"
 
-type HeaderProps = {
-  styleValue: string;
-  width: number;
-}
-
-function Header({ styleValue, width }: HeaderProps): JSX.Element {
-  
+function Header(): JSX.Element {
   const { dispatch: serverDispatch, state } = useContext(ServerRequestContext);
-
-  // align different depending on the screen size
-  const textAlignSetting = width < 768 ? 'left' : 'right';
+  const activeItem = state.currentPage;
 
   return (
-      <Grid className={styleValue} style={{marginBottom:'15px', padding: '10px'}} stackable>
-        <Grid.Row>
-          <Grid.Column width={8}>
-          <div
-            className="headerTitleStyle">
-            <Icon name="food" size="small" />
-            TastyBoi
-          </div>
-          </Grid.Column>
-          <Grid.Column width={8} textAlign={textAlignSetting}>
-            <Button inverted onClick={() => serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} })}>
-                <Icon name="log out" />
-                Log-out
-            </Button>
-            {
-              state.currentPage === "basket" ?
-              (
-                <Button inverted onClick={() => serverDispatch({ type: 'SWITCH_TO_RECIPES', payload: {} })}>
-                  <Icon name="list alternate outline" />
-                  View Recipes
-                </Button>
-              ) :
-              (
-                <Button inverted onClick={() => serverDispatch({ type: 'SWITCH_TO_BASKET', payload: {} })}>
-                  <Icon name="shopping basket" />
-                  Basket
-                  { state.basket && state.basket.length > 0 && ` (${state.basket.length})`}
-                </Button>
-              )
-            }
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-
+  <Menu inverted color="orange" icon='labeled' stackable>
+    <Menu.Item
+      onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "viewRecipes" } })}
+    >
+      <h1 style={{fontFamily:'Marck Script'}}><Icon name="food" size="small" />TastyBoi</h1>
+    </Menu.Item>
+    <Menu.Menu position='right' icon='labeled'>
+      <Menu.Item
+        name='basket'
+        active={activeItem === 'basket'}
+        onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "basket" } })}
+      >
+        <Icon name="shopping basket" size="small" />
+        Basket
+        { state.basket && state.basket.length > 0 && ` (${state.basket.length})`}   
+      </Menu.Item>
+      <Menu.Item
+        name='calendar'
+        active={activeItem === 'calendar'}
+        onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "calendar" } })}
+      >
+        <Icon name="calendar alternate outline" size="small" />
+        Calendar
+      </Menu.Item>
+      <Menu.Item
+        name='logout'
+        active={activeItem === 'logout'}
+        onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "viewRecipes" } })}
+      >
+        <Icon name="log out" size="small" />
+        Logout
+      </Menu.Item>
+    </Menu.Menu>
+  </Menu>
   )
 }
 

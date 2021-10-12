@@ -42,7 +42,6 @@ function Ingredients(): JSX.Element{
   }
 
   async function submitSearch(prefix: string) {
-    console.log(prefix);
     if(prefix !== "") {
       setIsLoading(true);
       const response = await searchIngredient(prefix, serverState.accessToken);

@@ -33,21 +33,29 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
     if (inputtedRecipe._id) {
       const response = await updateRecipe(inputtedRecipe._id, submittedRecipe, serverState.accessToken);
       if (response.status === 200) {
-        serverDispatch({ type: 'EDIT_SUCCESS', payload: { recipeName: state.recipeName } });
+        serverDispatch({ type: 'SHOW_MESSAGE',
+          payload: { messageContent: `Recipe, "${state.recipeName}", has been edited`, success: true }
+        });
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       } else {
-        serverDispatch({ type: 'EDIT_FAILURE', payload: {} });
+        serverDispatch({ type: 'SHOW_MESSAGE',
+          payload: { messageContent: `There was an error in editing the recipe`, success: false }
+        });
       }
     } else {
       const response = await createRecipe(submittedRecipe, serverState.accessToken);
       if (response.status === 201) {
-        serverDispatch({ type: 'CREATE_SUCCESS', payload: { recipeName: state.recipeName } });
+        serverDispatch({ type: 'SHOW_MESSAGE',
+          payload: { messageContent: `Recipe, "${state.recipeName}", has been created`, success: true }
+        });
         onSuccessfulCreate(state.recipeName);
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       } else {
-        serverDispatch({ type: 'CREATE_FAILURE', payload: {} });
+        serverDispatch({ type: 'SHOW_MESSAGE',
+          payload: { messageContent: `There was an error in creating a new recipe`, success: false }
+        });
       }
     }
   };
@@ -60,7 +68,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
             <h1> Edit Recipe</h1>
           </Grid.Column>
           <Grid.Column textAlign="right">
-            <Button inverted color="orange" onClick={() => serverDispatch({ type: 'SWITCH_TO_RECIPES', payload: {} })}>
+            <Button inverted color="orange" onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "viewRecipes" } })}>
               Back to My Recipes
             </Button>
           </Grid.Column>

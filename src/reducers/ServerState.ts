@@ -10,6 +10,7 @@ export interface ServerState {
   currentPage: string;
   basket: Recipe[];
   recipes?: Recipe[];
+  calendarRecipes?: Recipe[];
   numberOfRecipes?: number;
   header?: string;
   messageContent?: string;
@@ -23,4 +24,5 @@ export const initialServerState: ServerState = {
   currentPage: "viewRecipes",
   basket: [],
   recipes: [],
+  calendarRecipes: [],
 }
