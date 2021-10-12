@@ -3,7 +3,6 @@ import { Promise } from "bluebird";
 import { get, set, has } from 'lodash';
 import { NewIngredient } from "./types/ingredient";
 import { PaginatedRequest } from "./types/paginatedRequest";
-import { QueryRecipe } from "./types/queryRecipe";
 import { Recipe } from "./types/recipe";
 
 let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
