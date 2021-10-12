@@ -173,9 +173,8 @@ function Calendar({ width }: CalendarProps) {
       const loadingRecipe = (isLoading && currentEditCard === i) || !recipes.length;
       dayCards.push(
       <Card
-        onClick={()=>setCurrentEditCard(i)}
         link>
-        <Card.Content>
+        <Card.Content onClick={()=>setCurrentEditCard(i)}>
           <Card.Header>{currentDay.weekdayLong}</Card.Header>
           <Card.Meta>{currentDay.toLocaleString(DateTime.DATE_FULL)}</Card.Meta>
           <Card.Description>
@@ -191,6 +190,22 @@ function Calendar({ width }: CalendarProps) {
               </Label>
             }
           </Card.Description>
+        </Card.Content>
+        <Card.Content extra>
+          <Button
+            loading={isLoading}
+            basic
+            onClick={() => serverDispatch({
+              type: 'QUERY_RECIPES_PENDING',
+              payload: { 
+                paginatedRequest: {
+                  pageSize: 1, pageCount: 0,
+                  queryRecipe: {recipeName: recipes[i].recipeName}
+                }
+              }})}
+          >
+            View Recipe
+          </Button>
         </Card.Content>
       </Card>);
       currentDay = currentDay.plus({ days: 1 });

@@ -96,7 +96,8 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
       return {
         ...state, 
         paginatedRequest: payload.paginatedRequest || defaultPaginatedRequest,
-        shouldRefresh: true
+        shouldRefresh: true,
+        currentPage: "viewRecipes",
       }
     case "QUERY_RECIPES_SUCCESS":
       return {
