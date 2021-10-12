@@ -1,9 +1,6 @@
-import React, { useState, useContext } from "react";
-import { List, Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react";
-import { ServerRequestContext } from "../ServerRequestContext";
-import { deleteRecipe } from "../serviceCalls";
+import React, {  } from "react";
+import { Card, Grid, Loader, Label } from "semantic-ui-react";
 import { defaultTags } from "../edit/Tags";
-import { findIndex } from "lodash";
 import { Recipe } from "../types/recipe";
 
 type RecipeCardProps = {

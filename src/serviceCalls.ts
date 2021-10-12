@@ -120,21 +120,6 @@ export const deleteRecipe = async (recipeId: string, token: string): Promise<Axi
   return response
 };
 
-export const searchRecipe = async (recipe: QueryRecipe, token: string) => {
-  let response;
-  try {
-    response = await axios.post(endpoint + `/api/recipe/search`, {...recipe}, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      }
-    });
-  } catch(err) {
-    response = get(err, 'response');
-  }
-  return response
-}
-
 export const createIngredient = async (ingredient: NewIngredient, token: string): Promise<AxiosResponse> => {
   let response;
   try {

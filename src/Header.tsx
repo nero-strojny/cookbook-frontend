@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Icon, Button, Grid, Menu } from "semantic-ui-react";
+import { Icon, Menu } from "semantic-ui-react";
 import { ServerRequestContext } from "./ServerRequestContext"
 
 function Header(): JSX.Element {

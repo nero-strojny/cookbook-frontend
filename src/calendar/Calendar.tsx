@@ -3,7 +3,7 @@ import { Card, Grid, Button, Label, Loader, SemanticWIDTHSNUMBER, Divider, Dropd
 import { DateTime } from "luxon";
 import { Recipe } from "../types/recipe";
 import { ServerRequestContext } from "../ServerRequestContext";
-import { getRandomRecipes, getRecipes, searchRecipe } from "../serviceCalls";
+import { getRandomRecipes, getRecipes } from "../serviceCalls";
 import SimplifiedRecipeCard from "../view/SimplifiedRecipeCard";
 
 type CalendarProps = {
@@ -49,7 +49,7 @@ function Calendar({ width }: CalendarProps) {
     return () => {
       isCurrent = false;
     }
-  }, []);
+  });
 
   async function submitSearch(prefix: string) {
     if(prefix !== "") {
