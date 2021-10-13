@@ -116,11 +116,11 @@ function Calendar({ width }: CalendarProps) {
     const loadingRecipe = isLoading || !recipes.length;
     const showRecipeDetails = currentDayRecipe.recipeName !== defaultRecipeName;
     return (
-      <Card>
+      <Card fluid>
         <Card.Content>
           <Card.Header>{chosenDay.weekdayLong}</Card.Header>
           <Card.Meta>{chosenDay.toLocaleString(DateTime.DATE_FULL)}</Card.Meta>
-          <Card.Description style={{margin:'40px'}}>
+          <Card.Description style={{margin:'10px 4em'}}>
             <SimplifiedRecipeCard recipe={currentDayRecipe} showRecipeDetails={showRecipeDetails} loading={loadingRecipe}/>
           </Card.Description>
         </Card.Content>
@@ -145,8 +145,6 @@ function Calendar({ width }: CalendarProps) {
                 loading={isLoading}
                 onClick={()=>searchAndSetRecipe()}
               >Set Recipe</Button>
-            </Grid.Row>
-            <Grid.Row centered>
               <Button 
                 color='orange'
                 loading={isLoading}
@@ -214,21 +212,6 @@ function Calendar({ width }: CalendarProps) {
   }
 
   return <Grid padding>
-    <Grid.Row style={{margin: '15px'}}>
-      <Grid.Column>
-        <Card.Group itemsPerRow={cardsPerRow}>
-          { createDayCards() }
-        </Card.Group>
-      </Grid.Column>
-    </Grid.Row>
-    <Divider />
-    <Grid.Row>
-      <Grid.Column>
-        <Card.Group centered itemsPerRow={3}>
-          { createEditCard() }
-        </Card.Group>
-      </Grid.Column>
-    </Grid.Row>
     <Grid.Row style={{textAlign: 'right', marginRight: '15px'}}>
       <Grid.Column>
         <Button 
@@ -240,10 +223,24 @@ function Calendar({ width }: CalendarProps) {
         <Button
           color='orange'
           onClick={() => serverDispatch({ type: 'ADD_ALL_CALENDAR', payload: { calendarRecipes: recipes } })}
-        
         >
           Save Calendar
         </Button>
+      </Grid.Column>
+    </Grid.Row>
+    <Grid.Row style={{margin:'0px 2em'}}>
+      <Grid.Column>
+        <Card.Group itemsPerRow={cardsPerRow}>
+          { createDayCards() }
+        </Card.Group>
+      </Grid.Column>
+    </Grid.Row>
+    <Divider />
+    <Grid.Row style={{margin:'0px 8em'}}>
+      <Grid.Column>
+        <Card.Group centered>
+          { createEditCard() }
+        </Card.Group>
       </Grid.Column>
     </Grid.Row>
   </Grid>
