@@ -22,9 +22,10 @@ function SimplifiedRecipeCard({
     prepTime,
     author,
     calories,
-    tags,
     servings,
   } = recipe;
+
+  const tags = recipe.tags || [];
 
   return (
     <Card fluid>
