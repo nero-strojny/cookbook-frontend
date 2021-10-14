@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { ServerAction } from './reducers/ServerAction';
-import { initialServerState, ServerState } from './reducers/ServerState';
+import { ServerAction } from '../reducers/ServerAction';
+import { initialServerState, ServerState } from '../reducers/ServerState';
 
 export const ServerRequestContext = createContext<{
   state: ServerState;

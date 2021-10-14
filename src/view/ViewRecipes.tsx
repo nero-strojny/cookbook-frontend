@@ -1,24 +1,20 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Grid, Button, Icon, Card, Transition, Loader, Pagination, SemanticWIDTHSNUMBER } from "semantic-ui-react";
+import { Grid, Button, Card, Transition, Loader, Pagination, SemanticWIDTHSNUMBER } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
 import { getRecipes, getRandomRecipes, defaultPaginatedRequest } from "../serviceCalls";
 import SearchSection from "./SearchSection";
-import { ServerRequestContext } from "../ServerRequestContext";
+import { ServerRequestContext } from "../context/ServerRequestContext";
 import { get } from 'lodash';
 
 type ViewRecipesProps = {
-  onCreateRecipe: Function, 
-  onEditRecipe: Function,
   width: number
 }
 
-function ViewRecipes({
-  onCreateRecipe,
-  onEditRecipe,
+const ViewRecipes = ({
   width
-}: ViewRecipesProps): JSX.Element {
+}: ViewRecipesProps): JSX.Element => {
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorState, setErrorState] = useState<string>("");
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   
@@ -62,18 +58,12 @@ function ViewRecipes({
     }
   }, [currentPage, serverState.accessToken, serverDispatch, serverState.shouldRefresh, serverState.paginatedRequest]);
 
-
-  function refreshRecipesAfterDelete() {
-    setIsLoading(true);
-    serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: defaultPaginatedRequest } });
-  }
-
-  function refreshAndClearError(){
+  const refreshAndClearError = () => {
     setErrorState("");
     serverDispatch({ type: 'QUERY_RECIPES_PENDING', payload: { paginatedRequest: defaultPaginatedRequest } });
   }
 
-  async function generateRandomRecipes() {
+  const generateRandomRecipes = async() => {
     setIsLoading(true);
     const response = await getRandomRecipes(serverState.accessToken, PAGESIZE);
     if (response.status === 200 ) {
@@ -88,7 +78,7 @@ function ViewRecipes({
     setIsLoading(false);
   }
 
-  async function switchPage(activePage: number | undefined){
+  const switchPage = async (activePage: number | undefined) =>{
     if (activePage) {
       setCurrentPage(activePage);
       serverDispatch({
@@ -104,24 +94,14 @@ function ViewRecipes({
     }
   }
 
-  if (!serverState.recipes || !serverState.recipes.length) {
-    return <></>;
-  }
-
   return (
     <Grid padded>
       <Grid.Row columns="equal">
-        <Grid.Column width={10}>
+        <Grid.Column>
           <SearchSection
             setIsLoading={setIsLoading}
             setCurrentPage={setCurrentPage}
           />
-        </Grid.Column>
-        <Grid.Column textAlign="right" width={6}>
-          <Button color="orange" onClick={() => onCreateRecipe()}>
-            <Icon name="plus" />
-            New Recipe
-          </Button>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
@@ -174,11 +154,9 @@ function ViewRecipes({
               <Transition.Group
                 duration={1500}
               >
-                {serverState.recipes.map((r) => (
+                {serverState.recipes && serverState.recipes.map((r) => (
                   <RecipeCard
                     recipe={r}
-                    refreshRecipesAfterDelete={refreshRecipesAfterDelete}
-                    onEditRecipe={onEditRecipe}
                     key={"recipeCard" + r._id}
                   />
                 ))}

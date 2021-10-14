@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { Icon, Label, Header } from "semantic-ui-react";
-import { RecipeContext } from "../RecipeContext";
+import { RecipeContext } from "../context/RecipeContext";
 
 export const defaultTags = [ "dinner", "lunch", "breakfast", "snack", "side dish", "main dish"];
 
-function Tags(): JSX.Element {
+const Tags = (): JSX.Element => {
     const { state, dispatch } = useContext(RecipeContext);
 
     const currentTags = state.tags || [];

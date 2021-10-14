@@ -2,13 +2,16 @@ import React, { useState, useContext } from "react";
 import { Card, Form, Transition, Message } from "semantic-ui-react";
 import { login } from "./serviceCalls";
 import { get } from 'lodash';
-import { ServerRequestContext } from './ServerRequestContext';
+import { ServerRequestContext } from './context/ServerRequestContext';
+import { useHistory } from 'react-router-dom'
 
-function Login(): JSX.Element {
+const Login = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [password, setPassword] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [error, setError] = useState<boolean>(false);
+
+  let history = useHistory();
   
   const { dispatch: serverDispatch } = useContext(ServerRequestContext);
 
@@ -21,6 +24,7 @@ function Login(): JSX.Element {
         localStorage.setItem('userName', username);
         setError(false)
         serverDispatch({ type: 'LOGIN_SUCCESS', payload: { userName: username, accessToken: response.data.accessToken } });
+        history.push("/viewRecipes");
       } else {
         setError(true)
       }

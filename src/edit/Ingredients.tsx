@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import { Grid, Form, Dropdown, Button, Label, Divider, Modal, Message, Transition } from "semantic-ui-react";
-import { RecipeContext } from "../RecipeContext";
+import { RecipeContext } from "../context/RecipeContext";
 import { searchIngredient, createIngredient } from "../serviceCalls";
-import { ServerRequestContext } from "../ServerRequestContext";
+import { ServerRequestContext } from "../context/ServerRequestContext";
 import { Ingredient } from "../types/ingredient";
 
-function Ingredients(): JSX.Element{
+const Ingredients = (): JSX.Element => {
   const { dispatch, state } = useContext(RecipeContext);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
   const { ingredients: currentIngredients } = state;
@@ -19,7 +19,7 @@ function Ingredients(): JSX.Element{
   const [ newCategory, setNewCategory ] = useState<string>("");
   const [ successfulPost, setSuccessfulPost ] = useState<boolean>(false);
 
-  function addIngredient() {
+  const addIngredient = () => {
     const selectedOption = selectionOptions.find(option => option.name === newName);
     if (selectedOption) {
       dispatch({
@@ -41,7 +41,7 @@ function Ingredients(): JSX.Element{
     }
   }
 
-  async function submitSearch(prefix: string) {
+  const submitSearch = async (prefix: string) => {
     if(prefix !== "") {
       setIsLoading(true);
       const response = await searchIngredient(prefix, serverState.accessToken);
@@ -53,7 +53,7 @@ function Ingredients(): JSX.Element{
     }
   }
 
-  async function postNewIngredient() {
+  const postNewIngredient = async () => {
     setIsLoading(true);
     const response = await createIngredient(
       { name: newIngredientName || newName, category: newCategory},
@@ -66,7 +66,7 @@ function Ingredients(): JSX.Element{
     setIsLoading(false);
   }
 
-  function createIngredients() {
+  const createIngredients = () => {
     let ingredientInputs = [
       <Grid.Row columns="equal" key="ingredient">
         <Grid.Column width={1}>

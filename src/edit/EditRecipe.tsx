@@ -1,28 +1,56 @@
-import React, { useState, useContext, useReducer } from "react";
-import { Form, Divider, Grid, Button, Card } from "semantic-ui-react";
+import React, { useState, useContext, useReducer, useEffect } from "react";
+import { Form, Divider, Grid, Card } from "semantic-ui-react";
 import Steps from "./Steps";
 import Tags from "./Tags";
 import Ingredients from "./Ingredients";
-import { createRecipe, updateRecipe } from "../serviceCalls";
-import { ServerRequestContext } from "../ServerRequestContext";
-import { RecipeContext } from "../RecipeContext";
+import { createRecipe, getRecipe, updateRecipe } from "../serviceCalls";
+import { ServerRequestContext } from "../context/ServerRequestContext";
+import { RecipeContext } from "../context/RecipeContext";
 import { editRecipeReducer } from "../reducers/editRecipeReducer";
 import { Recipe } from "../types/recipe";
-import { defaultRecipe } from "../reducers/EditRecipeState";
+import { defaultRecipe, defaultRecipeState } from "../reducers/EditRecipeState";
+import { useHistory } from "react-router-dom";
 
-type EditRecipeProps = {
-  onSuccessfulCreate: Function;
-  inputtedRecipe: Recipe
-}
-
-function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.Element {
+const EditRecipe = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingRecipe, setLoadingRecipe] = useState<boolean>(true);
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
-  const [state, dispatch] = useReducer(editRecipeReducer, {
-    ...defaultRecipe,
-    ...inputtedRecipe
-  });
+  const [state, dispatch] = useReducer(editRecipeReducer, defaultRecipeState);
+  const history = useHistory();
+  const currentPath = history.location.pathname;
 
+  useEffect(() => {
+    let isCurrent = true;
+    (async () => {
+      if (isCurrent) {
+        if (currentPath.includes("editRecipes")) {
+          const recipeId = currentPath.substring(currentPath.lastIndexOf('/') + 1);
+          if(recipeId === "editRecipes") {
+            dispatch({type: "SET_RECIPE", payload: {...defaultRecipe}});
+          } else {
+            setLoadingRecipe(true);
+            const response = await getRecipe(recipeId, serverState.accessToken);
+            if (response.status === 200) {
+              dispatch({type: "SET_RECIPE", payload: {...response.data}});
+            } else if (response.status === 401 || response.status === 403) {
+              serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+            } else {
+              serverDispatch({ type: 'SHOW_MESSAGE',
+                payload: { messageContent: `There was an error retrieving the recipe`, success: false }
+              });
+              history.push("/viewRecipes");
+            }
+          }
+          setLoadingRecipe(false);
+        }
+      }
+    })();
+    return () => {
+      isCurrent = false
+    }
+  }, [currentPath, history, serverDispatch, serverState.accessToken]);
+
+  
   const submitRecipe = async () => {
     const submittedRecipe: Recipe = {
       ...state,
@@ -30,12 +58,13 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
     };
 
     setIsLoading(true);
-    if (inputtedRecipe._id) {
-      const response = await updateRecipe(inputtedRecipe._id, submittedRecipe, serverState.accessToken);
+    if (state._id) {
+      const response = await updateRecipe(state._id, submittedRecipe, serverState.accessToken);
       if (response.status === 200) {
         serverDispatch({ type: 'SHOW_MESSAGE',
           payload: { messageContent: `Recipe, "${state.recipeName}", has been edited`, success: true }
         });
+        history.push('/viewRecipes');
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       } else {
@@ -49,7 +78,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
         serverDispatch({ type: 'SHOW_MESSAGE',
           payload: { messageContent: `Recipe, "${state.recipeName}", has been created`, success: true }
         });
-        onSuccessfulCreate(state.recipeName);
+        history.push('/viewRecipes');
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       } else {
@@ -62,15 +91,11 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
 
   return (
     <RecipeContext.Provider value={{state, dispatch}}>
+      {!loadingRecipe && 
       <Grid padded>
         <Grid.Row columns="equal">
           <Grid.Column>
             <h1> Edit Recipe</h1>
-          </Grid.Column>
-          <Grid.Column textAlign="right">
-            <Button inverted color="orange" onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "viewRecipes" } })}>
-              Back to My Recipes
-            </Button>
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
@@ -90,7 +115,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
                           <label>Recipe Name</label>
                           <input
                             placeholder="Recipe Name"
-                            defaultValue={inputtedRecipe.recipeName}
+                            value={state.recipeName}
                             onChange={(event) =>
                               dispatch({ type: 'EDIT_NAME', payload: { recipeName: event.target.value } })
                             }
@@ -104,7 +129,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
                           <label>Author</label>
                           <input
                             placeholder="Author"
-                            defaultValue={inputtedRecipe.author}
+                            value={state.author}
                             onChange={(event) =>
                               dispatch({ type: 'EDIT_AUTHOR', payload: { author: event.target.value } })
                             }
@@ -115,9 +140,8 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
                         <Form.Field>
                           <label>Calories Per Serving</label>
                           <input
-                            type="number"
                             placeholder="kCal/serving"
-                            defaultValue={inputtedRecipe.calories}
+                            value={state.calories}
                             onChange={(event) =>
                               dispatch({ type: 'EDIT_CALORIES', payload: { calories: Number(event.target.value) } })
                             }
@@ -130,8 +154,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
                         <Form.Field>
                           <label>Prep Time (min)</label>
                           <input
-                            type="number"
-                            defaultValue={inputtedRecipe.prepTime}
+                            value={state.prepTime}
                             onChange={(event) =>
                               dispatch({ type: 'EDIT_PREP_TIME', payload: { prepTime: Number(event.target.value) } })
                             }
@@ -142,8 +165,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
                         <Form.Field>
                           <label>Cook Time (min)</label>
                           <input
-                            type="number"
-                            defaultValue={inputtedRecipe.cookTime}
+                            value={state.cookTime}
                             onChange={(event) =>
                               dispatch({ type: 'EDIT_COOK_TIME', payload: { cookTime: Number(event.target.value) } })
                             }
@@ -154,8 +176,7 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
                         <Form.Field>
                           <label>Servings</label>
                           <input
-                            type="number"
-                            defaultValue={inputtedRecipe.servings}
+                            value={state.servings}
                             onChange={(event) =>
                               dispatch({ type: 'EDIT_SERVINGS', payload: { servings: Number(event.target.value) } })
                             }
@@ -184,7 +205,8 @@ function EditRecipe({onSuccessfulCreate, inputtedRecipe}: EditRecipeProps): JSX.
           </Grid.Column>
         </Grid.Row>
       </Grid>
-    </RecipeContext.Provider>
+      }
+      </RecipeContext.Provider>
   );
 }
 export default EditRecipe;

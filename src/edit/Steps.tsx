@@ -1,12 +1,12 @@
 import React, { useContext } from "react";
 import { Form, TextArea, Grid, Button, Icon } from "semantic-ui-react";
-import { RecipeContext } from "../RecipeContext";
+import { RecipeContext } from "../context/RecipeContext";
 
-function Steps(): JSX.Element {
+const Steps = (): JSX.Element => {
   const { state, dispatch } = useContext(RecipeContext);
   const { steps: currentSteps } = state;
 
-  function createSteps() {
+  const createSteps = () => {
     const stepInputs = [
       <Grid.Row columns="equal" key={"stepsText0"}>
           <Grid.Column width={13}>

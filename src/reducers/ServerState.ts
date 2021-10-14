@@ -7,7 +7,6 @@ export interface ServerState {
   userName: string;
   paginatedRequest: PaginatedRequest;
   shouldRefresh: boolean;
-  currentPage: string;
   basket: Recipe[];
   recipes?: Recipe[];
   calendarRecipes?: Recipe[];
@@ -21,8 +20,7 @@ export const initialServerState: ServerState = {
   userName: "",
   paginatedRequest: defaultPaginatedRequest,
   shouldRefresh: true,
-  currentPage: "viewRecipes",
   basket: [],
   recipes: [],
-  calendarRecipes: [],
+  calendarRecipes: []
 }
