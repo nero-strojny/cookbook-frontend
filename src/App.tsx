@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react'
-import { Switch, Route, Redirect, BrowserRouter, useHistory } from 'react-router-dom'
+import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom'
 import Login from "./Login";
 import { serverRequestReducer } from './reducers/serverRequestReducer';
 import { initialServerState } from './reducers/ServerState';
