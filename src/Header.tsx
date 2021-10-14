@@ -2,8 +2,7 @@ import { has } from 'lodash';
 import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import { Icon, Menu } from "semantic-ui-react";
-import { ServerRequestContext } from "./context/ServerRequestContext"
-import { defaultRecipe } from './reducers/EditRecipeState';
+import { ServerRequestContext } from "./context/ServerRequestContext";
 
 const Header = (): JSX.Element => {
   const { dispatch: serverDispatch, state } = useContext(ServerRequestContext);
