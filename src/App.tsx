@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react'
-import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom'
+import { Switch, Route, Redirect, BrowserRouter, useHistory } from 'react-router-dom'
 import Login from "./Login";
 import { serverRequestReducer } from './reducers/serverRequestReducer';
 import { initialServerState } from './reducers/ServerState';
@@ -49,7 +49,7 @@ const App = (): JSX.Element => {
     return () => {
       isCurrent = false
     }
-  }, [localStorageAccessToken, localStorageUserName]);
+  }, [localStorageAccessToken, localStorageUserName, state.accessToken]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -63,7 +63,7 @@ const App = (): JSX.Element => {
     <BrowserRouter>
       <Switch>
         {
-          (state.accessToken || localStorage.getItem("accessToken")) === "" ?
+          state.accessToken === "" ?
             (
               <><Route path="/login" exact>
                 <Login />
