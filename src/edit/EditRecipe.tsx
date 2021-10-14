@@ -78,12 +78,6 @@ const EditRecipe = (): JSX.Element => {
         serverDispatch({ type: 'SHOW_MESSAGE',
           payload: { messageContent: `Recipe, "${state.recipeName}", has been created`, success: true }
         });
-        serverDispatch({
-          type: "SET_EDIT_RECIPE",
-          payload: {
-            recipeToEdit: {...defaultRecipe, userName: serverState.userName}
-          }
-        });
         history.push('/viewRecipes');
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });

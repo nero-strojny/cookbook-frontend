@@ -178,7 +178,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
                 (<>
                 <Button size='mini' color='orange' inverted
                   onClick={() =>{
-                    serverDispatch({type: "SET_EDIT_RECIPE", payload: {recipeToEdit: recipe}});
                     history.push(`/editRecipes/${recipeId}`);
                   }}>
                     <Icon name="pencil" />

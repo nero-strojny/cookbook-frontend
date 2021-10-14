@@ -15,6 +15,5 @@ export type ServerAction = {
     calendarRecipes?: Recipe[];
     numberOfRecipes?: number;
     paginatedRequest?: PaginatedRequest;
-    recipeToEdit?: Recipe;
   }
  }

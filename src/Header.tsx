@@ -29,7 +29,6 @@ const Header = (): JSX.Element => {
         name='editRecipes'
         active={activeItem === 'editRecipes'}
         onClick={() => {
-          serverDispatch({type: "SET_EDIT_RECIPE", payload: {recipeToEdit: {...defaultRecipe, userName: state.userName}}})
           history.push("/editRecipes");
         }}
       >

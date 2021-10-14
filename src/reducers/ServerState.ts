@@ -14,7 +14,6 @@ export interface ServerState {
   numberOfRecipes?: number;
   header?: string;
   messageContent?: string;
-  recipeToEdit?: Recipe;
 }
 
 export const initialServerState: ServerState = {
@@ -24,6 +23,5 @@ export const initialServerState: ServerState = {
   shouldRefresh: true,
   basket: [],
   recipes: [],
-  calendarRecipes: [],
-  recipeToEdit: defaultRecipe,
+  calendarRecipes: []
 }

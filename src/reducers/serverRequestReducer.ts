@@ -105,11 +105,6 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         ...state,
         shouldRefresh: true
       }
-    case "SET_EDIT_RECIPE":
-      return {
-        ...state,
-        recipeToEdit: payload.recipeToEdit
-      }
     default:
       return state;
   }
