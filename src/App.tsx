@@ -15,7 +15,8 @@ import Basket from './basket/Basket';
 const App = (): JSX.Element => {
   const localStorageAccessToken = localStorage.getItem("accessToken");
   const localStorageUserName = localStorage.getItem("userName");
-  const [ state, dispatch ] = useReducer(serverRequestReducer, initialServerState);
+  const [ state, dispatch ] = useReducer(serverRequestReducer, 
+    {...initialServerState, userName: localStorageUserName||"", accessToken: localStorageAccessToken||""});
   const [ width, setWidth ] = useState<number>(window.innerWidth);
 
   const handleWindowSizeChange = () => {
@@ -57,8 +58,6 @@ const App = (): JSX.Element => {
     return () => clearTimeout(timer);
   }, [dispatch, state]);
 
-  console.log(state);
-
   return (
     <ServerRequestContext.Provider value={{state, dispatch}}>
     <BrowserRouter>
@@ -96,6 +95,7 @@ const App = (): JSX.Element => {
                 <Route path="/login" exact>
                   <Login />
                 </Route>
+                <Redirect exact from="/" to="/viewRecipes" />
               </>
             )
         }
