@@ -12,16 +12,7 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
       return {
         ...state,
         shouldRefresh: true,
-        currentPage: "viewRecipes",
         basket: [],
-      }
-    case "ADD_BASKET":
-      if (payload.basketItem){
-        tempBasket = [...state.basket, payload.basketItem];
-      }
-      return {
-        ...state,
-        basket: tempBasket
       }
     case "ADD_ALL_BASKET":
       tempBasket = [...state.basket];
@@ -61,8 +52,7 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         header: payload.success ? "Success!": "Error",
         messageContent: payload.messageContent,
         paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes"
+        shouldRefresh: true
       }
     case "CLEAR_MESSAGE":
       return {
@@ -77,7 +67,6 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         userName: payload.userName || "",
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: true,
-        currentPage: "viewRecipes",
         basket: [],
       }
     case "LOGOUT_SUCCESS":
@@ -87,7 +76,6 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         userName: "",
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: false,
-        currentPage: "viewRecipes",
         recipes: [],
         numberOfRecipes: 1,
         basket: []
@@ -96,8 +84,7 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
       return {
         ...state, 
         paginatedRequest: payload.paginatedRequest || defaultPaginatedRequest,
-        shouldRefresh: true,
-        currentPage: "viewRecipes",
+        shouldRefresh: true
       }
     case "QUERY_RECIPES_SUCCESS":
       return {
@@ -116,26 +103,12 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
     case "SWITCH_TO_PAGE":
       return {
         ...state,
-        currentPage: payload.currentPage || "viewRecipes",
         shouldRefresh: true
       }
-    case "EMAIL_SUCCESS":
+    case "SET_EDIT_RECIPE":
       return {
         ...state,
-        header: 'Success!',
-        messageContent: 'Shopping list has been emailed!',
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: false,
-        currentPage: "basket"
-      }
-    case "EMAIL_FAILURE":
-      return {
-        ...state,
-        header: 'Error!',
-        messageContent: 'Emailing shopping list failed due to an error',
-        paginatedRequest: defaultPaginatedRequest,
-        shouldRefresh: false,
-        currentPage: "basket"
+        recipeToEdit: payload.recipeToEdit
       }
     default:
       return state;

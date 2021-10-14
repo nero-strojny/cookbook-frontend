@@ -4,7 +4,6 @@ import { Recipe } from "../types/recipe";
 export type ServerAction = {
   type: string,
   payload: {
-    currentPage?: string;
     success?: boolean;
     messageContent?: string;
     basketItem?: Recipe;
@@ -16,5 +15,6 @@ export type ServerAction = {
     calendarRecipes?: Recipe[];
     numberOfRecipes?: number;
     paginatedRequest?: PaginatedRequest;
+    recipeToEdit?: Recipe;
   }
  }

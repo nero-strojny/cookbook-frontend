@@ -1,23 +1,45 @@
+import { has } from 'lodash';
 import React, { useContext } from 'react'
+import { useHistory } from 'react-router-dom';
 import { Icon, Menu } from "semantic-ui-react";
-import { ServerRequestContext } from "./ServerRequestContext"
+import { ServerRequestContext } from "./context/ServerRequestContext"
+import { defaultRecipe } from './reducers/EditRecipeState';
 
-function Header(): JSX.Element {
+const Header = (): JSX.Element => {
   const { dispatch: serverDispatch, state } = useContext(ServerRequestContext);
-  const activeItem = state.currentPage;
+  const history = useHistory();
+  let activeItem;
+  if(has(history, 'location.pathname')) {
+    const currentPath = history.location.pathname;
+    activeItem = currentPath.substring(currentPath.lastIndexOf('/') + 1);
+  }
 
   return (
   <Menu inverted color="orange" icon='labeled' stackable>
     <Menu.Item
-      onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "viewRecipes" } })}
+      onClick={() => {
+        serverDispatch({ type: 'REFRESH_RECIPES', payload: {} });
+        history.push("/viewRecipes");
+      }}
     >
       <h1 style={{fontFamily:'Marck Script'}}><Icon name="food" size="small" />TastyBoi</h1>
     </Menu.Item>
     <Menu.Menu position='right' icon='labeled'>
       <Menu.Item
+        name='editRecipes'
+        active={activeItem === 'editRecipes'}
+        onClick={() => {
+          serverDispatch({type: "SET_EDIT_RECIPE", payload: {recipeToEdit: {...defaultRecipe, userName: state.userName}}})
+          history.push("/editRecipes");
+        }}
+      >
+        <Icon name="book" size="small" />
+        New Recipe 
+      </Menu.Item>
+      <Menu.Item
         name='basket'
         active={activeItem === 'basket'}
-        onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "basket" } })}
+        onClick={() => history.push('/basket')}
       >
         <Icon name="shopping basket" size="small" />
         Basket
@@ -26,7 +48,7 @@ function Header(): JSX.Element {
       <Menu.Item
         name='calendar'
         active={activeItem === 'calendar'}
-        onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "calendar" } })}
+        onClick={() => history.push('/calendar')}
       >
         <Icon name="calendar alternate outline" size="small" />
         Calendar
@@ -34,7 +56,11 @@ function Header(): JSX.Element {
       <Menu.Item
         name='logout'
         active={activeItem === 'logout'}
-        onClick={() => serverDispatch({ type: 'SWITCH_TO_PAGE', payload: { currentPage: "viewRecipes" } })}
+        onClick={() => {
+          localStorage.setItem('accessToken', "");
+          localStorage.setItem('userName', "");
+          history.push('/login');
+        }}
       >
         <Icon name="log out" size="small" />
         Logout

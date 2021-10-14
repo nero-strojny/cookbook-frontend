@@ -1,19 +1,19 @@
 import React, { useState, useContext } from "react";
 import { Input, Icon } from "semantic-ui-react";
 import { defaultTags } from "../edit/Tags";
-import { ServerRequestContext } from "../ServerRequestContext"
+import { ServerRequestContext } from "../context/ServerRequestContext"
 
 type SearchSectionProps = {
   setIsLoading: Function,
   setCurrentPage: Function
 }
 
-function SearchSection({ setIsLoading, setCurrentPage}: SearchSectionProps): JSX.Element {
+const SearchSection = ({ setIsLoading, setCurrentPage}: SearchSectionProps): JSX.Element => {
   
   const [searchField, setSearchField] = useState<string>("");
   const { dispatch: serverDispatch } = useContext(ServerRequestContext);
 
-  async function submitSearch() {
+  const submitSearch = async () => {
     setIsLoading(true);
 
     if (searchField !== ""){
@@ -29,7 +29,7 @@ function SearchSection({ setIsLoading, setCurrentPage}: SearchSectionProps): JSX
     setIsLoading(false);
   }
 
-  async function onInputChange(event: React.KeyboardEvent<Input>) {
+  const onInputChange = async (event: React.KeyboardEvent<Input>) => {
     if (event.key === 'Enter') {
       await submitSearch();
     }

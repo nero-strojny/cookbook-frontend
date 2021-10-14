@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Card, Grid, Button, Label, Loader, SemanticWIDTHSNUMBER, Divider, Dropdown } from "semantic-ui-react";
 import { DateTime } from "luxon";
 import { Recipe } from "../types/recipe";
-import { ServerRequestContext } from "../ServerRequestContext";
+import { ServerRequestContext } from "../context/ServerRequestContext";
 import { getRandomRecipes, getRecipes } from "../serviceCalls";
 import SimplifiedRecipeCard from "../view/SimplifiedRecipeCard";
 
@@ -10,7 +10,7 @@ type CalendarProps = {
   width: number
 }
 
-function Calendar({ width }: CalendarProps) {
+const Calendar = ({ width }: CalendarProps) => {
   const DAYS_IN_A_WEEK = 7;
   const defaultRecipeName = "None Selected";
   // start cards on Sunday Date, luxon starts on Mondays, so we
@@ -51,7 +51,7 @@ function Calendar({ width }: CalendarProps) {
     }
   });
 
-  async function submitSearch(prefix: string) {
+  const submitSearch = async (prefix: string) => {
     if(prefix !== "") {
       setSearchLoading(true);
       const response = await getRecipes({pageSize: 5, pageCount: 0, queryRecipe:{recipeName: prefix}}, serverState.accessToken);

@@ -9,11 +9,11 @@ type RecipeCardProps = {
   loading?: boolean;
 }
 
-function SimplifiedRecipeCard({
+const SimplifiedRecipeCard = ({
   recipe,
   showRecipeDetails,
   loading
- }: RecipeCardProps): JSX.Element {
+ }: RecipeCardProps): JSX.Element => {
 
   const {
     recipeName,

@@ -1,22 +1,17 @@
 import React, { useState, useContext } from "react";
 import { List, Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react";
-import { ServerRequestContext } from "../ServerRequestContext";
+import { ServerRequestContext } from "../context/ServerRequestContext";
 import { deleteRecipe } from "../serviceCalls";
 import { defaultTags } from "../edit/Tags";
 import { findIndex } from "lodash";
 import { Recipe } from "../types/recipe";
+import { useHistory } from "react-router";
 
 type RecipeCardProps = {
-  recipe: Recipe,
-  refreshRecipesAfterDelete: Function,
-  onEditRecipe: Function
+  recipe: Recipe
 }
 
-function RecipeCard({
-  recipe, 
-  refreshRecipesAfterDelete, 
-  onEditRecipe
- }: RecipeCardProps): JSX.Element {
+const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
 
   const {
     recipeName,
@@ -33,6 +28,8 @@ function RecipeCard({
 
   const tags = recipe.tags || [];
 
+  const history = useHistory();
+
   const [stepsVisible, setStepsVisible] = useState<boolean>(false)
   const [ingredientsVisible, setIngredientsVisible] = useState<boolean>(false)
   const [recipeLoading, setRecipeLoading] = useState<boolean>(false);
@@ -47,7 +44,6 @@ function RecipeCard({
         serverDispatch({ type: 'SHOW_MESSAGE',
           payload: { messageContent: `Recipe, "${recipe.recipeName}", has been deleted`, success: true }
         });
-        refreshRecipesAfterDelete();
       } else if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       } else {
@@ -78,7 +74,7 @@ function RecipeCard({
       </Button>);
     }
     return(<Button size='mini' color='orange' inverted 
-      onClick={() => serverDispatch({ type: 'ADD_BASKET', payload: { basketItem: recipe } })}>
+      onClick={() => serverDispatch({ type: 'ADD_ALL_BASKET', payload: { basketItems: [recipe] } })}>
       <Icon name="plus" />
       Basket
     </Button>);
@@ -162,8 +158,8 @@ function RecipeCard({
       <Card.Content>
         <Card.Header>
           <Grid>
-            <Grid.Row columns="equal">
-              <Grid.Column>
+            <Grid.Row>
+              <Grid.Column width={7}>
                 <p style={{ cursor: 'pointer', textDecoration:'underline' }}
                   onClick={() => serverDispatch({
                     type: 'QUERY_RECIPES_PENDING',
@@ -177,11 +173,14 @@ function RecipeCard({
                   {recipeName}
                 </p>
               </Grid.Column>
-              <Grid.Column textAlign="right">
+              <Grid.Column width={9} textAlign="right">
               {(!recipeLoading && (userName === serverState.userName)) &&
                 (<>
                 <Button size='mini' color='orange' inverted
-                  onClick={() => onEditRecipe(recipe)}>
+                  onClick={() =>{
+                    serverDispatch({type: "SET_EDIT_RECIPE", payload: {recipeToEdit: recipe}});
+                    history.push(`/editRecipes/${recipeId}`);
+                  }}>
                     <Icon name="pencil" />
                     Edit
                 </Button>
