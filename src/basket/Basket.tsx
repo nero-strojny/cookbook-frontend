@@ -103,7 +103,6 @@ const Basket = (): JSX.Element => {
         ingredientCategories.forEach(category => {
             set(ingredientObject, category, generateIngredientStrings(category).filter(ingredient => !ingredientsToNotEmail.includes(ingredient)))
         });
-        set(ingredientObject, "userName",  state.userName)
         const response = await emailBasket(ingredientObject, state.accessToken)
         if (response.status === 200) {
             dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Shopping list has been emailed!`, success: true }});
