@@ -5,8 +5,8 @@ import { NewIngredient } from "./types/ingredient";
 import { PaginatedRequest } from "./types/paginatedRequest";
 import { Recipe } from "./types/recipe";
 
-let endpoint = "http://ec2-3-216-126-107.compute-1.amazonaws.com:8080";
 // let endpoint = "http://localhost:8080";
+let endpoint = "https://tastyboi-server.com"
 
 export const defaultPaginatedRequest: PaginatedRequest = {
   pageSize: 6,
