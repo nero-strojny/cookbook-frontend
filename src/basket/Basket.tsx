@@ -109,7 +109,7 @@ const Basket = (): JSX.Element => {
         } else if (response.status === 401 || response.status === 403) {
             dispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
         } else {
-          dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Shopping list has been emailed!`, success: false }});
+          dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Emailing shopping list failed due to an error`, success: false }});
         }
     }
 
