@@ -157,7 +157,13 @@ const Login = (): JSX.Element => {
             />
           </Form.Field>
           <Form.Field>
-            <Checkbox onChange={()=>setAgree(!agree)} style={{marginRight:'5px'}}/>I agree to the <a onClick={()=>setOpenModal(true)}>Terms and Conditions</a>
+            <Checkbox onChange={()=>setAgree(!agree)} style={{marginRight:'5px'}}/>
+            <div style={{display:'inline'}}>
+              I agree to the
+              <div style={{display:'inline', color: 'blue', cursor: 'pointer'}}
+                onClick={()=>setOpenModal(true)}> Terms and Conditions
+              </div>
+            </div>
           </Form.Field>
           <Form.Button color='orange'  type='submit' loading={loading}>Submit</Form.Button>
         </Form>
