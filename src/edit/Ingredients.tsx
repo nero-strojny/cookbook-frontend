@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { Grid, Form, Dropdown, Button, Label, Divider, Modal, Message, Transition } from "semantic-ui-react";
 import { RecipeContext } from "../context/RecipeContext";
 import { searchIngredient, createIngredient } from "../serviceCalls";
 import { ServerRequestContext } from "../context/ServerRequestContext";
 import { Ingredient } from "../types/ingredient";
+import { debounce } from "lodash";
 
 const Ingredients = (): JSX.Element => {
   const { dispatch, state } = useContext(RecipeContext);
@@ -44,14 +45,21 @@ const Ingredients = (): JSX.Element => {
   const submitSearch = async (prefix: string) => {
     if(prefix !== "") {
       setIsLoading(true);
+      console.log(prefix);
       const response = await searchIngredient(prefix, serverState.accessToken);
       if (response.status === 401 || response.status === 403) {
         serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
       }
       setSelectionOptions(response.data);
       setIsLoading(false);
+    } else {
+      setSelectionOptions([]);
     }
   }
+
+  const debouncedSubmitSearch = useCallback(
+    debounce(submitSearch, 300)
+  , []);
 
   const postNewIngredient = async () => {
     setIsLoading(true);
@@ -230,7 +238,7 @@ const Ingredients = (): JSX.Element => {
                 options={selectionOptions.map(opt => ({text: opt.name, value: opt.name, key: opt.name}))}
                 onSearchChange={(event) => {
                   const element = event.target as HTMLInputElement
-                  submitSearch(element.value);
+                  debouncedSubmitSearch(element.value);
                 }}
               />
             </Form.Field>
