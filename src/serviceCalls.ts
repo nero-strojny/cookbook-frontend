@@ -5,7 +5,7 @@ import { NewIngredient } from "./types/ingredient";
 import { PaginatedRequest } from "./types/paginatedRequest";
 import { Recipe } from "./types/recipe";
 
-// let endpoint = "http://localhost:8080";
+//let endpoint = "http://localhost:8080";
 let endpoint = "https://tastyboi-server.com"
 
 export const defaultPaginatedRequest: PaginatedRequest = {
@@ -20,6 +20,15 @@ export const login = async (username: string, password: string) => {
       "Content-Type": "application/json",
     },
   });
+}
+
+export const signup = async (username: string, password: string, email: string, agree: boolean) => {
+  return await axios.post(endpoint + "/api/user", 
+  {username, password, email, agreedToTerms: agree}, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  })
 }
 
 export const createRecipe = async (recipe: Recipe, token: string) => {
