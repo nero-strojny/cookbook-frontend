@@ -1,5 +1,5 @@
 import React, { useState, useContext, useReducer } from "react";
-import { Card, Form, Transition, Message, Divider, Tab, Menu, Icon, Checkbox, Modal, Header } from "semantic-ui-react";
+import { Card, Form, Transition, Message, Tab, Menu, Icon, Checkbox, Modal, Header } from "semantic-ui-react";
 import { login, signup } from "./serviceCalls";
 import { get } from 'lodash';
 import { ServerRequestContext } from './context/ServerRequestContext';
