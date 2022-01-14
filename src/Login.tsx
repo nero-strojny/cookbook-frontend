@@ -185,7 +185,7 @@ const Login = (): JSX.Element => {
           content={message}
         />
       </Transition>
-      <Card style={{ marginTop: "5%", width: '60%' }} centered color="orange">
+      <Card style={{ marginTop: "5em", width: '25em' }} centered color="orange">
         <Card.Content>
         <Tab panes={panes} />
         </Card.Content>

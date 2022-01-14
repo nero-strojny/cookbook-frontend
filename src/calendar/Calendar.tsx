@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Card, Grid, Button, Label, Loader, SemanticWIDTHSNUMBER, Divider, Dropdown } from "semantic-ui-react";
+import { Card, Grid, Button, Label, Loader, SemanticWIDTHSNUMBER, Divider, Dropdown, Header, Segment } from "semantic-ui-react";
 import { DateTime } from "luxon";
 import { Recipe } from "../types/recipe";
 import { ServerRequestContext } from "../context/ServerRequestContext";
@@ -103,12 +103,14 @@ const Calendar = ({ width }: CalendarProps) => {
   const createEditCard = () => {
     if(currentEditCard === -1) {
       return (
-        <Card>
-          <Card.Content>
-            <Card.Header>No Day Selected</Card.Header>
-            <Card.Meta>Click A Day to Edit its Chosen Recipe</Card.Meta>
-          </Card.Content>
-        </Card>
+      <Grid>
+        <Grid.Row centered>
+          <Segment style={{ border: '1px solid lightgrey', borderRadius:'5px' }} basic>
+            <Header as='h3'>No Day Selected</Header>
+            <p>Click A Day to Edit its Chosen Recipe</p>
+          </Segment>
+        </Grid.Row>
+      </Grid>
       );
     }
     const chosenDay = beginningOfWeek.plus({ days: currentEditCard });
@@ -116,50 +118,59 @@ const Calendar = ({ width }: CalendarProps) => {
     const loadingRecipe = isLoading || !recipes.length;
     const showRecipeDetails = currentDayRecipe.recipeName !== defaultRecipeName;
     return (
-      <Card fluid>
-        <Card.Content>
-          <Card.Header>{chosenDay.weekdayLong}</Card.Header>
-          <Card.Meta>{chosenDay.toLocaleString(DateTime.DATE_FULL)}</Card.Meta>
-          <Card.Description style={{margin:'10px 4em'}}>
+      <Grid columns={2} centered padded>
+      <Grid.Row>
+        <Grid.Column floated="right">
+          <Segment style={{ border: '1px solid lightgrey', borderRadius:'5px' }} basic>
+            <Header as='h3'>{chosenDay.weekdayLong}</Header>
+            <p>{chosenDay.toLocaleString(DateTime.DATE_FULL)}</p>
             <SimplifiedRecipeCard recipe={currentDayRecipe} showRecipeDetails={showRecipeDetails} loading={loadingRecipe}/>
-          </Card.Description>
-        </Card.Content>
-        <Card.Content extra>
-          <Grid>
-            <Grid.Row centered>
-              <Dropdown
-                search
-                selection
-                loading={searchLoading}
-                onChange={(_event, { value }) => {setNewRecipeName(String(value));}}
-                placeholder="Enter Specific Recipe Here"
-                options={selectionOptions.map(opt => ({text: opt.recipeName, value: opt.recipeName, key: opt.recipeName}))}
-                onSearchChange={(event) => {
-                  const element = event.target as HTMLInputElement
-                  submitSearch(element.value);
-                }}
-              />
-              <Button 
-                style={{marginLeft: '5px'}}
-                color='orange'
-                loading={isLoading}
-                onClick={()=>searchAndSetRecipe()}
-              >Set Recipe</Button>
-              <Button 
-                color='orange'
-                loading={isLoading}
-                onClick= {() => generateRandomRecipe(currentEditCard) }
-              >New Random Recipe</Button>
-              <Button 
-                color='orange'
-                inverted
-                loading={isLoading}
-                onClick= {() => clearRecipe(currentEditCard) }
-              >Clear Recipe</Button>
-            </Grid.Row>
-          </Grid>
-        </Card.Content>
-      </Card>
+          </Segment>
+        </Grid.Column>
+        <Grid.Column>
+          <Card>
+            <Card.Content>
+            <Card.Header>Edit Options</Card.Header>
+            <Grid columns={1}>
+              <Grid.Row>
+                <Dropdown
+                  search
+                  selection
+                  loading={searchLoading}
+                  onChange={(_event, { value }) => setNewRecipeName(String(value))}
+                  placeholder="Enter Specific Recipe Here"
+                  options={selectionOptions.map(opt => ({text: opt.recipeName, value: opt.recipeName, key: opt.recipeName}))}
+                  onSearchChange={(event) => {
+                    const element = event.target as HTMLInputElement
+                    submitSearch(element.value);
+                  }}
+                />
+                <Button 
+                  style={{marginLeft: '5px'}}
+                  color='orange'
+                  loading={isLoading}
+                  onClick={()=>searchAndSetRecipe()}
+                >Set Recipe</Button>
+              </Grid.Row>
+              <Grid.Row>
+                <Button 
+                  color='orange'
+                  loading={isLoading}
+                  onClick= {() => generateRandomRecipe(currentEditCard) }
+                >New Random Recipe</Button>
+                <Button 
+                  color='orange'
+                  inverted
+                  loading={isLoading}
+                  onClick= {() => clearRecipe(currentEditCard) }
+                >Clear Recipe</Button>
+              </Grid.Row>
+            </Grid>
+            </Card.Content>
+          </Card>
+        </Grid.Column>
+      </Grid.Row>
+      </Grid>
     );
   }
 
@@ -189,29 +200,13 @@ const Calendar = ({ width }: CalendarProps) => {
             }
           </Card.Description>
         </Card.Content>
-        <Card.Content extra>
-          <Button
-            loading={isLoading}
-            basic
-            onClick={() => serverDispatch({
-              type: 'QUERY_RECIPES_PENDING',
-              payload: { 
-                paginatedRequest: {
-                  pageSize: 1, pageCount: 0,
-                  queryRecipe: {recipeName: recipes[i].recipeName}
-                }
-              }})}
-          >
-            View Recipe
-          </Button>
-        </Card.Content>
       </Card>);
       currentDay = currentDay.plus({ days: 1 });
     }
     return dayCards;
   }
 
-  return <Grid padding>
+  return <><Grid padding>
     <Grid.Row style={{textAlign: 'right', marginRight: '15px'}}>
       <Grid.Column>
         <Button 
@@ -236,14 +231,9 @@ const Calendar = ({ width }: CalendarProps) => {
       </Grid.Column>
     </Grid.Row>
     <Divider />
-    <Grid.Row style={{margin:'0px 8em'}}>
-      <Grid.Column>
-        <Card.Group centered>
-          { createEditCard() }
-        </Card.Group>
-      </Grid.Column>
-    </Grid.Row>
-  </Grid>
+    </Grid>
+    { createEditCard() }
+    </>
 }
 
 export default Calendar;

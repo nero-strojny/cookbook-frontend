@@ -2,6 +2,8 @@ import React, {  } from "react";
 import { Card, Grid, Loader, Label } from "semantic-ui-react";
 import { defaultTags } from "../edit/Tags";
 import { Recipe } from "../types/recipe";
+import IngredientsList from "./IngredientsList";
+import StepsList from "./StepsList";
 
 type RecipeCardProps = {
   recipe: Recipe,
@@ -16,6 +18,7 @@ const SimplifiedRecipeCard = ({
  }: RecipeCardProps): JSX.Element => {
 
   const {
+    _id: recipeId,
     recipeName,
     userName,
     cookTime,
@@ -23,6 +26,8 @@ const SimplifiedRecipeCard = ({
     author,
     calories,
     servings,
+    steps,
+    ingredients
   } = recipe;
 
   const tags = recipe.tags || [];
@@ -50,6 +55,10 @@ const SimplifiedRecipeCard = ({
               </Card.Meta>
             </Grid.Column>
           </Grid.Row>
+          <Grid>
+            <IngredientsList ingredients={ingredients} recipeId={recipeId} />
+            <StepsList steps={steps} recipeId={recipeId} />
+          </Grid>
         </Grid>}
         </Card.Description>
       </Card.Content>

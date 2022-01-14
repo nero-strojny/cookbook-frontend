@@ -261,7 +261,7 @@ const Ingredients = (): JSX.Element => {
       <Modal
         open={openModal}
         size={"small"}
-        onClose={()=>setOpenModal(false)}
+        onClose={()=>{setOpenModal(false); setSuccessfulPost(false);}}
         header='Add Ingredient'
         content={modalContent}
         actions={[{ key: 'done', content: 'Done', positive: true }]}
