@@ -1,11 +1,13 @@
 import React, { useState, useContext } from "react";
-import { List, Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react";
+import { Card, Grid, Icon, Loader, Button, Label } from "semantic-ui-react";
 import { ServerRequestContext } from "../context/ServerRequestContext";
 import { deleteRecipe } from "../serviceCalls";
 import { defaultTags } from "../edit/Tags";
 import { findIndex } from "lodash";
 import { Recipe } from "../types/recipe";
 import { useHistory } from "react-router";
+import IngredientsList from "./IngredientsList";
+import StepsList from "./StepsList";
 
 type RecipeCardProps = {
   recipe: Recipe
@@ -30,8 +32,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
 
   const history = useHistory();
 
-  const [stepsVisible, setStepsVisible] = useState<boolean>(false)
-  const [ingredientsVisible, setIngredientsVisible] = useState<boolean>(false)
   const [recipeLoading, setRecipeLoading] = useState<boolean>(false);
 
   const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
@@ -56,15 +56,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
     }
   }
 
-  const getIngredientEntry = (name: string, amount: number, measurement: string) => {
-    if (!measurement && amount) {
-      return `${amount} ${name}`;
-    } else if (!measurement && !amount) {
-      return `some ${name}`;
-    }
-    return `${amount} ${measurement} of ${name}`;
-  }
-
   const createBasketButton = () => {
     if(findIndex(serverState.basket, basketItem => recipe._id === basketItem._id) !== -1){
       return(<Button size='mini' color='orange' 
@@ -80,78 +71,6 @@ const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
     </Button>);
   }
 
-  const createIngredients = () => {
-    if (ingredientsVisible) {
-      return (
-        <Grid.Row>
-          <Grid.Column>
-            <h4>
-              <p style={{ cursor: 'pointer' }}
-                onClick={() => setIngredientsVisible(false)}>
-                <Icon name="minus" color='orange' ></Icon>
-                {"\tIngredients"}
-              </p>
-            </h4>
-            <List bulleted>
-              {ingredients.map((ingredient) => (
-                <List.Item key={"ingredient-" + ingredient.name + recipeId}>
-                  {getIngredientEntry(ingredient.name, ingredient.amount, ingredient.measurement)}
-                </List.Item>
-              ))}
-            </List>
-          </Grid.Column>
-        </Grid.Row>
-      )
-    }
-    return (
-      <Grid.Row>
-        <Grid.Column>
-          <h4>
-            <p style={{ cursor: 'pointer' }}
-              onClick={() => setIngredientsVisible(true)}>
-              <Icon name="plus" color='orange' ></Icon>
-              {"\tIngredients ..."}
-            </p>
-          </h4>
-        </Grid.Column>
-      </Grid.Row>
-    );
-  }
-
-  const createSteps = () => {
-    if (stepsVisible) {
-      return (
-        <Grid.Row>
-          <Grid.Column>
-            <h4>
-              <p style={{ cursor: 'pointer' }}
-                onClick={() => setStepsVisible(false)}>
-                <Icon name="minus" color='orange'  ></Icon>
-                {"\tSteps"}</p>
-            </h4>
-            <List ordered>
-              {steps.map((step) => (
-                <List.Item key={"step-text-" + step.number + recipeId}>{step.text}</List.Item>
-              ))}
-            </List>
-          </Grid.Column>
-        </Grid.Row>
-      )
-    }
-    return (
-      <Grid.Row>
-        <Grid.Column>
-          <h4>
-            <p style={{ cursor: 'pointer' }}
-              onClick={() => setStepsVisible(true)}>
-              <Icon name="plus" color='orange' ></Icon>
-              {"\tSteps ..."}
-            </p>
-          </h4>
-        </Grid.Column>
-      </Grid.Row>
-    );
-  }
 
   return (
     <Card fluid color="orange">
@@ -213,8 +132,8 @@ const RecipeCard = ({ recipe }: RecipeCardProps): JSX.Element => {
         {recipeLoading ?
           <Loader active inline='centered' size='massive' /> :
           <Grid>
-            {createIngredients()}
-            {createSteps()}
+            <IngredientsList ingredients={ingredients} recipeId={recipeId} />
+            <StepsList steps={steps} recipeId={recipeId} />
           </Grid>
         }
       </Card.Content>
