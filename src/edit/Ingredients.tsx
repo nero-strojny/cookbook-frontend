@@ -145,50 +145,32 @@ const Ingredients = (): JSX.Element => {
   }
 
   const modalContent = (
-    <Form>
-    <Grid style={{margin:'15px'}} centered columns={2}>
-      <Grid.Row>
-        <Grid.Column>
-          <Transition visible={successfulPost} animation="scale">
-            <Message
-              positive
-              onDismiss={()=>setSuccessfulPost(false)}
-              header={"Success!"}
-              content={`Added New Ingredient: "${newIngredientName || newName}"`}
-            />
-          </Transition>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <Form.Input inline
-            label="Name:"
-            defaultValue={newName}
-            onChange={(event) => setNewIngredientName(event.target.value)} />
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column>
-          <Form.Input inline
-            list='categories'
-            label="Category:"
-            onChange={(event) => setNewCategory(event.target.value)}/>
-          <datalist id='categories'>
-            <option value='produce'/>
-            <option value='protein'/>
-            <option value='pantry'/>
-            <option value='dairy'/>
-            <option value='alcohol'/>
-          </datalist>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row>
-        <Grid.Column textAlign={"center"}>
-          <Button onClick={()=>postNewIngredient()} loading={isLoading}>Submit</Button>
-        </Grid.Column>
-      </Grid.Row>
-  </Grid>
-  </Form>
+    <Form style={{padding: '10px'}}>
+      <Transition visible={successfulPost} animation="scale">
+        <Message
+          positive
+          onDismiss={()=>setSuccessfulPost(false)}
+          header={"Success!"}
+          content={`Added New Ingredient: "${newIngredientName || newName}"`}
+        />
+      </Transition>
+      <Form.Input
+        label="Name:"
+        defaultValue={newName}
+        onChange={(event) => setNewIngredientName(event.target.value)} />
+      <Form.Input
+        list='categories'
+        label="Category:"
+        onChange={(event) => setNewCategory(event.target.value)}/>
+      <datalist id='categories'>
+        <option value='produce'/>
+        <option value='protein'/>
+        <option value='pantry'/>
+        <option value='dairy'/>
+        <option value='alcohol'/>
+      </datalist>
+      <Button onClick={()=>postNewIngredient()} loading={isLoading}>Submit</Button>
+    </Form>
   )
 
   return (
@@ -260,7 +242,7 @@ const Ingredients = (): JSX.Element => {
       </Grid>
       <Modal
         open={openModal}
-        size={"small"}
+        size={"mini"}
         onClose={()=>{setOpenModal(false); setSuccessfulPost(false);}}
         header='Add Ingredient'
         content={modalContent}
