@@ -11,11 +11,12 @@ import Header from './Header';
 import ViewRecipes from './view/ViewRecipes';
 import Calendar from './calendar/Calendar';
 import Basket from './basket/Basket';
+import Household from "./view/Household";
 
 const App = (): JSX.Element => {
   const localStorageAccessToken = localStorage.getItem("accessToken");
   const localStorageUserName = localStorage.getItem("userName");
-  const [ state, dispatch ] = useReducer(serverRequestReducer, 
+  const [ state, dispatch ] = useReducer(serverRequestReducer,
     {...initialServerState, userName: localStorageUserName||"", accessToken: localStorageAccessToken||""});
   const [ width, setWidth ] = useState<number>(window.innerWidth);
 
@@ -94,6 +95,11 @@ const App = (): JSX.Element => {
                 </Route>
                 <Route path="/login" exact>
                   <Login />
+                </Route>
+                <Route path="/household" exact>
+                  <Header/>
+                  <MessageBar/>
+                  <Household />
                 </Route>
                 <Redirect exact from="/" to="/viewRecipes" />
               </>
