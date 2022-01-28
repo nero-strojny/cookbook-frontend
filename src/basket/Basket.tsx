@@ -1,200 +1,171 @@
-
 import React, { useContext, useState } from "react";
-import { Checkbox, Grid, Button, Label, Segment, List } from "semantic-ui-react";
+import { Grid, Button, Segment, Header, Icon, Form } from "semantic-ui-react";
 import { ServerRequestContext } from "../context/ServerRequestContext";
-import { flatMap, groupBy, findIndex, set } from 'lodash';
+import { flatMap, set } from 'lodash';
 import { emailBasket } from "../serviceCalls";
 import { Ingredient } from "../types/ingredient";
+import SelectedRecipesSegment from "./SelectedRecipesSegment";
+import IngredientCards from "./IngredientCards";
+import { generateIngredientStrings, ingredientCategories } from "./visualizeIngredients";
 
-const Basket = (): JSX.Element => {
-    const { state, dispatch } = useContext(ServerRequestContext);
-
-    const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState<string[]>([]);
-    const measurementsToPluralize = ["clove", "cup", "stalk", "slice", "lb"];
-    const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
-    const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
-    const ingredientCategories = ["produce", "protein", "dairy", "pantry", "alcohol"];
-
-
-    const changeIngredientsToNotEmail = (ingredientString: string) => {
-      let tempArray = [];
-      if(ingredientsToNotEmail.includes(ingredientString)){
-        tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
-      } else {
-        tempArray = [ingredientString];
-      }
-      setIngredientsToNotEmail(tempArray.concat(ingredientsToNotEmail));
+const Basket = ({width}: {width:number}): JSX.Element => {
+  const { state, dispatch } = useContext(ServerRequestContext);
+  const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
+  const defaultNewIngredient: Ingredient = {_id:'', name: '', category: '', amount: 0, measurement: '' };
+  
+  const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState<string[]>([]);
+  const [ additionalIngredients, setAdditionalIngredients] = useState<Ingredient[]>([]);
+  const [ newIngredient, setNewIngredient ] = useState<Ingredient>({...defaultNewIngredient});
+  
+  const changeIngredientsToNotEmail = (ingredientString: string) => {
+    let tempArray = [];
+    if(ingredientsToNotEmail.includes(ingredientString)){
+      tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
+    } else {
+      tempArray = [...ingredientsToNotEmail, ingredientString];
     }
+    setIngredientsToNotEmail(tempArray);
+  }
 
-    const determineIngredientString = (sameIngredientList: Ingredient[]) => {
-      let quantityString = "";
-      let addToTaste = false;
+  const changeNewIngredient = (key: string, value: string | number) => {
+    let tempIngredient = {...newIngredient};
+    set(tempIngredient, key, value);
+    setNewIngredient(tempIngredient);
+  }
 
-      sameIngredientList.forEach(ingredient => {
-        if (measurementsToPluralize.includes(ingredient.measurement)) {
-          ingredient.measurement = `${ingredient.measurement}s`
-        }
-        if(ingredient.amount === undefined || ingredient.amount === 0) {
-          addToTaste = true;
-        }
-      });
-      const sameMeasurements = groupBy(sameIngredientList, ingredient => ingredient.measurement);
-    
-      Object.values(sameMeasurements)
-        .filter(measurementGroup => findIndex(measurementGroup, group => group.amount !== undefined) !== -1)
-        .forEach(measurementGroup => {
-        let totalQuantity = 0;
-        measurementGroup.forEach(ingredient => {
-          if(ingredient.amount !== undefined && ingredient.amount !== 0) {
-            totalQuantity+=ingredient.amount;
-          } else {
-            addToTaste = true;
-          }
-        });
-        if(totalQuantity) {
-          const measurementStr = measurementGroup[0].measurement ? ` ${measurementGroup[0].measurement}` : "";
-          quantityString += `${totalQuantity}${measurementStr}`;
-        }
-        if (Object.values(sameMeasurements).length > 1) {
-          quantityString += ' + ';
-        }
-      });
-      if(`(${quantityString})` === '()') {
-        if(addToTaste) {
-          return `${sameIngredientList[0].name}*`;
-        }
-        return `${sameIngredientList[0].name}`;
-      }
-      if (quantityString.substring(quantityString.length - 3 , quantityString.length) === " + ") {
-        quantityString = quantityString.substring(0, quantityString.length - 3);
-      }
-      if(addToTaste) {
-        return `${sameIngredientList[0].name} (${quantityString})*`;
-      }
-      return `${sameIngredientList[0].name} (${quantityString})`;
+  const addIngredient = () => {
+    let tempArray = [];
+    tempArray = [...additionalIngredients, newIngredient];
+    setAdditionalIngredients(tempArray);
+    setNewIngredient(defaultNewIngredient);
+  }
+
+  const emailIngredients = async () => {
+    let ingredientObject = {};
+    ingredientCategories.forEach(category => {
+        set(ingredientObject, category, generateIngredientStrings(
+          [...ingredients, ...additionalIngredients], category).filter(ingredient => !ingredientsToNotEmail.includes(ingredient)))
+    });
+    const response = await emailBasket(ingredientObject, state.accessToken)
+    if (response.status === 200) {
+        dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Shopping list has been emailed!`, success: true }});
+    } else if (response.status === 401 || response.status === 403) {
+        dispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+    } else {
+      dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Emailing shopping list failed due to an error`, success: false }});
     }
+  }
 
-    const generateIngredientStrings = (categoryName: string) => {
-      const sameIngredientGroups = groupBy(categoryGroupIngredients[categoryName], ingredient => ingredient._id);
-      const sortedIngredientGroup = Object.values(sameIngredientGroups).sort((a,b) => (a[0].name > b[0].name) ? 1 : -1);
-      return sortedIngredientGroup.map(sameIngredient => determineIngredientString(sameIngredient));
-    }
+  const generateBasketIngredients = () => {
+    return (<Grid>
+      <Grid.Row>
+        <Grid.Column width={5}>
+          <Header as='h3'>Shopping List</Header>
+        </Grid.Column>
+        <Grid.Column width={5} floated='right' textAlign='right'>
+          <Button color='orange' onClick={() => emailIngredients()}>Send To Email</Button>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row centered columns={1}>
+        <Grid.Column width={13}>
+          <Form>
+            <Form.Group>
+              <Form.Input
+                type='number'
+                width={2}
+                label="Add Item"
+                placeholder='Amount'
+                value={newIngredient.amount}
+                onChange={(event) => changeNewIngredient('amount', parseFloat(event.target.value))}
+              />
+              <Form.Input
+                width={3}
+                style={{marginTop:'24px'}}
+                placeholder='Measurement'
+                value={newIngredient.measurement}
+                onChange={(event) => changeNewIngredient('measurement', event.target.value)}
+                />
+              <Form.Input
+                width={5}
+                style={{marginTop:'24px'}}
+                placeholder='Item'
+                value={newIngredient.name}
+                onChange={(event) => changeNewIngredient('name', event.target.value)}
+              />
+              <Form.Input
+                width={5}
+                list='categories'
+                placeholder='Category'
+                style={{marginTop:'24px'}}
+                value={newIngredient.category}
+                onChange={(event) => changeNewIngredient('category', event.target.value)}/>
+              <datalist id='categories'>
+                <option value='produce'/>
+                <option value='protein'/>
+                <option value='pantry'/>
+                <option value='dairy'/>
+                <option value='alcohol'/>
+                <option value='other'/>
+              </datalist>
+              <Form.Button
+                icon fluid color='orange'
+                style={{marginTop:'24px'}}
+                disabled={!newIngredient.name || !newIngredient.category}
+                onClick={() => addIngredient()}
+              >
+                <Icon name="plus" />
+              </Form.Button>
+            </Form.Group>
+          </Form>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row columns={1} style={{margin:'15px'}}>
+        <Grid.Column width={16}>
+        <IngredientCards
+          width={width}
+          ingredients={ [...ingredients, ...additionalIngredients]}
+          ingredientsToNotEmail={ingredientsToNotEmail}
+          changeIngredientsToNotEmail={changeIngredientsToNotEmail} />
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column width={5}>
+          * = Amount Not Specified
+        </Grid.Column>
+      </Grid.Row>
+    </Grid>)
+  }
 
-    const generateBasketRows = (categoryName: string) => {
-        const ingredientBoxes = generateIngredientStrings(categoryName).map(ingredientString => {
-          return (<Grid.Row columns="equal" style={{marginTop:'10px'}}>
-            <Grid.Column>
-              <Checkbox defaultChecked label={ingredientString} onChange={()=>changeIngredientsToNotEmail(ingredientString)}/>
+  return (
+    <Grid padded>
+      {
+        (state.basket && state.basket.length) ?
+        (<>
+          <Grid.Row columns={1} centered>
+            <Grid.Column width={16}>
+            <SelectedRecipesSegment width={width} />
             </Grid.Column>
-          </Grid.Row>);
-        });
-      return (<>
-        <Grid.Row columns="equal" style={{marginTop:'15px'}}>
+          </Grid.Row>
+          <Grid.Row columns={1} centered>
+            <Grid.Column width={16}>
+              <Segment style={{
+                border: '1px solid lightgrey',
+                borderRadius:'5px',
+                textAlign: 'left'
+                }} basic>
+                  {generateBasketIngredients()}
+              </Segment>
+            </Grid.Column>
+        </Grid.Row></>) :
+        (<Grid.Row>
           <Grid.Column>
-            <h3>{categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}</h3>
+            <h3>No Recipes in Basket</h3>
           </Grid.Column>
-        </Grid.Row>
-        {ingredientBoxes}
-      </>);
-    }
-
-    const emailIngredients = async () => {
-        let ingredientObject = {};
-        ingredientCategories.forEach(category => {
-            set(ingredientObject, category, generateIngredientStrings(category).filter(ingredient => !ingredientsToNotEmail.includes(ingredient)))
-        });
-        const response = await emailBasket(ingredientObject, state.accessToken)
-        if (response.status === 200) {
-            dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Shopping list has been emailed!`, success: true }});
-        } else if (response.status === 401 || response.status === 403) {
-            dispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
-        } else {
-          dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Emailing shopping list failed due to an error`, success: false }});
-        }
-    }
-
-    const generateBasketIngredients = () => {
-      const {pantry, produce, protein, dairy, alcohol} = categoryGroupIngredients;
-
-      return (<Grid>
-        <Grid.Row>
-          <Grid.Column width={10} style={{marginTop:'10px'}}>
-            * = Not specified in the recipe, add to taste
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={4} style={{marginTop:'10px'}}>
-            {(produce && produce.length) && (<>{generateBasketRows("produce")}</>)}
-          </Grid.Column>
-          <Grid.Column width={4} style={{marginTop:'10px'}}>
-            {(pantry && pantry.length) && (<>{generateBasketRows("pantry")}</>)}
-          </Grid.Column>
-          <Grid.Column width={4} style={{marginTop:'10px'}}>
-            {(protein && protein.length) && (<>{generateBasketRows("protein")}</>)}
-          </Grid.Column>
-          <Grid.Column width={4} style={{marginTop:'10px'}}>  
-            {(dairy && dairy.length) && (<>{generateBasketRows("dairy")}</>)}
-            {(alcohol && alcohol.length) && (<>{generateBasketRows("alcohol")}</>)}
-          </Grid.Column>
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column width={4} floated='right'>
-            <Button color='orange' onClick={() => emailIngredients()}>Send To Email</Button>
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>)
-    }
-
-    const generateBasketRecipes = () => {
-      return (
-        <Segment>
-          <Label as='a' color='orange' size='large' ribbon>
-            Included Recipes
-          </Label>
-          <List bulleted>
-          {state.basket.map(recipe => 
-            (
-              <List.Item> {recipe.recipeName} </List.Item>
-            ))}
-          </List>
-        </Segment>
-      )
-    }
-
-    return (
-      <Grid padded>
-          {
-            (state.basket && state.basket.length) ?
-            (<>
-              <Grid.Row>
-                <Grid.Column>
-                  <Button color="orange" inverted onClick={() => dispatch({ type: 'EMPTY_BASKET', payload: {} })}>
-                    {`Empty Basket`}
-                    </Button>
-                </Grid.Column>
-              </Grid.Row>
-              <Grid.Row style={{marginLeft:'10px'}}>
-                <Grid.Column width={4}>
-                  {generateBasketRecipes()}
-                </Grid.Column>
-                <Grid.Column width={12}>
-                  <Segment>
-                    <Label as='a' color='orange' size='large' ribbon>
-                      Shopping List
-                    </Label>
-                      {generateBasketIngredients()}
-                  </Segment>
-                </Grid.Column>
-            </Grid.Row></>) :
-            (<Grid.Row>
-              <Grid.Column>
-                <h3>No Recipes in Basket</h3>
-              </Grid.Column>
-              </Grid.Row>
-            )
-          }
-      </Grid>
-    );
+          </Grid.Row>
+        )
+      }
+    </Grid>
+  );
 }
 
 export default Basket;

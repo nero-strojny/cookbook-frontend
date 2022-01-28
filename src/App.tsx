@@ -85,7 +85,7 @@ const App = (): JSX.Element => {
                 <Route path="/basket" exact>
                   <Header/>
                   <MessageBar/>
-                  <Basket />
+                  <Basket width={width}/>
                 </Route>
                 <Route path="/calendar" exact>
                   <Header/>
