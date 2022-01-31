@@ -11,7 +11,7 @@ import Header from './Header';
 import ViewRecipes from './view/ViewRecipes';
 import Calendar from './calendar/Calendar';
 import Basket from './basket/Basket';
-import Household from "./view/Household";
+import Profile from "./view/Profile";
 
 const App = (): JSX.Element => {
   const localStorageAccessToken = localStorage.getItem("accessToken");
@@ -96,10 +96,10 @@ const App = (): JSX.Element => {
                 <Route path="/login" exact>
                   <Login />
                 </Route>
-                <Route path="/household" exact>
+                <Route path="/profile" exact>
                   <Header/>
                   <MessageBar/>
-                  <Household />
+                  <Profile />
                 </Route>
                 <Redirect exact from="/" to="/viewRecipes" />
               </>
