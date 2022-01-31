@@ -1,7 +1,7 @@
 import { has } from 'lodash';
 import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
-import { Icon, Menu } from "semantic-ui-react";
+import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import { ServerRequestContext } from "./context/ServerRequestContext";
 import { defaultPaginatedRequest } from './serviceCalls';
 
