@@ -3,7 +3,6 @@ import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import { ServerRequestContext } from "./context/ServerRequestContext";
-import { defaultPaginatedRequest } from './serviceCalls';
 
 const Header = (): JSX.Element => {
     const {dispatch: serverDispatch, state} = useContext(ServerRequestContext);

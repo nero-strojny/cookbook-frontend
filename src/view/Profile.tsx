@@ -32,7 +32,7 @@ const profileReducer = (state: ProfileState, action: ProfileAction): ProfileStat
 }
 
 const Profile = (): JSX.Element => {
-    const {state: serverState, dispatch: serverDispatch} = useContext(ServerRequestContext);
+    const {state: serverState} = useContext(ServerRequestContext);
     const [{message, error, loading}, loginDispatch] = useReducer(profileReducer, {message: "", loading: false, error: false});
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -45,7 +45,7 @@ const Profile = (): JSX.Element => {
             loginDispatch({type: 'LOADING', payload: {}});
             if (newPassword === confirmedPassword) {
                 const response = await updatePassword(serverState.userName, currentPassword, newPassword);
-                if (response.status == 400) {
+                if (response.status === 400) {
                     loginDispatch({type: 'FAILURE', payload: {message: "Current password is incorrect."}})
                 }
             } else {
