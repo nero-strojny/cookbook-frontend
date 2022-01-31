@@ -35,7 +35,7 @@ const Basket = ({width}: {width:number}): JSX.Element => {
 
   const addIngredient = () => {
     let tempArray = [];
-    tempArray = [...additionalIngredients, newIngredient];
+    tempArray = [...additionalIngredients, {...newIngredient, _id: newIngredient.name}];
     setAdditionalIngredients(tempArray);
     setNewIngredient(defaultNewIngredient);
   }
