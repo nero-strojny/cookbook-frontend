@@ -45,10 +45,15 @@ const Header = (): JSX.Element => {
                 </Menu.Item>
             </Menu.Menu>
             <Menu.Menu position='right'>
-                <Dropdown     icon='user alternate outline big'
-                              color="orange"
-                              className="orange"
-                              button>
+                <Dropdown icon={null}
+                  button
+                  color="orange"
+                  className="orange"
+                  style={{padding:'0px', margin:'0px'}}
+                  trigger={<Menu.Item>
+                    <Icon name="user" size="small"/>
+                    {`Hello, ${state.userName}`}
+                    </Menu.Item>} >
                     <Dropdown.Menu>
                         <Dropdown.Item active={activeItem === 'profile'}
                                        onClick={() => {
