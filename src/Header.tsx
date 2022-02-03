@@ -1,5 +1,5 @@
 import { has } from 'lodash';
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import { Icon, Menu, Dropdown } from "semantic-ui-react";
 import { ServerRequestContext } from "./context/ServerRequestContext";
