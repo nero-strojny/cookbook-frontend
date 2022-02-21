@@ -5,8 +5,6 @@ import {NewIngredient} from "./types/ingredient";
 import {PaginatedRequest} from "./types/paginatedRequest";
 import {Recipe} from "./types/recipe";
 
-// let process.env.REACT_APP_SERVER_BASE_URL = "http://localhost:8080";
-
 export const defaultPaginatedRequest: PaginatedRequest = {
     pageSize: 6,
     pageCount: 0
