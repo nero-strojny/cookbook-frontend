@@ -1,5 +1,5 @@
 import { groupBy } from "lodash";
-import React from "react";
+import React, { Fragment } from "react";
 import { Card, List, SemanticWIDTHSNUMBER } from "semantic-ui-react";
 import { Ingredient } from "../types/ingredient";
 import { generateIngredientStrings, ingredientCategories } from "./visualizeIngredients";
@@ -41,6 +41,7 @@ const IngredientCards = ({
         { color: 'black' };
         return (
         <List.Item
+          key={`ingredient-${ingredientString}`}
           onClick={()=>changeIngredientsToNotEmail(ingredientString)}
           style={itemStyle}>
             {ingredientString}
@@ -56,7 +57,7 @@ const IngredientCards = ({
       ingredientCategories.map(categoryName => {
         return (categoryGroupIngredients[categoryName]
           && categoryGroupIngredients[categoryName].length) ?
-          <Card>
+          <Card key={`ingredientCard-${categoryName}`}>
             <Card.Content>
               <Card.Header>
                 {categoryName.charAt(0).toUpperCase() + categoryName.slice(1)}
@@ -66,7 +67,7 @@ const IngredientCards = ({
                 {generateBasketRows(categoryName)}
               </Card.Description>
             </Card.Content>
-          </Card> : <></>
+          </Card> : <Fragment key={`ingredientCard-${categoryName}`}></Fragment>
     })}
   </Card.Group>);
 }

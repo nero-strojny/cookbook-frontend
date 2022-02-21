@@ -4,3 +4,4 @@ server/config.json
 node_modules
 build
 .idea/
+.env.local

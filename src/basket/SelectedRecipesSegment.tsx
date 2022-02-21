@@ -37,7 +37,7 @@ const SelectedRecipesSegment = ({width}:{width:number}) => {
         <Grid.Row columns={1} style={{margin:'15px'}}>
           <Grid.Column width={16}>
             <Card.Group itemsPerRow={recipeCardsPerRow}>
-              {recipes.map(recipe => <Card link>
+              {recipes.map(recipe => <Card link key={`calendar-${recipe.recipeName}`}>
                 <Card.Content>
                   <Card.Description>
                     <Header as='h4'>

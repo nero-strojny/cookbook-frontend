@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useMemo } from "react";
 import { Grid, Form, Dropdown, Button, Label, Divider, Modal, Message, Transition } from "semantic-ui-react";
 import { RecipeContext } from "../context/RecipeContext";
 import { searchIngredient, createIngredient } from "../serviceCalls";
@@ -42,24 +42,35 @@ const Ingredients = (): JSX.Element => {
     }
   }
 
-  const submitSearch = async (prefix: string) => {
-    if(prefix !== "") {
-      setIsLoading(true);
-      console.log(prefix);
-      const response = await searchIngredient(prefix, serverState.accessToken);
-      if (response.status === 401 || response.status === 403) {
-        serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+  const debouncedSearch = useMemo(
+    () => {
+      const submitSearch = async (prefix: string) => {
+        if(prefix !== "") {
+          setIsLoading(true);
+          const response = await searchIngredient(prefix, serverState.accessToken);
+          if (response.status === 401 || response.status === 403) {
+            serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+          }
+          setSelectionOptions(response.data);
+          setIsLoading(false);
+        } else {
+          setSelectionOptions([]);
+        }
       }
-      setSelectionOptions(response.data);
-      setIsLoading(false);
-    } else {
-      setSelectionOptions([]);
-    }
-  }
+      return debounce(prefix => {
+        submitSearch(prefix)
+      }, 300)
+    },
+    [serverDispatch, serverState.accessToken]
+  )
 
-  const debouncedSubmitSearch = useCallback(
-    debounce(submitSearch, 300)
-  , []);
+  const handleChange = useCallback(
+    e => {
+      const element = e.target as HTMLInputElement
+      debouncedSearch(element.value);
+    },
+    [debouncedSearch]
+  )
 
   const postNewIngredient = async () => {
     setIsLoading(true);
@@ -218,10 +229,7 @@ const Ingredients = (): JSX.Element => {
                 onAddItem={() => setOpenModal(true)}
                 loading={isLoading}
                 options={selectionOptions.map(opt => ({text: opt.name, value: opt.name, key: opt.name}))}
-                onSearchChange={(event) => {
-                  const element = event.target as HTMLInputElement
-                  debouncedSubmitSearch(element.value);
-                }}
+                onSearchChange={handleChange}
               />
             </Form.Field>
           </Grid.Column>
