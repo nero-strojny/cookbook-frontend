@@ -183,8 +183,7 @@ const Calendar = ({ width }: CalendarProps) => {
     for (let i = 0; i < DAYS_IN_A_WEEK; i++) {
       const loadingRecipe = (isLoading && currentEditCard === i) || !recipes.length;
       dayCards.push(
-      <Card
-        link>
+      <Card link key={`recipeCard-${currentDay.weekdayLong}`}>
         <Card.Content onClick={()=>setCurrentEditCard(i)}>
           <Card.Header>{currentDay.weekdayLong}</Card.Header>
           <Card.Meta>{currentDay.toLocaleString(DateTime.DATE_FULL)}</Card.Meta>
