@@ -1,4 +1,4 @@
 export type QueryRecipe = {
-  recipeName?:  string;
+  recipeName?: string;
   tags?: string[]
 }

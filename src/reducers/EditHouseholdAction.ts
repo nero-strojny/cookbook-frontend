@@ -1,8 +1,8 @@
 export type EditHouseholdAction = {
-    type: string,
-    payload: {
-        householdName?: string,
-        householdMember?: string
-        memberInvite?: string
-    }
+  type: string,
+  payload: {
+    householdName?: string,
+    householdMember?: string
+    memberInvite?: string
+  }
 }

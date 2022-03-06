@@ -1,5 +1,5 @@
-import { PaginatedRequest } from "../types/paginatedRequest";
-import { Recipe } from "../types/recipe";
+import {PaginatedRequest} from "../types/paginatedRequest";
+import {Recipe} from "../types/recipe";
 
 export type ServerAction = {
   type: string,
@@ -16,4 +16,4 @@ export type ServerAction = {
     numberOfRecipes?: number;
     paginatedRequest?: PaginatedRequest;
   }
- }
+}

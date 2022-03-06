@@ -1,4 +1,4 @@
-import { Ingredient } from "../types/ingredient";
+import {Ingredient} from "../types/ingredient";
 
 export type EditRecipeAction = {
   type: string,
@@ -14,4 +14,4 @@ export type EditRecipeAction = {
     indexSelected?: number;
     valueInput?: string;
   }
- }
+}

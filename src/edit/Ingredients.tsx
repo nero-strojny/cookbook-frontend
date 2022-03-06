@@ -1,36 +1,36 @@
-import React, { useCallback, useContext, useState, useMemo } from "react";
-import { Grid, Form, Dropdown, Button, Label, Divider, Modal, Message, Transition } from "semantic-ui-react";
-import { RecipeContext } from "../context/RecipeContext";
-import { searchIngredient, createIngredient } from "../serviceCalls";
-import { ServerRequestContext } from "../context/ServerRequestContext";
-import { Ingredient } from "../types/ingredient";
-import { debounce } from "lodash";
+import React, {useCallback, useContext, useMemo, useState} from "react";
+import {Button, Divider, Dropdown, Form, Grid, Label, Message, Modal, Transition} from "semantic-ui-react";
+import {RecipeContext} from "../context/RecipeContext";
+import {createIngredient, searchIngredient} from "../serviceCalls";
+import {ServerRequestContext} from "../context/ServerRequestContext";
+import {Ingredient} from "../types/ingredient";
+import {debounce} from "lodash";
 
 const Ingredients = (): JSX.Element => {
-  const { dispatch, state } = useContext(RecipeContext);
-  const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
-  const { ingredients: currentIngredients } = state;
-  const [ isLoading, setIsLoading ] = useState<boolean>(false);
-  const [ newName, setNewName ] = useState<string>("");
-  const [ newMeasurement, setNewMeasurement ] = useState<string>("");
-  const [ newAmount, setNewAmount ] = useState<number>(0);
-  const [ selectionOptions, setSelectionOptions ] = useState<Ingredient[]>([]);
-  const [ openModal, setOpenModal ] = useState<boolean>(false);
-  const [ newIngredientName, setNewIngredientName ] = useState<string>("");
-  const [ newCategory, setNewCategory ] = useState<string>("");
-  const [ successfulPost, setSuccessfulPost ] = useState<boolean>(false);
+  const {dispatch, state} = useContext(RecipeContext);
+  const {state: serverState, dispatch: serverDispatch} = useContext(ServerRequestContext);
+  const {ingredients: currentIngredients} = state;
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [newName, setNewName] = useState<string>("");
+  const [newMeasurement, setNewMeasurement] = useState<string>("");
+  const [newAmount, setNewAmount] = useState<number>(0);
+  const [selectionOptions, setSelectionOptions] = useState<Ingredient[]>([]);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [newIngredientName, setNewIngredientName] = useState<string>("");
+  const [newCategory, setNewCategory] = useState<string>("");
+  const [successfulPost, setSuccessfulPost] = useState<boolean>(false);
 
   const addIngredient = () => {
     const selectedOption = selectionOptions.find(option => option.name === newName);
     if (selectedOption) {
       dispatch({
-        type:'ADD_INGREDIENT',
+        type: 'ADD_INGREDIENT',
         payload: {
           ingredient: {
             name: newName,
             amount: newAmount,
             measurement: newMeasurement,
-            _id: selectedOption._id, 
+            _id: selectedOption._id,
             category: selectedOption.category
           }
         }
@@ -45,11 +45,11 @@ const Ingredients = (): JSX.Element => {
   const debouncedSearch = useMemo(
     () => {
       const submitSearch = async (prefix: string) => {
-        if(prefix !== "") {
+        if (prefix !== "") {
           setIsLoading(true);
           const response = await searchIngredient(prefix, serverState.accessToken);
           if (response.status === 401 || response.status === 403) {
-            serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+            serverDispatch({type: 'LOGOUT_SUCCESS', payload: {}});
           }
           setSelectionOptions(response.data);
           setIsLoading(false);
@@ -75,10 +75,10 @@ const Ingredients = (): JSX.Element => {
   const postNewIngredient = async () => {
     setIsLoading(true);
     const response = await createIngredient(
-      { name: newIngredientName || newName, category: newCategory},
-    serverState.accessToken);
+      {name: newIngredientName || newName, category: newCategory},
+      serverState.accessToken);
     if (response.status === 401 || response.status === 403) {
-      serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+      serverDispatch({type: 'LOGOUT_SUCCESS', payload: {}});
     }
     setSelectionOptions([response.data]);
     setSuccessfulPost(true);
@@ -99,21 +99,21 @@ const Ingredients = (): JSX.Element => {
         <Grid.Column width={4}>
           <h4>Name</h4>
         </Grid.Column>
-        <Grid.Column width={2} />
+        <Grid.Column width={2}/>
       </Grid.Row>
     ];
 
     // Do not display the default ingredient list
-    if (currentIngredients.length > 0 ) {
+    if (currentIngredients.length > 0) {
       for (let i = 0; i < currentIngredients.length; i++) {
         ingredientInputs.push(
           <Grid.Row columns="equal" key={`ingredient${i}`}>
-            <Grid.Column width={1} />
+            <Grid.Column width={1}/>
             <Grid.Column width={3}>
               {
                 currentIngredients.length >= 1
-                  ? currentIngredients[i].amount > 0 
-                    ? currentIngredients[i].amount  
+                  ? currentIngredients[i].amount > 0
+                    ? currentIngredients[i].amount
                     : ""
                   : ""
               }
@@ -134,10 +134,10 @@ const Ingredients = (): JSX.Element => {
             </Grid.Column>
             <Grid.Column width={2} textAlign="center" verticalAlign="middle">
               <Button size='mini' color='orange' inverted circular icon='x'
-                onClick={() => dispatch({ 
-                  type: 'DELETE_INGREDIENT',
-                  payload: { indexSelected: i }
-                })}>
+                      onClick={() => dispatch({
+                        type: 'DELETE_INGREDIENT',
+                        payload: {indexSelected: i}
+                      })}>
               </Button>
             </Grid.Column>
           </Grid.Row>
@@ -145,13 +145,13 @@ const Ingredients = (): JSX.Element => {
         ingredientInputs.push(
           <Grid.Row columns="equal" key={`divider${i}`}>
             <Grid.Column width={16}>
-              <Divider fitted />
+              <Divider fitted/>
             </Grid.Column>
           </Grid.Row>
         )
       }
     }
-    
+
     return ingredientInputs;
   }
 
@@ -160,7 +160,7 @@ const Ingredients = (): JSX.Element => {
       <Transition visible={successfulPost} animation="scale">
         <Message
           positive
-          onDismiss={()=>setSuccessfulPost(false)}
+          onDismiss={() => setSuccessfulPost(false)}
           header={"Success!"}
           content={`Added New Ingredient: "${newIngredientName || newName}"`}
         />
@@ -168,7 +168,7 @@ const Ingredients = (): JSX.Element => {
       <Form.Input
         label="Name:"
         defaultValue={newName}
-        onChange={(event) => setNewIngredientName(event.target.value)} />
+        onChange={(event) => setNewIngredientName(event.target.value)}/>
       <Form.Input
         list='categories'
         label="Category:"
@@ -180,7 +180,7 @@ const Ingredients = (): JSX.Element => {
         <option value='dairy'/>
         <option value='alcohol'/>
       </datalist>
-      <Button onClick={()=>postNewIngredient()} loading={isLoading}>Submit</Button>
+      <Button onClick={() => postNewIngredient()} loading={isLoading}>Submit</Button>
     </Form>
   )
 
@@ -196,7 +196,7 @@ const Ingredients = (): JSX.Element => {
       </Grid>
       <Grid stackable>
         <Grid.Row>
-          <Grid.Column width={1} />
+          <Grid.Column width={1}/>
           <Grid.Column width={3}>
             <Form.Field>
               <input
@@ -225,7 +225,7 @@ const Ingredients = (): JSX.Element => {
                 selection
                 clearable
                 allowAdditions
-                onChange={(_event, { value }) => setNewName(String(value))}
+                onChange={(_event, {value}) => setNewName(String(value))}
                 onAddItem={() => setOpenModal(true)}
                 loading={isLoading}
                 options={selectionOptions.map(opt => ({text: opt.name, value: opt.name, key: opt.name}))}
@@ -235,14 +235,14 @@ const Ingredients = (): JSX.Element => {
           </Grid.Column>
           <Grid.Column width={4} textAlign="center" verticalAlign="middle">
             <Button size='mini' color='orange' inverted circular icon='plus'
-              onClick={() => addIngredient()}
-              disabled={newName === ""}
+                    onClick={() => addIngredient()}
+                    disabled={newName === ""}
             />
           </Grid.Column>
         </Grid.Row>
         <Grid.Row>
           <Grid.Column>
-            {state.ingredients.length <= 0 &&(
+            {state.ingredients.length <= 0 && (
               <Label pointing color="red">Please enter at least one ingredient</Label>
             )}
           </Grid.Column>
@@ -251,10 +251,13 @@ const Ingredients = (): JSX.Element => {
       <Modal
         open={openModal}
         size={"mini"}
-        onClose={()=>{setOpenModal(false); setSuccessfulPost(false);}}
+        onClose={() => {
+          setOpenModal(false);
+          setSuccessfulPost(false);
+        }}
         header='Add Ingredient'
         content={modalContent}
-        actions={[{ key: 'done', content: 'Done', positive: true }]}
+        actions={[{key: 'done', content: 'Done', positive: true}]}
       />
     </Form>
   );

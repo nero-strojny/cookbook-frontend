@@ -1,39 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Marck+Script&display=swap');
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #EBEBEB;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #EBEBEB;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
 .headerTitleStyle {
-  font-family: 'Marck Script', cursive;
-  font-size: xx-large;
-  color: white;
+    font-family: 'Marck Script', cursive;
+    font-size: xx-large;
+    color: white;
 }
 
 .logoutTitleStyle {
-  font-size: small;
-  color: white;
+    font-size: small;
+    color: white;
 }
 
 .orangeMenuStyle {
-  display: flex;
-  margin: 0;
-  background-color: #f2711c !important;
+    display: flex;
+    margin: 0;
+    background-color: #f2711c !important;
 }
 
 .blueMenuStyle {
-  display: flex;
-  margin: 0;
-  background-color: #7EABEF !important;
+    display: flex;
+    margin: 0;
+    background-color: #7EABEF !important;
 }

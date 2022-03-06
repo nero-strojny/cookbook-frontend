@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Grid, Icon, List } from "semantic-ui-react"
-import { Ingredient } from "../types/ingredient";
+import React, {useState} from "react";
+import {Grid, Icon, List} from "semantic-ui-react"
+import {Ingredient} from "../types/ingredient";
 
 type IngredientsListProps = {
   ingredients: Ingredient[];
   recipeId?: string;
 }
 
-const IngredientsList = ({ ingredients, recipeId }: IngredientsListProps): JSX.Element => {
+const IngredientsList = ({ingredients, recipeId}: IngredientsListProps): JSX.Element => {
 
   const [ingredientsVisible, setIngredientsVisible] = useState<boolean>(false);
 
@@ -25,9 +25,9 @@ const IngredientsList = ({ ingredients, recipeId }: IngredientsListProps): JSX.E
       <Grid.Row>
         <Grid.Column>
           <h4>
-            <p style={{ cursor: 'pointer' }}
-              onClick={() => setIngredientsVisible(false)}>
-              <Icon name="minus" color='orange' ></Icon>
+            <p style={{cursor: 'pointer'}}
+               onClick={() => setIngredientsVisible(false)}>
+              <Icon name="minus" color='orange'></Icon>
               {"\tIngredients"}
             </p>
           </h4>
@@ -45,9 +45,9 @@ const IngredientsList = ({ ingredients, recipeId }: IngredientsListProps): JSX.E
       <Grid.Row>
         <Grid.Column>
           <h4>
-            <p style={{ cursor: 'pointer' }}
-              onClick={() => setIngredientsVisible(true)}>
-              <Icon name="plus" color='orange' ></Icon>
+            <p style={{cursor: 'pointer'}}
+               onClick={() => setIngredientsVisible(true)}>
+              <Icon name="plus" color='orange'></Icon>
               {"\tIngredients ..."}
             </p>
           </h4>
