@@ -1,10 +1,10 @@
-import { groupBy } from "lodash";
-import React, { Fragment } from "react";
-import { Card, List, SemanticWIDTHSNUMBER } from "semantic-ui-react";
-import { Ingredient } from "../types/ingredient";
-import { generateIngredientStrings, ingredientCategories } from "./visualizeIngredients";
+import {groupBy} from "lodash";
+import React, {Fragment} from "react";
+import {Card, List, SemanticWIDTHSNUMBER} from "semantic-ui-react";
+import {Ingredient} from "../types/ingredient";
+import {generateIngredientStrings, ingredientCategories} from "./visualizeIngredients";
 
-type IngredientCardsProps = { 
+type IngredientCardsProps = {
   width: number;
   ingredients: Ingredient[];
   ingredientsToNotEmail: string[];
@@ -12,17 +12,17 @@ type IngredientCardsProps = {
 }
 
 const IngredientCards = ({
-  width,
-  ingredients,
-  ingredientsToNotEmail,
-  changeIngredientsToNotEmail
-}: IngredientCardsProps) => {
+                           width,
+                           ingredients,
+                           ingredientsToNotEmail,
+                           changeIngredientsToNotEmail
+                         }: IngredientCardsProps) => {
   const categoryGroupIngredients = groupBy(ingredients, ingredient => ingredient.category);
 
   let ingredientCardsPerRow: SemanticWIDTHSNUMBER = 1;
   if (width > 1100) {
     ingredientCardsPerRow = 5;
-  } else if (width > 900){
+  } else if (width > 900) {
     ingredientCardsPerRow = 4;
   } else if (width > 700) {
     ingredientCardsPerRow = 3;
@@ -33,23 +33,24 @@ const IngredientCards = ({
   const generateBasketRows = (categoryName: string) => {
     const ingredientBoxes = generateIngredientStrings(ingredients, categoryName).map(ingredientString => {
       const itemStyle = ingredientsToNotEmail.includes(ingredientString) ?
-        { textDecorationLine: 'line-through',
+        {
+          textDecorationLine: 'line-through',
           color: 'black',
           textDecorationColor: 'black',
           textDecorationThickness: '0.2em'
         } :
-        { color: 'black' };
-        return (
+        {color: 'black'};
+      return (
         <List.Item
           key={`ingredient-${ingredientString}`}
-          onClick={()=>changeIngredientsToNotEmail(ingredientString)}
+          onClick={() => changeIngredientsToNotEmail(ingredientString)}
           style={itemStyle}>
-            {ingredientString}
+          {ingredientString}
         </List.Item>);
     });
     return <List selection>
-        {ingredientBoxes}
-      </List>;
+      {ingredientBoxes}
+    </List>;
   }
 
   return (<Card.Group centered itemsPerRow={ingredientCardsPerRow}>
@@ -68,7 +69,7 @@ const IngredientCards = ({
               </Card.Description>
             </Card.Content>
           </Card> : <Fragment key={`ingredientCard-${categoryName}`}></Fragment>
-    })}
+      })}
   </Card.Group>);
 }
 

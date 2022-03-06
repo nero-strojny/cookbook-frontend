@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import { Transition, Message } from "semantic-ui-react";
-import { ServerRequestContext } from "./context/ServerRequestContext";
+import React, {useContext} from "react";
+import {Message, Transition} from "semantic-ui-react";
+import {ServerRequestContext} from "./context/ServerRequestContext";
 
 const MessageBar = (): JSX.Element => {
-  const { state, dispatch } = useContext(ServerRequestContext);
-  const { header, messageContent } = state;
+  const {state, dispatch} = useContext(ServerRequestContext);
+  const {header, messageContent} = state;
   return (
     <Transition visible={Boolean(messageContent)} animation="scale" duration={500}>
       <Message

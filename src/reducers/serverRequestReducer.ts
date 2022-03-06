@@ -1,11 +1,11 @@
-import { defaultPaginatedRequest } from "../serviceCalls";
-import { findIndex, get } from "lodash";
-import { ServerState } from "./ServerState";
-import { ServerAction } from "./ServerAction";
-import { Recipe } from "../types/recipe";
+import {defaultPaginatedRequest} from "../serviceCalls";
+import {findIndex, get} from "lodash";
+import {ServerState} from "./ServerState";
+import {ServerAction} from "./ServerAction";
+import {Recipe} from "../types/recipe";
 
 export const serverRequestReducer = (state: ServerState, action: ServerAction): ServerState => {
-  const { payload } = action;
+  const {payload} = action;
   let tempBasket: Recipe[] = [];
   switch (action.type) {
     case "REFRESH_RECIPES":
@@ -24,14 +24,14 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
       return {
         ...state,
         basket: tempBasket.concat(dedup)
-        }
+      }
     case "ADD_ALL_CALENDAR":
       return {
         ...state,
         calendarRecipes: payload.calendarRecipes,
         header: 'Success!',
         messageContent: `Your Calendar Has Been Saved For This Session!`,
-        }
+      }
     case "REMOVE_BASKET":
       tempBasket = [...state.basket];
       const basketItemId: string = get(payload, "basketItem._id", "");
@@ -49,14 +49,14 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
     case "SHOW_MESSAGE":
       return {
         ...state,
-        header: payload.success ? "Success!": "Error",
+        header: payload.success ? "Success!" : "Error",
         messageContent: payload.messageContent,
         paginatedRequest: defaultPaginatedRequest,
         shouldRefresh: true
       }
     case "CLEAR_MESSAGE":
       return {
-        ...state, 
+        ...state,
         header: undefined,
         messageContent: undefined
       };
@@ -82,7 +82,7 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
       }
     case "QUERY_RECIPES_PENDING":
       return {
-        ...state, 
+        ...state,
         paginatedRequest: payload.paginatedRequest || defaultPaginatedRequest,
         shouldRefresh: true
       }
