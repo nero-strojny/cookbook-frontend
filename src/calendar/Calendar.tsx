@@ -1,41 +1,32 @@
-import React, {useContext, useEffect, useState} from "react";
-import {
-  Button,
-  Card,
-  Divider,
-  Dropdown,
-  Grid,
-  Header,
-  Label,
-  Loader,
-  Popup,
-  Segment,
-  SemanticWIDTHSNUMBER
-} from "semantic-ui-react";
-import {DateTime} from "luxon";
-import {Recipe} from "../types/recipe";
-import {ServerRequestContext} from "../context/ServerRequestContext";
-import {getRandomRecipes, getRecipes} from "../serviceCalls";
+import React, { useEffect, useState, useContext } from "react";
+import { Card, Grid, Button, Label, Loader, SemanticWIDTHSNUMBER, Divider, Dropdown, Header, Segment, Popup } from "semantic-ui-react";
+import { DateTime } from "luxon";
+import { Recipe } from "../types/recipe";
+import { ServerRequestContext } from "../context/ServerRequestContext";
+import { getRandomRecipes, getRecipes, updateCalendar } from "../serviceCalls";
 import SimplifiedRecipeCard from "../view/SimplifiedRecipeCard";
+import { CalendarObject, calendarToRecipes, populateCalendar } from "../actions/populateCalendar";
+import { get, has, indexOf, set } from "lodash";
 
 type CalendarProps = {
   width: number
 }
 
-const Calendar = ({width}: CalendarProps) => {
-  const DAYS_IN_A_WEEK = 7;
-  const defaultRecipeName = "None Selected";
+const Calendar = ({ width }: CalendarProps) => {
+
   // start cards on Sunday Date, luxon starts on Mondays, so we
   // have to subtract 1
-  const beginningOfWeek = DateTime.now().startOf('week').minus({days: 1});
+  const beginningOfWeek = DateTime.now().startOf('week').minus({ days: 1 });
+  const daysInAWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+  const defaultRecipeName = "None Selected";
 
-  const {state: serverState, dispatch: serverDispatch} = useContext(ServerRequestContext);
-  const [recipes, setRecipes] = useState<Recipe[]>(serverState.calendarRecipes || []);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [searchLoading, setSearchLoading] = useState<boolean>(false);
-  const [currentEditCard, setCurrentEditCard] = useState<number>(-1);
-  const [selectionOptions, setSelectionOptions] = useState<Recipe[]>([]);
-  const [newRecipeName, setNewRecipeName] = useState<string>("false");
+  const { state: serverState, dispatch: serverDispatch } = useContext(ServerRequestContext);
+  const [ isLoading, setIsLoading ] = useState<boolean>(false);
+  const [ searchLoading, setSearchLoading ] = useState<boolean>(false);
+  const [ currentEditCard, setCurrentEditCard ] = useState<string>("");
+  const [ selectionOptions, setSelectionOptions ] = useState<Recipe[]>([]);
+  const [ newRecipeName, setNewRecipeName ] = useState<string>("false");
+  const [ calendar, setCalendar ] = useState<CalendarObject>({});
 
   let cardsPerRow: SemanticWIDTHSNUMBER = 1;
   let segmentWidth: string = '98%';
@@ -52,21 +43,24 @@ const Calendar = ({width}: CalendarProps) => {
   useEffect(() => {
     let isCurrent = true;
     (async () => {
-      if (isCurrent && !recipes.length) {
+      if (isCurrent) {
         setIsLoading(true);
-        const response = await getRandomRecipes(serverState.accessToken, DAYS_IN_A_WEEK);
-        if (response.status === 200) {
-          setRecipes(response.data);
-        } else if (response.status === 401 || response.status === 403) {
-          serverDispatch({type: 'LOGOUT_SUCCESS', payload: {}});
-        }
+        const populationResponse = await populateCalendar(beginningOfWeek, serverState, serverDispatch, serverState.accessToken);
+        setCalendar(populationResponse);
         setIsLoading(false);
       }
     })();
     return () => {
       isCurrent = false;
     }
-  });
+  }, []);
+
+  const setRecipeForCalendarDay = async (dayToUpdate: string, recipe?: Recipe) => {
+    const tempCalendar = {...calendar};
+    set(tempCalendar, dayToUpdate, recipe);
+    await updateCalendar(tempCalendar, serverState.accessToken);
+    setCalendar(tempCalendar);
+  }
 
   const submitSearch = async (prefix: string) => {
     if (prefix !== "") {
@@ -84,26 +78,19 @@ const Calendar = ({width}: CalendarProps) => {
     }
   }
 
-  const generateRandomRecipe = async (index: number) => {
+  const generateRandomRecipe = async(dayToUpdate: string) => {
     setIsLoading(true);
     const response = await getRandomRecipes(serverState.accessToken, 1);
     if (response.status === 200) {
-      const tempRecipes = [...recipes];
-      tempRecipes[index] = response.data[0];
-      setRecipes(tempRecipes);
+      await setRecipeForCalendarDay(dayToUpdate, response.data[0]);
     } else if (response.status === 401 || response.status === 403) {
       serverDispatch({type: 'LOGOUT_SUCCESS', payload: {}});
     }
     setIsLoading(false);
   }
 
-  const clearRecipe = (index: number) => {
-    const tempRecipes = [...recipes];
-    tempRecipes[index] = {
-      ...tempRecipes[index],
-      recipeName: defaultRecipeName
-    };
-    setRecipes(tempRecipes);
+  const clearRecipe = async (dayToClear: string) => {
+    await setRecipeForCalendarDay(dayToClear);
   }
 
   const searchAndSetRecipe = async () => {
@@ -116,17 +103,15 @@ const Calendar = ({width}: CalendarProps) => {
     if (response.status === 401 || response.status === 403) {
       serverDispatch({type: 'LOGOUT_SUCCESS', payload: {}});
     }
-    if (response.data.recipes && response.data.recipes.length) {
-      const tempRecipes = [...recipes];
-      tempRecipes[currentEditCard] = response.data.recipes[0];
-      setRecipes(tempRecipes);
+    if(response.data.recipes && response.data.recipes.length){
+      await setRecipeForCalendarDay(currentEditCard, response.data.recipes[0]);
     }
     setIsLoading(false);
 
   }
 
   const createEditCard = () => {
-    if (currentEditCard === -1) {
+    if(currentEditCard === "") {
       return (
         <Segment style={{border: '1px solid lightgrey', borderRadius: '5px'}} basic>
           <Header as='h3'>No Day Selected</Header>
@@ -134,9 +119,9 @@ const Calendar = ({width}: CalendarProps) => {
         </Segment>
       );
     }
-    const chosenDay = beginningOfWeek.plus({days: currentEditCard});
-    const currentDayRecipe = recipes[currentEditCard];
-    const loadingRecipe = isLoading || !recipes.length;
+    const chosenDay = beginningOfWeek.plus({ days: indexOf(daysInAWeek, currentEditCard)});
+    const currentDayRecipe = get(calendar, currentEditCard);
+    const loadingRecipe = isLoading;
     const showRecipeDetails = currentDayRecipe.recipeName !== defaultRecipeName;
     return (
       <Segment style={{
@@ -203,32 +188,34 @@ const Calendar = ({width}: CalendarProps) => {
 
 
   const createDayCards = () => {
-    const dayCards = [];
+    const dayCards: JSX.Element[] = [];
     let currentDay = beginningOfWeek;
-    for (let i = 0; i < DAYS_IN_A_WEEK; i++) {
-      const loadingRecipe = (isLoading && currentEditCard === i) || !recipes.length;
+    daysInAWeek.forEach((day, index) => {
+      const recipeOfTheDay = get(calendar, day) as Recipe;
+      const loadingRecipe = (isLoading && currentEditCard === day) || !Object.values(calendar).length;
+      console.log(loadingRecipe);
       dayCards.push(
-        <Card link key={`recipeCard-${currentDay.weekdayLong}`}>
-          <Card.Content onClick={() => setCurrentEditCard(i)}>
-            <Card.Header>{currentDay.weekdayLong}</Card.Header>
-            <Card.Meta>{currentDay.toLocaleString(DateTime.DATE_FULL)}</Card.Meta>
-            <Card.Description>
-              {loadingRecipe ?
-                <Loader active inline='centered'/> :
-                <Label
-                  as='a'
-                  basic
-                  color={recipes[i].recipeName === defaultRecipeName ? 'grey' : 'orange'}
-                  size='large'
-                >
-                  {recipes[i].recipeName}
-                </Label>
-              }
-            </Card.Description>
-          </Card.Content>
-        </Card>);
-      currentDay = currentDay.plus({days: 1});
-    }
+      <Card link key={`recipeCard-${day}`}>
+        <Card.Content onClick={()=>setCurrentEditCard(day)}>
+          <Card.Header>{currentDay.weekdayLong}</Card.Header>
+          <Card.Meta>{currentDay.toLocaleString(DateTime.DATE_FULL)}</Card.Meta>
+          <Card.Description>
+            {loadingRecipe ?
+              <Loader active inline='centered'/> :
+              <Label
+                as='a'
+                basic
+                color={has(recipeOfTheDay, "recipeName") ? 'orange' : 'grey'}
+                size='large'
+              >
+                {recipeOfTheDay.recipeName || defaultRecipeName}
+              </Label>
+            }
+          </Card.Description>
+        </Card.Content>
+      </Card>);
+      currentDay = currentDay.plus({ days: 1 });
+    });
     return dayCards;
   }
 
@@ -237,18 +224,9 @@ const Calendar = ({width}: CalendarProps) => {
       <Grid.Column>
         <Button
           color='orange'
-          onClick={() => serverDispatch({
-            type: 'ADD_ALL_BASKET',
-            payload: {basketItems: recipes.filter(recipe => recipe.recipeName !== defaultRecipeName)}
-          })}
+          onClick={() => serverDispatch({ type: 'ADD_ALL_BASKET', payload: { basketItems: calendarToRecipes(calendar) } })}
         >
           Add All To Basket
-        </Button>
-        <Button
-          color='orange'
-          onClick={() => serverDispatch({type: 'ADD_ALL_CALENDAR', payload: {calendarRecipes: recipes}})}
-        >
-          Save Calendar
         </Button>
       </Grid.Column>
     </Grid.Row>

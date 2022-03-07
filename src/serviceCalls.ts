@@ -1,6 +1,7 @@
 import axios, {AxiosResponse} from "axios";
 import {Promise} from "bluebird";
 import {get, has, set} from 'lodash';
+import { CalendarObject, recipesToCalendar } from "./actions/populateCalendar";
 import {NewIngredient} from "./types/ingredient";
 import {PaginatedRequest} from "./types/paginatedRequest";
 import {Recipe} from "./types/recipe";
@@ -194,4 +195,68 @@ export const emailBasket = async (ingredientStrings: { [category: string]: strin
   return response
 }
 
+export const getCalendar = async (startDate: string, token: string) => {
+    let response;
+    try {
+        response = await axios.get(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar/${startDate}`, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            }
+        });
+    } catch (err) {
+        response = get(err, 'response');
+    }
+    return response
+}
 
+export const createCalendar = async (recipes: Recipe[], startDate: string, token: string) => {
+    let response;
+    const body = {
+        startDate,
+        sunday: recipes[0]._id,
+        monday: recipes[1]._id,
+        tuesday: recipes[2]._id,
+        wednesday: recipes[3]._id,
+        thursday: recipes[4]._id,
+        friday: recipes[5]._id,
+        saturday: recipes[6]._id,
+      }
+    try {
+        response = await axios.post(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar`, {...body}, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            }
+        });
+    } catch (err) {
+        response = get(err, 'response');
+    }
+    return response
+}
+
+export const updateCalendar = async (calendar: CalendarObject, token: string) => {
+    let response;
+    const body = {
+        _id: calendar._id,
+        startDate: calendar.startDate,
+        monday: calendar.monday?._id,
+        tuesday: calendar.tuesday?._id,
+        wednesday: calendar.wednesday?._id,
+        thursday: calendar.thursday?._id,
+        friday: calendar.friday?._id,
+        saturday: calendar.saturday?._id,
+        sunday: calendar.sunday?._id,
+      }
+    try {
+        response = await axios.put(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar`, body, {
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            }
+        });
+    } catch (err) {
+        response = get(err, 'response');
+    }
+    return response
+}
