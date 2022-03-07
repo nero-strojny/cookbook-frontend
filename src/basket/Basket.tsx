@@ -9,8 +9,6 @@ import IngredientCards from "./IngredientCards";
 import { generateIngredientStrings, ingredientCategories } from "./visualizeIngredients";
 
 interface EmailState {
-  error: boolean;
-  message?: string;
   loading: boolean;
 }
 
@@ -24,13 +22,13 @@ export type EmailAction = {
 const emailReducer = (state: EmailState, action: EmailAction): EmailState =>  {
   switch (action.type) {
     case 'SUCCESS':
-      return {message: action.payload.message, error: false, loading: false};
+      return {loading: false};
     case 'FAILURE':
-      return {message: action.payload.message, error: true, loading: false};
+      return {loading: false};
     case 'LOADING':
-      return {...state, loading: true, message: ""};
+      return {loading: true};
     case 'CLEAR':
-      return {...state, loading: false, message: "", error: false};
+      return {loading: false};
     default:
       throw new Error();
   }
@@ -43,7 +41,7 @@ const Basket = ({width}: {width:number}): JSX.Element => {
   const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState<string[]>([]);
   const [ additionalIngredients, setAdditionalIngredients] = useState<Ingredient[]>([]);
   const [ newIngredient, setNewIngredient ] = useState<Ingredient>({...defaultNewIngredient});
-  const [{error, loading, message}, emailDispatch] = useReducer(emailReducer, {message: "", error: false, loading: false});
+  const [{loading}, emailDispatch] = useReducer(emailReducer, {loading: false});
 
   const changeIngredientsToNotEmail = (ingredientString: string) => {
     let tempArray = [];
