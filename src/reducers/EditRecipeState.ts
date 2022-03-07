@@ -1,6 +1,6 @@
-import { Ingredient } from "../types/ingredient";
-import { Recipe } from "../types/recipe";
-import { Step } from "../types/step";
+import {Ingredient} from "../types/ingredient";
+import {Recipe} from "../types/recipe";
+import {Step} from "../types/step";
 
 export interface EditRecipeState {
   recipeName: string;
@@ -30,6 +30,6 @@ export const defaultRecipe: Recipe = {
 };
 
 export const defaultRecipeState: EditRecipeState = {
-  ...defaultRecipe, 
+  ...defaultRecipe,
   calories: 0
 };

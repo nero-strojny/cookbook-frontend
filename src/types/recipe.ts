@@ -1,5 +1,5 @@
-import { Ingredient } from "./ingredient";
-import { Step } from "./step";
+import {Ingredient} from "./ingredient";
+import {Step} from "./step";
 
 export type Recipe = {
   _id?: string;

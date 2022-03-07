@@ -1,6 +1,6 @@
-import { defaultPaginatedRequest } from "../serviceCalls";
-import { PaginatedRequest } from "../types/paginatedRequest";
-import { Recipe } from "../types/recipe";
+import {defaultPaginatedRequest} from "../serviceCalls";
+import {PaginatedRequest} from "../types/paginatedRequest";
+import {Recipe} from "../types/recipe";
 
 export interface ServerState {
   accessToken: string;
