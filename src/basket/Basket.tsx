@@ -1,12 +1,12 @@
-import React, {useContext, useReducer, useState} from "react";
-import { Grid, Button, Segment, Header, Icon, Form } from "semantic-ui-react";
-import { ServerRequestContext } from "../context/ServerRequestContext";
-import { flatMap, set } from 'lodash';
-import { emailBasket } from "../serviceCalls";
-import { Ingredient } from "../types/ingredient";
+import React, {useContext, useState} from "react";
+import {Button, Form, Grid, Header, Icon, Segment} from "semantic-ui-react";
+import {ServerRequestContext} from "../context/ServerRequestContext";
+import {flatMap, set} from 'lodash';
+import {emailBasket} from "../serviceCalls";
+import {Ingredient} from "../types/ingredient";
 import SelectedRecipesSegment from "./SelectedRecipesSegment";
 import IngredientCards from "./IngredientCards";
-import { generateIngredientStrings, ingredientCategories } from "./visualizeIngredients";
+import {generateIngredientStrings, ingredientCategories} from "./visualizeIngredients";
 
 interface EmailState {
   loading: boolean;
@@ -43,9 +43,10 @@ const Basket = ({width}: {width:number}): JSX.Element => {
   const [ newIngredient, setNewIngredient ] = useState<Ingredient>({...defaultNewIngredient});
   const [{loading}, emailDispatch] = useReducer(emailReducer, {loading: false});
 
+
   const changeIngredientsToNotEmail = (ingredientString: string) => {
     let tempArray = [];
-    if(ingredientsToNotEmail.includes(ingredientString)){
+    if (ingredientsToNotEmail.includes(ingredientString)) {
       tempArray = ingredientsToNotEmail.filter(ingredientToNotEmail => ingredientToNotEmail !== ingredientString);
     } else {
       tempArray = [...ingredientsToNotEmail, ingredientString];
@@ -70,15 +71,15 @@ const Basket = ({width}: {width:number}): JSX.Element => {
     emailDispatch({ type: 'LOADING', payload: {} })
     let ingredientObject = {};
     ingredientCategories.forEach(category => {
-        set(ingredientObject, category, generateIngredientStrings(
-          [...ingredients, ...additionalIngredients], category).filter(ingredient => !ingredientsToNotEmail.includes(ingredient)))
+      set(ingredientObject, category, generateIngredientStrings(
+        [...ingredients, ...additionalIngredients], category).filter(ingredient => !ingredientsToNotEmail.includes(ingredient)))
     });
     const response = await emailBasket(ingredientObject, state.accessToken)
     if (response.status === 200) {
       emailDispatch({ type: 'SUCCESS', payload: {}})
       dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Shopping list has been emailed!`, success: true }});
     } else if (response.status === 401 || response.status === 403) {
-        dispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
+      dispatch({type: 'LOGOUT_SUCCESS', payload: {}});
     } else {
       emailDispatch({ type: 'FAILURE', payload: {}})
       dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Emailing shopping list failed due to an error`, success: false }});
@@ -109,14 +110,14 @@ const Basket = ({width}: {width:number}): JSX.Element => {
               />
               <Form.Input
                 width={3}
-                style={{marginTop:'24px'}}
+                style={{marginTop: '24px'}}
                 placeholder='Measurement'
                 value={newIngredient.measurement}
                 onChange={(event) => changeNewIngredient('measurement', event.target.value)}
-                />
+              />
               <Form.Input
                 width={5}
-                style={{marginTop:'24px'}}
+                style={{marginTop: '24px'}}
                 placeholder='Item'
                 value={newIngredient.name}
                 onChange={(event) => changeNewIngredient('name', event.target.value)}
@@ -125,7 +126,7 @@ const Basket = ({width}: {width:number}): JSX.Element => {
                 width={5}
                 list='categories'
                 placeholder='Category'
-                style={{marginTop:'24px'}}
+                style={{marginTop: '24px'}}
                 value={newIngredient.category}
                 onChange={(event) => changeNewIngredient('category', event.target.value)}/>
               <datalist id='categories'>
@@ -138,23 +139,23 @@ const Basket = ({width}: {width:number}): JSX.Element => {
               </datalist>
               <Form.Button
                 icon fluid color='orange'
-                style={{marginTop:'24px'}}
+                style={{marginTop: '24px'}}
                 disabled={!newIngredient.name || !newIngredient.category}
                 onClick={() => addIngredient()}
               >
-                <Icon name="plus" />
+                <Icon name="plus"/>
               </Form.Button>
             </Form.Group>
           </Form>
         </Grid.Column>
       </Grid.Row>
-      <Grid.Row columns={1} style={{margin:'15px'}}>
+      <Grid.Row columns={1} style={{margin: '15px'}}>
         <Grid.Column width={16}>
-        <IngredientCards
-          width={width}
-          ingredients={ [...ingredients, ...additionalIngredients]}
-          ingredientsToNotEmail={ingredientsToNotEmail}
-          changeIngredientsToNotEmail={changeIngredientsToNotEmail} />
+          <IngredientCards
+            width={width}
+            ingredients={[...ingredients, ...additionalIngredients]}
+            ingredientsToNotEmail={ingredientsToNotEmail}
+            changeIngredientsToNotEmail={changeIngredientsToNotEmail}/>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
@@ -169,29 +170,29 @@ const Basket = ({width}: {width:number}): JSX.Element => {
     <Grid padded>
       {
         (state.basket && state.basket.length) ?
-        (<>
-          <Grid.Row columns={1} centered>
-            <Grid.Column width={16}>
-            <SelectedRecipesSegment width={width} />
-            </Grid.Column>
-          </Grid.Row>
-          <Grid.Row columns={1} centered>
-            <Grid.Column width={16}>
-              <Segment style={{
-                border: '1px solid lightgrey',
-                borderRadius:'5px',
-                textAlign: 'left'
+          (<>
+            <Grid.Row columns={1} centered>
+              <Grid.Column width={16}>
+                <SelectedRecipesSegment width={width}/>
+              </Grid.Column>
+            </Grid.Row>
+            <Grid.Row columns={1} centered>
+              <Grid.Column width={16}>
+                <Segment style={{
+                  border: '1px solid lightgrey',
+                  borderRadius: '5px',
+                  textAlign: 'left'
                 }} basic>
                   {generateBasketIngredients()}
-              </Segment>
-            </Grid.Column>
-        </Grid.Row></>) :
-        (<Grid.Row>
-          <Grid.Column>
-            <h3>No Recipes in Basket</h3>
-          </Grid.Column>
-          </Grid.Row>
-        )
+                </Segment>
+              </Grid.Column>
+            </Grid.Row></>) :
+          (<Grid.Row>
+              <Grid.Column>
+                <h3>No Recipes in Basket</h3>
+              </Grid.Column>
+            </Grid.Row>
+          )
       }
     </Grid>
   );

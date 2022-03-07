@@ -1,5 +1,4 @@
-import { QueryRecipe } from "./queryRecipe";
-import { Recipe } from "./recipe";
+import {QueryRecipe} from "./queryRecipe";
 
 export type PaginatedRequest = {
   pageSize: number;
