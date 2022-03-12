@@ -12,7 +12,6 @@ export type ServerAction = {
     accessToken?: string;
     userName?: string;
     recipes?: Recipe[];
-    calendarRecipes?: Recipe[];
     numberOfRecipes?: number;
     paginatedRequest?: PaginatedRequest;
   }

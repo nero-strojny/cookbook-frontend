@@ -25,13 +25,6 @@ export const serverRequestReducer = (state: ServerState, action: ServerAction): 
         ...state,
         basket: tempBasket.concat(dedup)
       }
-    case "ADD_ALL_CALENDAR":
-      return {
-        ...state,
-        calendarRecipes: payload.calendarRecipes,
-        header: 'Success!',
-        messageContent: `Your Calendar Has Been Saved For This Session!`,
-      }
     case "REMOVE_BASKET":
       tempBasket = [...state.basket];
       const basketItemId: string = get(payload, "basketItem._id", "");

@@ -9,7 +9,6 @@ export interface ServerState {
   shouldRefresh: boolean;
   basket: Recipe[];
   recipes?: Recipe[];
-  calendarRecipes?: Recipe[];
   numberOfRecipes?: number;
   header?: string;
   messageContent?: string;
@@ -22,5 +21,4 @@ export const initialServerState: ServerState = {
   shouldRefresh: true,
   basket: [],
   recipes: [],
-  calendarRecipes: []
 }
