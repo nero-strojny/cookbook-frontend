@@ -7,6 +7,7 @@ import { getRandomRecipes, getRecipes, updateCalendar } from "../serviceCalls";
 import SimplifiedRecipeCard from "../view/SimplifiedRecipeCard";
 import { CalendarObject, calendarToRecipes, populateCalendar } from "../actions/populateCalendar";
 import { get, has, indexOf, set } from "lodash";
+import { defaultRecipe } from "../reducers/EditRecipeState";
 
 type CalendarProps = {
   width: number
@@ -45,7 +46,8 @@ const Calendar = ({ width }: CalendarProps) => {
     (async () => {
       if (isCurrent) {
         setIsLoading(true);
-        const populationResponse = await populateCalendar(beginningOfWeek, serverState, serverDispatch, serverState.accessToken);
+        const sundayDate = DateTime.now().startOf('week').minus({ days: 1 });
+        const populationResponse = await populateCalendar(sundayDate, serverDispatch, serverState.accessToken);
         setCalendar(populationResponse);
         setIsLoading(false);
       }
@@ -53,7 +55,7 @@ const Calendar = ({ width }: CalendarProps) => {
     return () => {
       isCurrent = false;
     }
-  }, []);
+  }, [serverState.accessToken, serverDispatch]);
 
   const setRecipeForCalendarDay = async (dayToUpdate: string, recipe?: Recipe) => {
     const tempCalendar = {...calendar};
@@ -120,9 +122,10 @@ const Calendar = ({ width }: CalendarProps) => {
       );
     }
     const chosenDay = beginningOfWeek.plus({ days: indexOf(daysInAWeek, currentEditCard)});
-    const currentDayRecipe = get(calendar, currentEditCard);
+    let currentDayRecipe = get(calendar, currentEditCard);
     const loadingRecipe = isLoading;
-    const showRecipeDetails = currentDayRecipe.recipeName !== defaultRecipeName;
+    const showRecipeDetails = has(currentDayRecipe, "recipeName");
+    currentDayRecipe = showRecipeDetails ? currentDayRecipe : {...defaultRecipe, recipeName: defaultRecipeName};
     return (
       <Segment style={{
         border: '1px solid lightgrey',
@@ -190,10 +193,9 @@ const Calendar = ({ width }: CalendarProps) => {
   const createDayCards = () => {
     const dayCards: JSX.Element[] = [];
     let currentDay = beginningOfWeek;
-    daysInAWeek.forEach((day, index) => {
+    daysInAWeek.forEach(day => {
       const recipeOfTheDay = get(calendar, day) as Recipe;
       const loadingRecipe = (isLoading && currentEditCard === day) || !Object.values(calendar).length;
-      console.log(loadingRecipe);
       dayCards.push(
       <Card link key={`recipeCard-${day}`}>
         <Card.Content onClick={()=>setCurrentEditCard(day)}>
@@ -208,7 +210,7 @@ const Calendar = ({ width }: CalendarProps) => {
                 color={has(recipeOfTheDay, "recipeName") ? 'orange' : 'grey'}
                 size='large'
               >
-                {recipeOfTheDay.recipeName || defaultRecipeName}
+                {get(recipeOfTheDay, "recipeName", defaultRecipeName)}
               </Label>
             }
           </Card.Description>
@@ -220,8 +222,15 @@ const Calendar = ({ width }: CalendarProps) => {
   }
 
   return <><Grid padding>
-    <Grid.Row style={{textAlign: 'right', marginRight: '15px'}}>
+    <Grid.Row style={{margin: '0px 15px'}} columns="equal">
       <Grid.Column>
+        <h3>
+          {beginningOfWeek.toLocaleString(DateTime.DATE_FULL)}
+          {` - `} 
+          {beginningOfWeek.plus({ days: 7}).toLocaleString(DateTime.DATE_FULL)}
+        </h3>
+      </Grid.Column>
+      <Grid.Column textAlign='right'>
         <Button
           color='orange'
           onClick={() => serverDispatch({ type: 'ADD_ALL_BASKET', payload: { basketItems: calendarToRecipes(calendar) } })}

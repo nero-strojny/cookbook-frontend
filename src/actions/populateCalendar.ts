@@ -1,9 +1,7 @@
-import { set } from "lodash";
+import { get, set } from "lodash";
 import { DateTime } from "luxon";
 import React from "react";
-import Calendar from "../calendar/Calendar";
 import { ServerAction } from "../reducers/ServerAction";
-import { ServerState } from "../reducers/ServerState";
 import { createCalendar, getCalendar, getRandomRecipes, getRecipe } from "../serviceCalls";
 import { Recipe } from "../types/recipe";
 
@@ -27,16 +25,24 @@ export type CalendarObject = {
   friday?: Recipe,
   saturday?: Recipe,
   sunday?: Recipe
+  householdID?: string;
 }
 
-const getRecipes = async (calendarRequest: {[key:string]: string}, token: string): Promise<CalendarObject> => {
-  const recipesData = await Promise.all(Object.keys(calendarRequest).map(request => getIndividualRecipe(request, calendarRequest[request], token)));
+const getRecipes = async (calendarRequest: CalendarObject, token: string): Promise<CalendarObject> => {
+  const currentCalendar = {...calendarRequest};
+  delete currentCalendar._id;
+  delete currentCalendar.startDate;
+  delete currentCalendar.householdID;
+  // short cut for iterating through all the days, we just have to delete the other keys on the calendar ^
+  const recipesData = await Promise.all(Object.keys(currentCalendar).map(request => getIndividualRecipe(request, get(calendarRequest,request), token)));
   const calendar = {};
   recipesData.forEach(recipeData => set(calendar, recipeData.day, recipeData.recipe));
   return calendar as CalendarObject;
 }
 
-const getIndividualRecipe = async(day: string, recipeId: string, token: string): Promise<{day: string, recipe: Recipe}> => {
+const getIndividualRecipe = async(day: string, recipeId: string, token: string): Promise<{day: string, recipe: Recipe | undefined}> => {
+  // the id becomes blank from the calendar, don't retrieve them if so
+  if (recipeId === "000000000000000000000000") { return { day, recipe: undefined } }
   const response = await getRecipe(recipeId, token);
   return { day, recipe: response.data };
 }
@@ -65,30 +71,31 @@ export const calendarToRecipes = (calendar: CalendarObject): Recipe[] => {
 
 export const populateCalendar = async (
   beginningOfWeek: DateTime,
-  serverState: ServerState,
   serverDispatch: React.Dispatch<ServerAction>,
   token: string):
   Promise<CalendarObject> => {
   const DAYS_IN_A_WEEK = 7;
   const startDate = `${beginningOfWeek.year}-${beginningOfWeek.day}-${beginningOfWeek.month}`
   // First, see if we already have a calendar for the current sunday date and the household
-  const getCalendarResponse = await getCalendar(startDate, serverState.accessToken)
-  if (getCalendarResponse.status === 200 || getCalendarResponse.status == 404) {
+  const getCalendarResponse = await getCalendar(startDate, token)
+  if(getCalendarResponse.status=== 200) {
+    // If we have a calendar, retrieve the recipes by their id
+    const calendar = await getRecipes(getCalendarResponse.data, token);
+    return {...calendar, _id: getCalendarResponse.data._id, startDate: getCalendarResponse.data.startDate};
+  } else if (getCalendarResponse.status === 404) {
     // If we do not have a calendar, create one
-    if (!getCalendarResponse.data){
-      const randomResponse = await getRandomRecipes(serverState.accessToken, DAYS_IN_A_WEEK);
-      const createCalendarRes = await createCalendar(randomResponse.data, startDate, serverState.accessToken);
-      if (createCalendarRes.status !== 201) {
-        serverDispatch({ type: 'SHOW_MESSAGE',
+    const randomResponse = await getRandomRecipes(token, DAYS_IN_A_WEEK);
+    const createCalendarRes = await createCalendar(randomResponse.data, startDate, token);
+    if (createCalendarRes.status !== 201) {
+      serverDispatch({ type: 'SHOW_MESSAGE',
         payload: { messageContent: `There was an error populating the calendar`, success: false }
       });
       return {};
-      }
-      return {_id: createCalendarRes.body._id, ...recipesToCalendar(randomResponse.data)};
     }
-    // If we have a calendar, retrieve the recipes by their id
-    const calendar = await getRecipes(getCalendarResponse.data, token);
-    return {...calendar, _id: getCalendarResponse.data._id};
+    return {_id: createCalendarRes.data._id,
+      ...recipesToCalendar(randomResponse.data),
+      startDate: createCalendarRes.data.startDate
+    };
   } else if (getCalendarResponse.status === 401 || getCalendarResponse.status === 403) {
     serverDispatch({ type: 'LOGOUT_SUCCESS', payload: {} });
   }

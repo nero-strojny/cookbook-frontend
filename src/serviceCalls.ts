@@ -1,7 +1,7 @@
 import axios, {AxiosResponse} from "axios";
 import {Promise} from "bluebird";
 import {get, has, set} from 'lodash';
-import { CalendarObject, recipesToCalendar } from "./actions/populateCalendar";
+import { CalendarObject } from "./actions/populateCalendar";
 import {NewIngredient} from "./types/ingredient";
 import {PaginatedRequest} from "./types/paginatedRequest";
 import {Recipe} from "./types/recipe";
@@ -198,7 +198,7 @@ export const emailBasket = async (ingredientStrings: { [category: string]: strin
 export const getCalendar = async (startDate: string, token: string) => {
     let response;
     try {
-        response = await axios.get(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar/?startDate=${startDate}`, {
+        response = await axios.get(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar?startDate=${startDate}`, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
@@ -239,7 +239,7 @@ export const updateCalendar = async (calendar: CalendarObject, token: string) =>
     let response;
     const body = {
         _id: calendar._id,
-        startDate: calendar.startDate,
+        startdate: calendar.startDate,
         monday: calendar.monday?._id,
         tuesday: calendar.tuesday?._id,
         wednesday: calendar.wednesday?._id,
