@@ -198,7 +198,7 @@ export const emailBasket = async (ingredientStrings: { [category: string]: strin
 export const getCalendar = async (startDate: string, token: string) => {
     let response;
     try {
-        response = await axios.get(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar/${startDate}`, {
+        response = await axios.get(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar/?startDate=${startDate}`, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
@@ -223,7 +223,7 @@ export const createCalendar = async (recipes: Recipe[], startDate: string, token
         saturday: recipes[6]._id,
       }
     try {
-        response = await axios.post(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar`, {...body}, {
+        response = await axios.post(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar`, body, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
@@ -249,7 +249,7 @@ export const updateCalendar = async (calendar: CalendarObject, token: string) =>
         sunday: calendar.sunday?._id,
       }
     try {
-        response = await axios.put(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar`, body, {
+        response = await axios.put(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar/${calendar._id}`, body, {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,

@@ -73,7 +73,7 @@ export const populateCalendar = async (
   const startDate = `${beginningOfWeek.year}-${beginningOfWeek.day}-${beginningOfWeek.month}`
   // First, see if we already have a calendar for the current sunday date and the household
   const getCalendarResponse = await getCalendar(startDate, serverState.accessToken)
-  if (getCalendarResponse.status === 200) {
+  if (getCalendarResponse.status === 200 || getCalendarResponse.status == 404) {
     // If we do not have a calendar, create one
     if (!getCalendarResponse.data){
       const randomResponse = await getRandomRecipes(serverState.accessToken, DAYS_IN_A_WEEK);
