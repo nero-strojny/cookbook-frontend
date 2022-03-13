@@ -12,10 +12,10 @@ type RecipeCardProps = {
 }
 
 const SimplifiedRecipeCard = ({
-                                recipe,
-                                showRecipeDetails,
-                                loading
-                              }: RecipeCardProps): JSX.Element => {
+  recipe,
+  showRecipeDetails,
+  loading
+}: RecipeCardProps): JSX.Element => {
 
   const {
     _id: recipeId,

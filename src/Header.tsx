@@ -63,7 +63,7 @@ const Header = (): JSX.Element => {
             <Dropdown.Item name='calendar'
                            active={activeItem === 'calendar'}
                            onClick={() => history.push('/calendar')}>
-              Calendar
+              Household Calendar
             </Dropdown.Item>
             <Dropdown.Item active={activeItem === 'logout'}
                            onClick={() => {
