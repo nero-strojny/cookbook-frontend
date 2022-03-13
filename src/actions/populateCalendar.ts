@@ -75,7 +75,7 @@ export const populateCalendar = async (
   token: string):
   Promise<CalendarObject> => {
   const DAYS_IN_A_WEEK = 7;
-  const startDate = `${beginningOfWeek.year}-${beginningOfWeek.day}-${beginningOfWeek.month}`
+  const startDate = beginningOfWeek.toISODate();
   // First, see if we already have a calendar for the current sunday date and the household
   const getCalendarResponse = await getCalendar(startDate, token)
   if(getCalendarResponse.status=== 200) {

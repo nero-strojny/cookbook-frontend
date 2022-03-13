@@ -17,7 +17,9 @@ const Calendar = ({ width }: CalendarProps) => {
 
   // start cards on Sunday Date, luxon starts on Mondays, so we
   // have to subtract 1
-  const beginningOfWeek = DateTime.now().startOf('week').minus({ days: 1 });
+  let beginningOfWeek: DateTime;
+  const today = DateTime.now().weekday;
+  beginningOfWeek = today === 7 ? DateTime.now() : DateTime.now().startOf('week').minus({ days: 1 });
   const daysInAWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const defaultRecipeName = "None Selected";
 
@@ -46,7 +48,10 @@ const Calendar = ({ width }: CalendarProps) => {
     (async () => {
       if (isCurrent) {
         setIsLoading(true);
-        const sundayDate = DateTime.now().startOf('week').minus({ days: 1 });
+        let sundayDate;
+        const today = DateTime.now().weekday;
+        sundayDate = today === 7 ? DateTime.now() : DateTime.now().startOf('week').minus({ days: 1 });
+        console.log(sundayDate);
         const populationResponse = await populateCalendar(sundayDate, serverDispatch, serverState.accessToken);
         setCalendar(populationResponse);
         setIsLoading(false);
