@@ -1,21 +1,47 @@
-import React, {useContext, useState} from "react";
-import {Button, Form, Grid, Header, Icon, Segment} from "semantic-ui-react";
-import {ServerRequestContext} from "../context/ServerRequestContext";
-import {flatMap, set} from 'lodash';
-import {emailBasket} from "../serviceCalls";
-import {Ingredient} from "../types/ingredient";
+import React, {useContext, useReducer, useState} from "react";
+import { Grid, Button, Segment, Header, Icon, Form } from "semantic-ui-react";
+import { ServerRequestContext } from "../context/ServerRequestContext";
+import { flatMap, set } from 'lodash';
+import { emailBasket } from "../serviceCalls";
+import { Ingredient } from "../types/ingredient";
 import SelectedRecipesSegment from "./SelectedRecipesSegment";
 import IngredientCards from "./IngredientCards";
 import {generateIngredientStrings, ingredientCategories} from "./visualizeIngredients";
 
-const Basket = ({width}: { width: number }): JSX.Element => {
-  const {state, dispatch} = useContext(ServerRequestContext);
-  const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
-  const defaultNewIngredient: Ingredient = {_id: '', name: '', category: '', amount: 0, measurement: ''};
+interface EmailState {
+  loading: boolean;
+}
 
-  const [ingredientsToNotEmail, setIngredientsToNotEmail] = useState<string[]>([]);
-  const [additionalIngredients, setAdditionalIngredients] = useState<Ingredient[]>([]);
-  const [newIngredient, setNewIngredient] = useState<Ingredient>({...defaultNewIngredient});
+export type EmailAction = {
+  type: string,
+  payload: {
+    message?: string;
+  }
+}
+
+const emailReducer = (state: EmailState, action: EmailAction): EmailState =>  {
+  switch (action.type) {
+    case 'SUCCESS':
+      return {loading: false};
+    case 'FAILURE':
+      return {loading: false};
+    case 'LOADING':
+      return {loading: true};
+    case 'CLEAR':
+      return {loading: false};
+    default:
+      throw new Error();
+  }
+}
+
+const Basket = ({width}: {width:number}): JSX.Element => {
+  const { state, dispatch } = useContext(ServerRequestContext);
+  const ingredients = flatMap(state.basket, recipe => recipe.ingredients);
+  const defaultNewIngredient: Ingredient = {_id:'', name: '', category: '', amount: 0, measurement: '' };
+  const [ ingredientsToNotEmail, setIngredientsToNotEmail ] = useState<string[]>([]);
+  const [ additionalIngredients, setAdditionalIngredients] = useState<Ingredient[]>([]);
+  const [ newIngredient, setNewIngredient ] = useState<Ingredient>({...defaultNewIngredient});
+  const [{loading}, emailDispatch] = useReducer(emailReducer, {loading: false});
 
   const changeIngredientsToNotEmail = (ingredientString: string) => {
     let tempArray = [];
@@ -41,6 +67,7 @@ const Basket = ({width}: { width: number }): JSX.Element => {
   }
 
   const emailIngredients = async () => {
+    emailDispatch({ type: 'LOADING', payload: {} })
     let ingredientObject = {};
     ingredientCategories.forEach(category => {
       set(ingredientObject, category, generateIngredientStrings(
@@ -48,14 +75,13 @@ const Basket = ({width}: { width: number }): JSX.Element => {
     });
     const response = await emailBasket(ingredientObject, state.accessToken)
     if (response.status === 200) {
-      dispatch({type: 'SHOW_MESSAGE', payload: {messageContent: `Shopping list has been emailed!`, success: true}});
+      emailDispatch({ type: 'SUCCESS', payload: {}})
+      dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Shopping list has been emailed!`, success: true }});
     } else if (response.status === 401 || response.status === 403) {
       dispatch({type: 'LOGOUT_SUCCESS', payload: {}});
     } else {
-      dispatch({
-        type: 'SHOW_MESSAGE',
-        payload: {messageContent: `Emailing shopping list failed due to an error`, success: false}
-      });
+      emailDispatch({ type: 'FAILURE', payload: {}})
+      dispatch({ type: 'SHOW_MESSAGE', payload: { messageContent: `Emailing shopping list failed due to an error`, success: false }});
     }
   }
 
@@ -66,7 +92,7 @@ const Basket = ({width}: { width: number }): JSX.Element => {
           <Header as='h3'>Shopping List</Header>
         </Grid.Column>
         <Grid.Column width={5} floated='right' textAlign='right'>
-          <Button color='orange' onClick={() => emailIngredients()}>Send To Email</Button>
+          <Button color='orange' loading={loading} onClick={() => emailIngredients()}>Send To Email</Button>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row centered columns={1}>
