@@ -2,7 +2,7 @@
 
 ## Description:
 
-The frontend for an application that alolows uses to store and edit recipes Deployed to an s3 bucket which is currently
+The frontend for an application that allows users to store and edit recipes. Deployed to an s3 bucket which is currently
 only accessible to the authors
 
 ### React App
