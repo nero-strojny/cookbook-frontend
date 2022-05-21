@@ -20,3 +20,4 @@ only accessible to the authors
 
 - Jake Strojny @jstrojny
 - Alexandra Nero @alexandra-nero
+- 
