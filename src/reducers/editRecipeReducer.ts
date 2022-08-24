@@ -46,7 +46,7 @@ export const editRecipeReducer = (state: EditRecipeState, action: EditRecipeActi
     case "ADD_STEP":
       return {
         ...state,
-        steps: [...tempSteps, {number: tempSteps.length, text: ""}]
+        steps: [...tempSteps, {number: tempSteps.length + 1, text: ""}]
       };
     case "EDIT_STEP":
       tempSteps[payload.indexSelected || 0] = {
