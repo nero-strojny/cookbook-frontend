@@ -80,7 +80,7 @@ const Calendar = ({ width }: CalendarProps) => {
       if (response.status === 401 || response.status === 403) {
         serverDispatch({type: 'LOGOUT_SUCCESS', payload: {}});
       }
-      setSelectionOptions(response.data.recipes);
+      setSelectionOptions(response.data.recipes || []);
       setSearchLoading(false);
     }
   }
