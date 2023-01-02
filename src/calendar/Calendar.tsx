@@ -51,7 +51,6 @@ const Calendar = ({ width }: CalendarProps) => {
         let sundayDate;
         const today = DateTime.now().weekday;
         sundayDate = today === 7 ? DateTime.now() : DateTime.now().startOf('week').minus({ days: 1 });
-        console.log(sundayDate);
         const populationResponse = await populateCalendar(sundayDate, serverDispatch, serverState.accessToken);
         setCalendar(populationResponse);
         setIsLoading(false);

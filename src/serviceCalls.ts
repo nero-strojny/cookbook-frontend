@@ -197,6 +197,7 @@ export const emailBasket = async (ingredientStrings: { [category: string]: strin
 
 export const getCalendar = async (startDate: string, token: string) => {
     let response;
+    console.log(startDate)
     try {
         response = await axios.get(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar?startDate=${startDate}`, {
             headers: {
@@ -210,17 +211,10 @@ export const getCalendar = async (startDate: string, token: string) => {
     return response
 }
 
-export const createCalendar = async (recipes: Recipe[], startDate: string, token: string) => {
+export const createCalendar = async (startDate: string, token: string) => {
     let response;
     const body = {
-        startDate,
-        sunday: recipes[0]._id,
-        monday: recipes[1]._id,
-        tuesday: recipes[2]._id,
-        wednesday: recipes[3]._id,
-        thursday: recipes[4]._id,
-        friday: recipes[5]._id,
-        saturday: recipes[6]._id,
+        startDate
       }
     try {
         response = await axios.post(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar`, body, {
@@ -240,13 +234,13 @@ export const updateCalendar = async (calendar: CalendarObject, token: string) =>
     const body = {
         _id: calendar._id,
         startdate: calendar.startDate,
-        monday: calendar.monday?._id,
-        tuesday: calendar.tuesday?._id,
-        wednesday: calendar.wednesday?._id,
-        thursday: calendar.thursday?._id,
-        friday: calendar.friday?._id,
-        saturday: calendar.saturday?._id,
-        sunday: calendar.sunday?._id,
+        monday: calendar.monday,
+        tuesday: calendar.tuesday,
+        wednesday: calendar.wednesday,
+        thursday: calendar.thursday,
+        friday: calendar.friday,
+        saturday: calendar.saturday,
+        sunday: calendar.sunday,
       }
     try {
         response = await axios.put(process.env.REACT_APP_SERVER_BASE_URL + `/api/calendar/${calendar._id}`, body, {
