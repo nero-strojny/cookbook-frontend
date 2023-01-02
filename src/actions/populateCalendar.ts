@@ -2,7 +2,7 @@ import { get, set } from "lodash";
 import { DateTime } from "luxon";
 import React from "react";
 import { ServerAction } from "../reducers/ServerAction";
-import { createCalendar, getCalendar, getRandomRecipes, getRecipe } from "../serviceCalls";
+import { createCalendar, getCalendar, getRecipe } from "../serviceCalls";
 import { Recipe } from "../types/recipe";
 
 export type CalendarRequest = {
@@ -74,7 +74,6 @@ export const populateCalendar = async (
   serverDispatch: React.Dispatch<ServerAction>,
   token: string):
   Promise<CalendarObject> => {
-  const DAYS_IN_A_WEEK = 7;
   const startDate = beginningOfWeek.toISODate();
   // First, see if we already have a calendar for the current sunday date and the household
   const getCalendarResponse = await getCalendar(startDate, token)
