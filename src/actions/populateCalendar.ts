@@ -2,7 +2,7 @@ import { get, set } from "lodash";
 import { DateTime } from "luxon";
 import React from "react";
 import { ServerAction } from "../reducers/ServerAction";
-import { createCalendar, getCalendar, getRandomRecipes, getRecipe } from "../serviceCalls";
+import { createCalendar, getCalendar, getRecipe } from "../serviceCalls";
 import { Recipe } from "../types/recipe";
 
 export type CalendarRequest = {
@@ -40,22 +40,22 @@ const getRecipes = async (calendarRequest: CalendarObject, token: string): Promi
   return calendar as CalendarObject;
 }
 
-const getIndividualRecipe = async(day: string, recipeId: string, token: string): Promise<{day: string, recipe: Recipe | undefined}> => {
+const getIndividualRecipe = async(day: string, recipe: Recipe, token: string): Promise<{day: string, recipe: Recipe | undefined}> => {
   // the id becomes blank from the calendar, don't retrieve them if so
-  if (recipeId === "000000000000000000000000") { return { day, recipe: undefined } }
-  const response = await getRecipe(recipeId, token);
+  if (recipe._id === "000000000000000000000000" || recipe._id === undefined) { return { day, recipe: undefined } }
+  const response = await getRecipe(recipe._id, token);
   return { day, recipe: response.data };
 }
 
-export const recipesToCalendar = (recipes: Recipe[]): CalendarObject => {
+export const recipesToCalendar = (calendar: CalendarObject): CalendarObject => {
   return {
-    monday: recipes[0],
-    tuesday: recipes[1],
-    wednesday: recipes[2],
-    thursday: recipes[3],
-    friday: recipes[4],
-    saturday: recipes[5],
-    sunday: recipes[6]
+    monday: calendar.monday,
+    tuesday: calendar.tuesday,
+    wednesday:calendar.wednesday,
+    thursday: calendar.thursday,
+    friday: calendar.friday,
+    saturday: calendar.saturday,
+    sunday: calendar.sunday
   }
 }
 
@@ -74,7 +74,6 @@ export const populateCalendar = async (
   serverDispatch: React.Dispatch<ServerAction>,
   token: string):
   Promise<CalendarObject> => {
-  const DAYS_IN_A_WEEK = 7;
   const startDate = beginningOfWeek.toISODate();
   // First, see if we already have a calendar for the current sunday date and the household
   const getCalendarResponse = await getCalendar(startDate, token)
@@ -84,8 +83,7 @@ export const populateCalendar = async (
     return {...calendar, _id: getCalendarResponse.data._id, startDate: getCalendarResponse.data.startDate};
   } else if (getCalendarResponse.status === 404) {
     // If we do not have a calendar, create one
-    const randomResponse = await getRandomRecipes(token, DAYS_IN_A_WEEK);
-    const createCalendarRes = await createCalendar(randomResponse.data, startDate, token);
+    const createCalendarRes = await createCalendar(startDate, token);
     if (createCalendarRes.status !== 201) {
       serverDispatch({ type: 'SHOW_MESSAGE',
         payload: { messageContent: `There was an error populating the calendar`, success: false }
@@ -93,7 +91,7 @@ export const populateCalendar = async (
       return {};
     }
     return {_id: createCalendarRes.data._id,
-      ...recipesToCalendar(randomResponse.data),
+      ...recipesToCalendar(createCalendarRes.data),
       startDate: createCalendarRes.data.startDate
     };
   } else if (getCalendarResponse.status === 401 || getCalendarResponse.status === 403) {
