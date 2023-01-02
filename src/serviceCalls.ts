@@ -20,15 +20,6 @@ export const login = async (username: string, password: string) => {
     });
 }
 
-export const signup = async (username: string, password: string, email: string, agree: boolean) => {
-  return await axios.post(process.env.REACT_APP_SERVER_BASE_URL + "/api/user",
-    {username, password, email, agreedToTerms: agree}, {
-      headers: {
-        "Content-Type": "application/json",
-      }
-    })
-}
-
 export const updatePassword = async (userName: string, currentPassword: string, newPassword: string) => {
   return await axios.put(process.env.REACT_APP_SERVER_BASE_URL + "/api/user",
     {username: userName, currentPassword, newPassword}, {
