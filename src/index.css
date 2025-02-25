@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Marck+Script&display=swap');
+@import "tailwindcss";
+
+:root {
+  color-scheme: light dark;
+  color: #213547;
+  background-color: #F7F9FB;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @theme {
+    --color-rust: #BF3512;
+    --color-successGreen: #93C572;
+    --color-errorRed: #C70039;
+    --color-sandy: #F4A261;
+    --color-seasalt: #F7F9FB;
+    --font-display: "Marck Script", cursive;
+  }
+}
