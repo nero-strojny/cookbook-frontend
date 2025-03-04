@@ -37,7 +37,7 @@ const IngredientsList = ({cart}:{cart:Recipe[]}) => {
     }
   }
 
-  const applyStrikethrough= (ingredient: IngredientString): string => {
+  const applyStrikethrough = (ingredient: IngredientString): string => {
     return ingredient.checked ? 'text-lg line-through' : 'text-lg';
   }
 

@@ -1,8 +1,8 @@
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  Row,
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
@@ -22,10 +22,11 @@ import { useEmailBasket } from '../hooks/useEmailCart'
 export const IngredientTable = ({cart}:{cart:Recipe[]}) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const ingredients = combineIngredients(cart)
+  const initialState = useMemo(()=>ingredientsToTable(ingredients), [cart])
   const [newName, setNewName] = useState<string>('')
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [modalIngredient, setModalIngredient] = useState<Ingredient>({_id:'',name:'', category: ''})
-  const [groupedIngredients, setGroupedIngredients] = useState<IngredientString[]>(ingredientsToTable(ingredients))
+  const [groupedIngredients, setGroupedIngredients] = useState<IngredientString[]>(initialState)
   const searchIngredientMutation = useSearchIngredient()
   const emailIngredientMutation = useEmailBasket()
   
@@ -106,29 +107,28 @@ export const IngredientTable = ({cart}:{cart:Recipe[]}) => {
     await emailIngredientMutation.mutateAsync(categoryMap)
   }
 
-  const columns = useMemo<ColumnDef<IngredientString>[]>(
-    () => [
+  const columns = [
       {
         accessorKey: 'checked',
         header: () => '',
-        cell: ({row}) => 
-          <IngredientCheckbox
+        cell: ({row}: {row:Row<IngredientString>}) => {
+          return <IngredientCheckbox
             checked={row.original.checked}
             toggleChecked={()=>toggleIngredient(row.original._id)}
-          />,
+          />},
         enableSorting: true
       },
       {
         accessorKey: 'name',
         header: () => 'Name',
-        cell: ({row}) => <span
+        cell: ({row}: {row:Row<IngredientString>}) => <span
           className={`${applyStrikethrough(row.original.checked)}`}>
             {row.original.name}</span>,
         enableSorting: true
       },
       {
         accessorKey: 'combinedString',
-        cell: ({row}) => <span
+        cell: ({row}: {row:Row<IngredientString>}) => <span
           className={`italic ${applyStrikethrough(row.original.checked)}`}>
             {row.original.combinedString}
           </span>,
@@ -137,7 +137,7 @@ export const IngredientTable = ({cart}:{cart:Recipe[]}) => {
       {
         accessorKey: 'category',
         header: () => 'Category',
-        cell: ({row}) => <span
+        cell: ({row}: {row:Row<IngredientString>}) => <span
           className={`${applyStrikethrough(row.original.checked)}`}>
             {capitalize(row.original.category)}</span>,
         enableSorting: true
@@ -145,12 +145,10 @@ export const IngredientTable = ({cart}:{cart:Recipe[]}) => {
       {
         accessorKey: 'recipes',
         header: () => 'Recipes',
-        cell: ({row}) => <RecipeCell recipes={row.original.recipes} checked={row.original.checked} />,
+        cell: ({row}: {row:Row<IngredientString>}) => <RecipeCell recipes={row.original.recipes} checked={row.original.checked} />,
         enableSorting: true
       }
-    ],
-    []
-  )
+    ]
 
 
   const table = useReactTable({
