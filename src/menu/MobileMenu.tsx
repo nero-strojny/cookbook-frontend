@@ -16,7 +16,7 @@ export const MobileMenu = () => {
   }
   
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white flex justify-around items-start border-t-1 border-sandy pb-3">
+    <div className="fixed bottom-0 left-0 w-full bg-white flex justify-around items-start border-t-1 border-sandy pb-3 z-20">
       <Link to="/" className={getMenuItemClass("/")}>
         <FiHome size={32} />
       </Link>

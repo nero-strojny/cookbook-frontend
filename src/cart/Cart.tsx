@@ -35,7 +35,7 @@ export const Cart = () => {
                   <div
                     className="flex justify-between mx-auto gap-2 w-full border-b border-gray-300"
                     key={recipe._id}>
-                    <span className="">{recipe.recipeName}</span>
+                    <span className="text-lg">{recipe.recipeName}</span>
                     <div className="flex gap-3">
                       <button
                         onClick={()=>removeFromCart(recipe._id)}
