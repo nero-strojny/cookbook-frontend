@@ -23,9 +23,9 @@ export const AppRoutes = () => {
       <CartProvider>
         <Router>
           <Header />
-          {!!token ? isMobileOnly ? <MobileMenu /> : <DesktopMenu /> : <></>}
+          {token ? isMobileOnly ? <MobileMenu /> : <DesktopMenu /> : <></>}
           <Routes>
-            {!!token ? <>
+            {token ? <>
               <Route path="/" element={<RecipeGrid />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/calendar" element={<Calendar />} />

@@ -17,8 +17,9 @@ export const formatDateToCST = (date: string) => {
 
 
 export const getDaysOfWeek = (currentDate: Date, startOfWeek: number) => {
-  return Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(currentDate.setDate(startOfWeek + i));
+  const array =  Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(currentDate);
+    date.setDate(startOfWeek + i);
     const formatter = new Intl.DateTimeFormat('en-US', {
       weekday: 'long',
       timeZone: 'America/Chicago', // CST time zone
@@ -30,7 +31,8 @@ export const getDaysOfWeek = (currentDate: Date, startOfWeek: number) => {
       month: date.getMonth() + 1, 
       weekday: formatter.format(date).toLowerCase()
     };
-});
+  });
+  return array;
 }
 
 export const getFirstAndLastDate = (currentDate: Date, startOfWeek: number) => {

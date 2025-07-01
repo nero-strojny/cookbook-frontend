@@ -86,9 +86,21 @@ export const Calendar = () => {
       </PageHeader>
       <div className={`container mx-auto mt-4 ${!isMobileOnly && 'flex'}`}>
         {isMobileOnly ?
-          <MobileDatePicker selectedDate={selectedDate} daysOfWeek={daysOfWeek} handleSetSelectedDate={handleSetSelectedDate}/> :
-          <DesktopDatePicker selectedDate={selectedDate} recipeMap={recipeMap} daysOfWeek={daysOfWeek} handleSetSelectedDate={handleSetSelectedDate}>
-            <AddToCartButton added={added} onClick={()=>handleAddAllToCart()} altAddText='Add all to Cart' altRemoveText='Remove all from cart' />
+          <MobileDatePicker 
+            selectedDate={selectedDate}
+            daysOfWeek={daysOfWeek}
+            handleSetSelectedDate={handleSetSelectedDate}
+          /> :
+          <DesktopDatePicker 
+            selectedDate={selectedDate}
+            recipeMap={recipeMap}
+            daysOfWeek={daysOfWeek}
+            handleSetSelectedDate={handleSetSelectedDate}>
+              <AddToCartButton 
+                added={added}
+                onClick={()=>handleAddAllToCart()}
+                altAddText='Add all to Cart' altRemoveText='Remove all from cart' 
+              />
           </DesktopDatePicker>
         }
         <div className={isMobileOnly ? 'w-full':`w-1/2 ml-8`}>
